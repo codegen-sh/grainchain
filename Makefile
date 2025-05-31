@@ -1,21 +1,39 @@
 # Grainchain Benchmarking Infrastructure
 
-.PHONY: help install benchmark publish clean
+.PHONY: help install benchmark publish clean grainchain-benchmark
 
 help: ## Show this help message
 	@echo "Grainchain Benchmarking Infrastructure"
 	@echo ""
 	@echo "Available commands:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \\033[36m%-20s\\033[0m %s\\n", $$1, $$2}'
 
 install: ## Install dependencies
 	pip install -r requirements.txt
 
-benchmark: ## Run a single benchmark
+# Original Outline benchmarks
+benchmark: ## Run a single Outline benchmark
 	python benchmarks/scripts/benchmark_runner.py
 
-benchmark-config: ## Run benchmark with custom config
+benchmark-config: ## Run Outline benchmark with custom config
 	python benchmarks/scripts/benchmark_runner.py --config benchmarks/configs/default.json
+
+# Grainchain-specific benchmarks
+grainchain-benchmark: ## Run Grainchain provider benchmarks
+	@echo "🚀 Running Grainchain Provider Benchmarks..."
+	./benchmarks/scripts/run_grainchain_benchmark.sh
+
+grainchain-local: ## Benchmark only local provider
+	@echo "🏠 Benchmarking Local Provider..."
+	./benchmarks/scripts/run_grainchain_benchmark.sh "local" 3
+
+grainchain-e2b: ## Benchmark only E2B provider
+	@echo "🌐 Benchmarking E2B Provider..."
+	./benchmarks/scripts/run_grainchain_benchmark.sh "e2b" 3
+
+grainchain-compare: ## Compare all available providers
+	@echo "⚖️  Comparing All Providers..."
+	./benchmarks/scripts/run_grainchain_benchmark.sh "local e2b" 5
 
 publish: ## Run benchmark and publish results
 	python benchmarks/scripts/auto_publish.py --run-benchmark
@@ -48,4 +66,3 @@ lint: ## Lint Python code
 
 format: ## Format Python code
 	python -m black benchmarks/scripts/
-
