@@ -66,6 +66,9 @@ class Sandbox:
         elif provider_name == "modal":
             from grainchain.providers.modal import ModalProvider
             return ModalProvider(provider_config)
+        elif provider_name == "daytona":
+            from grainchain.providers.daytona import DaytonaProvider
+            return DaytonaProvider(provider_config)
         elif provider_name == "local":
             from grainchain.providers.local import LocalProvider
             return LocalProvider(provider_config)
@@ -270,4 +273,3 @@ class Sandbox:
         """String representation of the sandbox."""
         status = self.status.value if self._session else "not_created"
         return f"Sandbox(provider={self.provider_name}, status={status}, id={self.sandbox_id})"
-

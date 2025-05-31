@@ -2,7 +2,7 @@
 """
 Grainchain Sandbox Provider Benchmarking
 
-This script benchmarks different sandbox providers (Local, E2B, Modal) to measure:
+This script benchmarks different sandbox providers (Local, E2B, Modal, Daytona) to measure:
 1. Sandbox creation time
 2. Command execution performance
 3. File operation speed
@@ -95,7 +95,7 @@ class GrainchainBenchmark:
     def _load_config(self, config_path: str) -> Dict[str, Any]:
         """Load configuration from file or use defaults"""
         default_config = {
-            "providers": ["local", "e2b"],  # Add "modal" when available
+            "providers": ["local", "e2b", "modal", "daytona"],  # Add "modal" when available
             "iterations": 3,
             "timeout": 30,
             "parallel_tests": False,
@@ -486,7 +486,7 @@ async def main():
     parser = argparse.ArgumentParser(description="Grainchain Provider Benchmarking")
     parser.add_argument("--config", help="Path to configuration file")
     parser.add_argument("--providers", nargs="+", help="Providers to test", 
-                       choices=["local", "e2b", "modal"], default=["local", "e2b"])
+                       choices=["local", "e2b", "modal", "daytona"], default=["local", "e2b"])
     parser.add_argument("--iterations", type=int, default=3, help="Number of iterations per test")
     parser.add_argument("--output-dir", help="Output directory for results")
     args = parser.parse_args()
