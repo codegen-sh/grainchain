@@ -96,6 +96,23 @@ class GrainchainBenchmark:
                     "python3 -c 'import hashlib; hashlib.sha256(b\"test\" * 1000).hexdigest()'",
                 ],
             },
+            {
+                "name": "snapshot_lifecycle",
+                "description": "Git clone, file creation, snapshot, kill, and restore operations",
+                "type": "snapshot_lifecycle",
+                "commands": [
+                    "git clone https://github.com/codegen-sh/outline.git /tmp/outline",
+                    "ls -la /tmp/outline",
+                ],
+                "files": [
+                    {
+                        "name": "codegen-test.md",
+                        "content": "# Codegen Test File\n\nThis is a minimal test file created during benchmarking.\n\nTimestamp: "
+                        + datetime.now().isoformat(),
+                        "size": "small",
+                    }
+                ],
+            },
         ]
 
     def _load_config(self, config_path: str) -> dict[str, Any]:
@@ -218,6 +235,12 @@ class GrainchainBenchmark:
         self, provider: str, scenario: dict[str, Any], iteration: int
     ) -> dict[str, Any]:
         """Run a single test scenario"""
+        # Check if this is a special snapshot lifecycle scenario
+        if scenario.get("type") == "snapshot_lifecycle":
+            return await self._run_snapshot_lifecycle_scenario(
+                provider, scenario, iteration
+            )
+
         start_time = time.time()
         result = {
             "iteration": iteration,
@@ -342,6 +365,153 @@ class GrainchainBenchmark:
             result["metrics"]["total_time"] = time.time() - start_time
             result["status"] = "failed"
             result["error"] = str(e)
+
+        return result
+
+    async def _run_snapshot_lifecycle_scenario(
+        self, provider: str, scenario: dict[str, Any], iteration: int
+    ) -> dict[str, Any]:
+        """Run the special snapshot lifecycle scenario"""
+        start_time = time.time()
+        result = {
+            "iteration": iteration,
+            "scenario": scenario["name"],
+            "provider": provider,
+            "status": "running",
+            "metrics": {
+                "sandbox_creation_time": 0,
+                "git_clone_time": 0,
+                "file_write_time": 0,
+                "snapshot_creation_time": 0,
+                "sandbox_kill_time": 0,
+                "sandbox_restore_time": 0,
+                "verification_time": 0,
+                "total_time": 0,
+                "success_rate": 0,
+                "operations_completed": 0,
+                "operations_total": 6,  # git clone, file write, snapshot, kill, restore, verify
+            },
+        }
+
+        operations_completed = 0
+
+        try:
+            # Step 1: Create initial sandbox and measure creation time
+            creation_start = time.time()
+            sandbox = Sandbox(provider=provider)
+            await sandbox.__aenter__()
+            result["metrics"]["sandbox_creation_time"] = time.time() - creation_start
+            operations_completed += 1
+
+            # Step 2: Git clone the outline repo
+            clone_start = time.time()
+            try:
+                clone_result = await sandbox.execute(
+                    "git clone https://github.com/codegen-sh/outline.git /tmp/outline",
+                    timeout=self.config["timeout"],
+                )
+                result["metrics"]["git_clone_time"] = time.time() - clone_start
+                if clone_result.success:
+                    operations_completed += 1
+                    self.logger.info(f"Git clone successful for {provider}")
+                else:
+                    self.logger.warning(
+                        f"Git clone failed for {provider}: {clone_result.stderr}"
+                    )
+            except Exception as e:
+                result["metrics"]["git_clone_time"] = time.time() - clone_start
+                self.logger.error(f"Git clone error for {provider}: {e}")
+
+            # Step 3: Write codegen-test.md file
+            file_start = time.time()
+            try:
+                file_content = scenario["files"][0]["content"]
+                await sandbox.upload_file("codegen-test.md", file_content)
+                result["metrics"]["file_write_time"] = time.time() - file_start
+                operations_completed += 1
+                self.logger.info(f"File write successful for {provider}")
+            except Exception as e:
+                result["metrics"]["file_write_time"] = time.time() - file_start
+                self.logger.error(f"File write error for {provider}: {e}")
+
+            # Step 4: Create snapshot
+            snapshot_start = time.time()
+            snapshot_id = None
+            try:
+                snapshot_id = await sandbox.create_snapshot()
+                result["metrics"]["snapshot_creation_time"] = (
+                    time.time() - snapshot_start
+                )
+                operations_completed += 1
+                self.logger.info(f"Snapshot created for {provider}: {snapshot_id}")
+            except Exception as e:
+                result["metrics"]["snapshot_creation_time"] = (
+                    time.time() - snapshot_start
+                )
+                self.logger.error(f"Snapshot creation error for {provider}: {e}")
+
+            # Step 5: Kill/close the original sandbox
+            kill_start = time.time()
+            try:
+                await sandbox.__aexit__(None, None, None)
+                result["metrics"]["sandbox_kill_time"] = time.time() - kill_start
+                operations_completed += 1
+                self.logger.info(f"Sandbox killed for {provider}")
+            except Exception as e:
+                result["metrics"]["sandbox_kill_time"] = time.time() - kill_start
+                self.logger.error(f"Sandbox kill error for {provider}: {e}")
+
+            # Step 6: Create new sandbox and restore from snapshot
+            restore_start = time.time()
+            try:
+                new_sandbox = Sandbox(provider=provider)
+                await new_sandbox.__aenter__()
+
+                if snapshot_id:
+                    await new_sandbox.restore_snapshot(snapshot_id)
+
+                # Verify the restoration by checking if files exist
+                verify_start = time.time()
+                outline_check = await new_sandbox.execute(
+                    "ls -la /tmp/outline", timeout=self.config["timeout"]
+                )
+                file_check = await new_sandbox.execute(
+                    "ls -la codegen-test.md", timeout=self.config["timeout"]
+                )
+
+                result["metrics"]["sandbox_restore_time"] = verify_start - restore_start
+                result["metrics"]["verification_time"] = time.time() - verify_start
+
+                if outline_check.success and file_check.success:
+                    operations_completed += 1
+                    self.logger.info(
+                        f"Snapshot restore and verification successful for {provider}"
+                    )
+                else:
+                    self.logger.warning(
+                        f"Snapshot restore verification failed for {provider}"
+                    )
+
+                await new_sandbox.__aexit__(None, None, None)
+
+            except Exception as e:
+                result["metrics"]["sandbox_restore_time"] = time.time() - restore_start
+                result["metrics"]["verification_time"] = 0
+                self.logger.error(f"Sandbox restore error for {provider}: {e}")
+
+            # Calculate success rate
+            result["metrics"]["operations_completed"] = operations_completed
+            result["metrics"]["success_rate"] = (
+                operations_completed / result["metrics"]["operations_total"]
+            )
+            result["metrics"]["total_time"] = time.time() - start_time
+            result["status"] = "completed"
+
+        except Exception as e:
+            result["metrics"]["total_time"] = time.time() - start_time
+            result["status"] = "failed"
+            result["error"] = str(e)
+            self.logger.error(f"Snapshot lifecycle scenario failed for {provider}: {e}")
 
         return result
 

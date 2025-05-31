@@ -1,267 +1,173 @@
-# Outline Benchmarking Infrastructure
+# Grainchain Benchmarks
 
-This directory contains a comprehensive benchmarking infrastructure for the [Outline](https://github.com/outline/outline) application. The system automatically boots up VMs using the codex-universal base image, installs Outline, and measures performance impacts of trivial changes.
+This directory contains benchmarking infrastructure for testing and comparing different sandbox providers in the Grainchain project.
 
-## 🏗️ Architecture
+## Overview
 
-The benchmarking system consists of several components:
+The benchmark suite evaluates sandbox providers across multiple scenarios:
+- **Basic Commands**: Simple shell commands and system information
+- **Python Execution**: Python script execution and package management
+- **File Operations**: File creation, reading, writing, and manipulation
+- **Computational Tasks**: CPU-intensive operations and mathematical computations
 
-- **`benchmark_runner.py`**: Core benchmarking engine that orchestrates the entire process
-- **`auto_publish.py`**: Automation script for periodic execution and result publishing
-- **Configuration files**: JSON-based configuration for customizing benchmark parameters
-- **GitHub Actions**: Automated CI/CD pipeline for scheduled benchmarks
-- **Results storage**: Structured storage of benchmark data in multiple formats
+## Supported Providers
 
-## 🚀 Quick Start
+### ✅ Working Providers
 
-### Prerequisites
+#### Local Provider
+- **Status**: ✅ Fully functional
+- **Setup**: No additional configuration required
+- **Performance**: Fastest execution (~0.04s avg)
+- **Use case**: Development and testing
 
-- Python 3.12+
-- Docker
-- Git
+#### E2B Provider
+- **Status**: ✅ Fully functional
+- **Setup**: Requires `E2B_API_KEY` environment variable
+- **Performance**: Good performance (~1.17s avg)
+- **Use case**: Production sandboxing
+
+### ⚠️ Modal Provider
+- **Status**: ⚠️ Limited support (Python 3.13 compatibility issues)
+- **Setup**: Requires `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` environment variables
+- **Known Issues**:
+  - Modal currently supports Python 3.9-3.12 only
+  - Image building may fail in Python 3.13 environments
+  - Requires compatible Python version for proper functionality
+- **Workaround**: Use in environments with Python 3.12 or earlier
+
+## Environment Setup
+
+### Required Environment Variables
+
+Create a `.env` file or set these environment variables:
+
+```bash
+# E2B Provider
+E2B_API_KEY=your_e2b_api_key_here
+
+# Modal Provider (optional, has compatibility limitations)
+MODAL_TOKEN_ID=your_modal_token_id_here
+MODAL_TOKEN_SECRET=your_modal_token_secret_here
+```
 
 ### Installation
 
 ```bash
 # Install dependencies
-make install
+pip install -e ".[e2b,modal]"
 
-# Or manually:
-pip install -r requirements.txt
+# Or install specific providers
+pip install -e ".[e2b]"  # For E2B only
+pip install -e ".[modal]"  # For Modal only (requires Python ≤3.12)
 ```
 
-### Running Benchmarks
+## Running Benchmarks
+
+### Basic Usage
 
 ```bash
-# Run a single benchmark with default settings
-make benchmark
+# Run benchmarks for all available providers
+python benchmarks/scripts/grainchain_benchmark.py
 
-# Run with custom configuration
-make benchmark-config
+# Run benchmarks for specific providers
+python benchmarks/scripts/grainchain_benchmark.py --providers local e2b
 
-# Run and automatically publish results
-make publish
+# Run with custom iterations
+python benchmarks/scripts/grainchain_benchmark.py --providers local --iterations 5
 
-# Generate summary report
-make summary
+# Run with custom output directory
+python benchmarks/scripts/grainchain_benchmark.py --output-dir custom_results
 ```
 
-## 📊 What Gets Measured
+### Command Line Options
 
-The benchmarking system captures comprehensive metrics:
+- `--providers`: Specify which providers to benchmark (default: all available)
+- `--iterations`: Number of iterations per scenario (default: 3)
+- `--output-dir`: Output directory for results (default: benchmarks/results)
+- `--verbose`: Enable verbose logging
 
-### Performance Metrics
-- **Build Time**: Time to execute `yarn build`
-- **Test Time**: Time to run the test suite
-- **Memory Usage**: Container memory consumption during operations
-- **CPU Usage**: Container CPU utilization
-
-### File System Metrics
-- **Project Size**: Total size of the Outline directory
-- **Node Modules Size**: Size of installed dependencies
-- **Package Count**: Number of installed npm packages
-
-### Change Impact Analysis
-- **Before/After Comparisons**: Performance impact of trivial changes
-- **Percentage Changes**: Relative performance differences
-- **Trend Analysis**: Historical performance tracking
-
-## 🔧 Configuration
-
-### Default Configuration
-
-The system uses `benchmarks/configs/default.json` for default settings:
-
-```json
-{
-  "base_image": "ghcr.io/openai/codex-universal:latest",
-  "outline_repo": "https://github.com/outline/outline.git",
-  "outline_branch": "main",
-  "node_version": "20",
-  "benchmark_iterations": 3,
-  "trivial_changes": [
-    {
-      "type": "comment",
-      "file": "README.md",
-      "content": "# Benchmark test comment"
-    },
-    {
-      "type": "whitespace",
-      "file": "package.json",
-      "content": "\\n"
-    },
-    {
-      "type": "log",
-      "file": "app/index.js",
-      "content": "console.log('benchmark test');"
-    }
-  ]
-}
-```
-
-### Custom Configuration
-
-Create your own configuration file and use it:
+### Example Commands
 
 ```bash
-python benchmarks/scripts/benchmark_runner.py --config my_config.json
+# Quick test with local provider
+python benchmarks/scripts/grainchain_benchmark.py --providers local --iterations 1
+
+# Comprehensive benchmark with working providers
+python benchmarks/scripts/grainchain_benchmark.py --providers local e2b --iterations 5
+
+# Test Modal provider (if compatible Python version)
+python benchmarks/scripts/grainchain_benchmark.py --providers modal --iterations 1
 ```
 
-## 📈 Results and Reports
+## Results
 
-### Output Formats
+Benchmark results are saved as JSON files in the `benchmarks/results/` directory with timestamps.
 
-The system generates results in multiple formats:
+### Sample Results
 
-1. **JSON**: Machine-readable data (`benchmark_YYYYMMDD_HHMMSS.json`)
-2. **HTML**: Interactive web report (`benchmark_YYYYMMDD_HHMMSS.html`)
-3. **Markdown**: GitHub-compatible report (`benchmark_YYYYMMDD_HHMMSS.md`)
+```
+🎉 Grainchain benchmark completed successfully!
+📊 Results saved to: benchmarks/results
 
-### Latest Results
-
-The most recent results are always available as:
-- `benchmarks/results/latest.json`
-- `benchmarks/results/latest.html`
-- `benchmarks/results/latest.md`
-
-### Summary Report
-
-A comprehensive summary of all historical benchmarks is maintained in:
-- `benchmarks/results/SUMMARY.md`
-
-## 🤖 Automation
-
-### GitHub Actions
-
-The system includes a GitHub Actions workflow (`.github/workflows/benchmark.yml`) that:
-
-- Runs benchmarks daily at 2 AM UTC
-- Can be triggered manually
-- Automatically commits results to the repository
-- Uploads artifacts for download
-
-### Scheduled Execution
-
-To set up local scheduled execution:
-
-```bash
-# Add to crontab for daily execution at 2 AM
-0 2 * * * cd /path/to/grainchain && make publish
+📈 Quick Summary:
+  local: 75.0% success, 0.04s avg
+  e2b: 100.0% success, 1.17s avg
 ```
 
-## 🐳 Docker Integration
+### Performance Comparison
 
-The system uses the [codex-universal](https://github.com/openai/codex-universal) base image, which provides:
+| Provider | Success Rate | Avg Time | Use Case |
+|----------|-------------|----------|----------|
+| Local    | 75-100%     | ~0.04s   | Development |
+| E2B      | 100%        | ~1.17s   | Production |
+| Modal    | N/A*        | N/A*     | Limited** |
 
-- Pre-configured development environment
-- Multiple language runtime support
-- Consistent execution environment
-- Isolated benchmark execution
+*Results may vary based on environment compatibility
+**Requires Python ≤3.12
 
-### Container Lifecycle
+## Troubleshooting
 
-1. **Pull**: Downloads the latest codex-universal image
-2. **Start**: Launches container with configured environment variables
-3. **Clone**: Downloads Outline repository
-4. **Install**: Runs `yarn install` to set up dependencies
-5. **Benchmark**: Executes performance measurements
-6. **Cleanup**: Stops and removes container
+### Modal Provider Issues
 
-## 📋 Benchmark Process
+If you encounter Modal provider errors:
 
-### Step-by-Step Execution
+1. **Python Version Check**: Ensure you're using Python 3.12 or earlier
+   ```bash
+   python --version  # Should show 3.12.x or earlier
+   ```
 
-1. **Environment Setup**
-   - Pull codex-universal Docker image
-   - Start container with Node.js 20 and Python 3.12
-   - Configure workspace directory
+2. **Environment Variables**: Verify Modal credentials are set
+   ```bash
+   echo $MODAL_TOKEN_ID
+   echo $MODAL_TOKEN_SECRET
+   ```
 
-2. **Application Installation**
-   - Clone Outline repository
-   - Install dependencies with `yarn install --frozen-lockfile`
-   - Verify successful installation
+3. **Alternative**: Use other providers (local, E2B) for testing
 
-3. **Baseline Measurement**
-   - Take initial performance snapshot
-   - Measure build time, memory usage, file sizes
-   - Record container resource utilization
+### E2B Provider Issues
 
-4. **Change Impact Testing**
-   - Apply trivial changes (comments, whitespace, logs)
-   - Take performance snapshots after each change
-   - Compare against baseline measurements
-   - Revert changes between iterations
+1. **API Key**: Ensure `E2B_API_KEY` is set correctly
+2. **Network**: Check internet connectivity for API access
+3. **Quota**: Verify your E2B account has available quota
 
-5. **Results Generation**
-   - Calculate performance differences
-   - Generate HTML, JSON, and Markdown reports
-   - Update summary statistics
+### General Issues
 
-## 🔍 Troubleshooting
+1. **Dependencies**: Ensure all optional dependencies are installed
+2. **Permissions**: Check file system permissions for result output
+3. **Logs**: Use `--verbose` flag for detailed error information
 
-### Common Issues
+## Contributing
 
-**Docker Permission Errors**
-```bash
-# Add user to docker group
-sudo usermod -aG docker $USER
-# Restart shell or logout/login
-```
+When adding new providers or scenarios:
 
-**Container Startup Failures**
-```bash
-# Check Docker daemon status
-sudo systemctl status docker
+1. Follow the existing provider interface in `grainchain/providers/`
+2. Add corresponding test scenarios in the benchmark script
+3. Update this README with setup instructions and known limitations
+4. Test with multiple iterations to ensure reliability
 
-# Test Docker connectivity
-make test-docker
-```
+## Provider Implementation Status
 
-**Build Failures**
-- Check Node.js version compatibility
-- Verify network connectivity for package downloads
-- Review container logs for specific error messages
-
-### Debug Mode
-
-Run with verbose logging:
-
-```bash
-python benchmarks/scripts/benchmark_runner.py --config benchmarks/configs/default.json 2>&1 | tee debug.log
-```
-
-## 🤝 Contributing
-
-### Adding New Metrics
-
-To add new performance metrics:
-
-1. Extend the `take_snapshot()` method in `BenchmarkRunner`
-2. Update the comparison logic in `_compare_snapshots()`
-3. Modify report generation to include new metrics
-4. Update configuration schema if needed
-
-### Custom Change Types
-
-To add new types of trivial changes:
-
-1. Extend the `apply_trivial_change()` method
-2. Add new change type to configuration
-3. Update documentation
-
-### Report Customization
-
-The HTML and Markdown report templates can be customized by modifying:
-- `generate_report()` for HTML output
-- `generate_markdown_report()` for Markdown output
-
-## 📚 References
-
-- [Outline Repository](https://github.com/outline/outline)
-- [Codex Universal Image](https://github.com/openai/codex-universal)
-- [Docker Documentation](https://docs.docker.com/)
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-
-## 📄 License
-
-This benchmarking infrastructure is part of the grainchain project and follows the same licensing terms.
+- ✅ **Local**: Complete implementation
+- ✅ **E2B**: Complete implementation with file operations
+- ⚠️ **Modal**: Basic implementation with compatibility limitations
+- 🔄 **Future**: Additional providers can be added following the base interface
