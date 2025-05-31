@@ -2,9 +2,9 @@
 
 import time
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 
 class SandboxStatus(Enum):
@@ -72,12 +72,15 @@ class SandboxConfig:
 
     # Environment
     image: Optional[str] = None
-    working_directory: str = "/workspace"
-    environment_vars: dict[str, str] = None
+    working_directory: str = "~"
+    environment_vars: dict[str, str] = field(default_factory=dict)
 
     # Behavior
     auto_cleanup: bool = True
     keep_alive: bool = False
+
+    # Provider-specific settings
+    provider_config: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         if self.environment_vars is None:

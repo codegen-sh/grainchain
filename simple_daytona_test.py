@@ -11,7 +11,6 @@ try:
     # Test configuration
     config = DaytonaConfig(
         api_key="dtn_7ff34af9c746f96e2f43ffe698e0b97af87bb5cc47b2376a1873935ac12f416a",
-        api_url="https://api.daytona.io",
         target="us",
     )
     print("✅ Daytona config created successfully")
@@ -21,6 +20,19 @@ try:
     print("✅ Daytona client created successfully")
 
     print("🎉 Basic Daytona SDK test passed!")
+
+    sandbox = daytona.create()
+
+    # Run the code securely inside the Sandbox
+    print("🚀 Running code securely inside the Sandbox...")
+    response = sandbox.process.code_run('print("Hello World from code!")')
+    if response.exit_code != 0:
+        print(f"Error: {response.exit_code} {response.result}")
+    else:
+        print(response.result)
+
+    print("🎉 Basic Daytona SDK test passed!")
+    daytona.remove(sandbox)
 
 except Exception as e:
     print(f"❌ Test failed: {e}")

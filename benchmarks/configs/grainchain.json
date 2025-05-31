@@ -18,9 +18,9 @@
       "enabled": true,
       "timeout": 20,
       "test_files": [
-        {"name": "small.txt", "size": 100},
-        {"name": "medium.txt", "size": 10000},
-        {"name": "large.txt", "size": 100000}
+        { "name": "small.txt", "size": 100 },
+        { "name": "medium.txt", "size": 10000 },
+        { "name": "large.txt", "size": 100000 }
       ]
     },
     "computational_tasks": {
@@ -31,9 +31,7 @@
   "environment": {
     "E2B_API_KEY": "from_env",
     "E2B_TEMPLATE": "base",
-    "DAYTONA_API_KEY": "from_env",
-    "DAYTONA_API_URL": "https://api.daytona.io",
-    "DAYTONA_TARGET": "us"
+    "DAYTONA_API_KEY": "from_env"
   },
   "reporting": {
     "include_raw_data": true,

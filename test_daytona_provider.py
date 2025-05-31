@@ -17,8 +17,6 @@ async def test_daytona_provider():
     config = ProviderConfig(
         {
             "api_key": "dtn_7ff34af9c746f96e2f43ffe698e0b97af87bb5cc47b2376a1873935ac12f416a",
-            "api_url": "https://api.daytona.io",
-            "target": "us",
         }
     )
 

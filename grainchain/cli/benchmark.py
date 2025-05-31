@@ -40,9 +40,7 @@ async def _run_benchmark_async(
     from grainchain.core.interfaces import SandboxConfig
 
     # Create benchmark config
-    config = SandboxConfig(
-        timeout=60, working_directory="/workspace", auto_cleanup=True
-    )
+    config = SandboxConfig(timeout=60, working_directory="~", auto_cleanup=True)
 
     results = {"provider": provider, "timestamp": time.time(), "tests": []}
 

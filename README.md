@@ -74,8 +74,14 @@ pip install grainchain[e2b]
 # With Daytona support
 pip install grainchain[daytona]
 
-# With all providers
+# With all sandbox providers
 pip install grainchain[all]
+
+# For benchmarking (docker, psutil)
+pip install grainchain[benchmark]
+
+# For data science examples (numpy, pandas, matplotlib)
+pip install grainchain[examples]
 ```
 
 ### For Development
@@ -89,7 +95,16 @@ cd grainchain
 uv venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install all dependencies (including dev tools)
+# Install core development dependencies
+uv sync --extra dev
+
+# Optional: Install benchmarking tools (if you need docker benchmarks)
+uv sync --extra benchmark
+
+# Optional: Install data science dependencies (if you need examples)
+uv sync --extra examples
+
+# Or install everything
 uv sync --all-extras
 
 # Install pre-commit hooks
@@ -104,6 +119,22 @@ grainchain install-hooks
 | **Daytona** | ✅ Supported | Development environments, workspace management   |
 | **Local**   | ✅ Supported | Local development and testing                    |
 | **Docker**  | 🚧 Planned   | Local Docker containers                          |
+
+### Daytona Troubleshooting
+
+If you encounter SSL certificate errors with Daytona:
+
+```
+SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate
+```
+
+This typically indicates:
+
+1. **Development Environment**: The API endpoint may be using self-signed certificates
+2. **API Key Environment**: Ensure your API key matches the intended environment (production vs staging)
+3. **Network Issues**: Check if you're behind a corporate firewall
+
+**Solution**: Verify your Daytona API key is for the correct environment and contact Daytona support if the issue persists.
 
 ## 📖 Usage Examples
 
@@ -221,7 +252,6 @@ providers:
 
   daytona:
     api_key: ${DAYTONA_API_KEY}
-    workspace_template: python-dev
     timeout: 300
 
 sandbox_defaults:

@@ -109,7 +109,7 @@ def benchmark(provider: str, config: str, output: str):
 
     except ImportError:
         click.echo(
-            "❌ Benchmark dependencies not installed. Run: uv sync --group benchmark"
+            "❌ Benchmark dependencies not installed. Run: uv sync --extra benchmark"
         )
         sys.exit(1)
     except Exception as e:

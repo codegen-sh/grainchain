@@ -41,7 +41,7 @@ class SandboxConfig:
 
     # Environment
     image: Optional[str] = None
-    working_directory: str = "/workspace"
+    working_directory: str = "~"
     environment_vars: dict[str, str] = field(default_factory=dict)
 
     # Behavior
@@ -113,6 +113,9 @@ class ConfigManager:
             "modal": {
                 "token_id": "MODAL_TOKEN_ID",
                 "token_secret": "MODAL_TOKEN_SECRET",
+            },
+            "daytona": {
+                "api_key": "DAYTONA_API_KEY",
             },
         }
 

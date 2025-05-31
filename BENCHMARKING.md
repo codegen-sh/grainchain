@@ -7,16 +7,19 @@ This document provides comprehensive instructions for running and understanding 
 ### Prerequisites
 
 1. **Install Grainchain in development mode:**
+
    ```bash
    pip install -e .
    ```
 
 2. **Install additional dependencies:**
+
    ```bash
    pip install psutil
    ```
 
 3. **Set up environment variables:**
+
    ```bash
    # Copy the example environment file
    cp .env.example .env
@@ -24,7 +27,7 @@ This document provides comprehensive instructions for running and understanding 
    # Edit .env with your API keys
    # For E2B: Set E2B_API_KEY
    # For Modal: Set MODAL_TOKEN_ID and MODAL_TOKEN_SECRET
-   # For Daytona: Set DAYTONA_API_KEY, DAYTONA_API_URL, DAYTONA_TARGET
+   # For Daytona: Set DAYTONA_API_KEY
    ```
 
 ### Running Benchmarks
@@ -88,6 +91,7 @@ Benchmark results are saved in `benchmarks/results/` in multiple formats:
 ### Key Metrics
 
 #### Provider Comparison Table
+
 ```
 | Provider | Success Rate | Avg Time (s) | Creation Time (s) | Status |
 |----------|--------------|--------------|-------------------|--------|
@@ -151,8 +155,6 @@ MODAL_TOKEN_SECRET=your_modal_token_secret_here
 
 # Daytona Provider
 DAYTONA_API_KEY=your_daytona_api_key_here
-DAYTONA_API_URL=https://api.daytona.io
-DAYTONA_TARGET=us
 ```
 
 ## 📈 Interpreting Results
@@ -162,12 +164,14 @@ DAYTONA_TARGET=us
 Based on recent benchmark results:
 
 #### E2B Provider
+
 - ✅ **Reliability**: 100% success rate across all scenarios
 - ⏱️ **Performance**: ~1.3s average execution time
 - 🚀 **Startup**: ~0.26s sandbox creation time
 - 💡 **Best for**: Production workloads requiring high reliability
 
 #### Local Provider
+
 - ⚠️ **Reliability**: 75% success rate (file operations failing)
 - ⚡ **Performance**: ~0.03s average execution time (43x faster)
 - 🚀 **Startup**: ~0.00s sandbox creation time (instant)
@@ -176,11 +180,13 @@ Based on recent benchmark results:
 ### Common Issues
 
 #### Local Provider File Operations Failing
+
 - **Cause**: Local provider may have limitations with file upload/download
 - **Impact**: Reduces overall success rate to 75%
 - **Recommendation**: Use E2B for file-heavy operations
 
 #### E2B Provider Slower Performance
+
 - **Cause**: Network latency and remote sandbox creation
 - **Impact**: ~40x slower than local provider
 - **Recommendation**: Acceptable trade-off for reliability in production
@@ -190,6 +196,7 @@ Based on recent benchmark results:
 ### Common Problems
 
 #### "Module not found" errors
+
 ```bash
 # Install missing dependencies
 pip install psutil
@@ -197,6 +204,7 @@ pip install -e .
 ```
 
 #### E2B authentication errors
+
 ```bash
 # Check your API key
 echo $E2B_API_KEY
@@ -206,6 +214,7 @@ cat .env | grep E2B_API_KEY
 ```
 
 #### Permission errors on scripts
+
 ```bash
 # Make scripts executable
 chmod +x benchmarks/scripts/run_grainchain_benchmark.sh
@@ -214,6 +223,7 @@ chmod +x benchmarks/scripts/run_grainchain_benchmark.sh
 ### Debug Mode
 
 Run with verbose logging:
+
 ```bash
 python benchmarks/scripts/grainchain_benchmark.py \
     --providers local e2b \
@@ -231,7 +241,7 @@ The benchmarking system is designed to integrate with CI/CD:
 name: Grainchain Benchmarks
 on:
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM
+    - cron: "0 2 * * *" # Daily at 2 AM
   workflow_dispatch:
 
 jobs:
@@ -248,6 +258,7 @@ jobs:
 ### Local Automation
 
 Set up cron job for regular benchmarking:
+
 ```bash
 # Add to crontab for daily execution
 0 2 * * * cd /path/to/grainchain && make grainchain-benchmark
@@ -279,16 +290,19 @@ Set up cron job for regular benchmarking:
 ## 🎯 Best Practices
 
 ### For Development
+
 - Use `make grainchain-local` for fast iteration
 - Run `make grainchain-compare` before major releases
 - Check file operations work across all providers
 
 ### For Production
+
 - Prefer E2B for reliability-critical workloads
 - Monitor success rates over time
 - Set up automated benchmarking for regression detection
 
 ### For Debugging
+
 - Use single iterations first: `./run_grainchain_benchmark.sh "local" 1`
 - Check individual scenario results in JSON output
 - Enable verbose logging for detailed error information

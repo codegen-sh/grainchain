@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.9"
 resolution-markers = [
     "python_full_version >= '3.12'",
@@ -295,7 +294,7 @@ resolution-markers = [
     "python_full_version < '3.10'",
 ]
 dependencies = [
-    { name = "colorama", marker = "python_full_version < '3.10' and sys_platform == 'win32'" },
+    { name = "colorama", marker = "python_full_version < '3.10' and platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593 }
 wheels = [
@@ -312,7 +311,7 @@ resolution-markers = [
     "python_full_version == '3.10.*'",
 ]
 dependencies = [
-    { name = "colorama", marker = "python_full_version >= '3.10' and sys_platform == 'win32'" },
+    { name = "colorama", marker = "python_full_version >= '3.10' and platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/60/6c/8ca2efa64cf75a977a0d7fac081354553ebe483345c734fb6b6515d96bbc/click-8.2.1.tar.gz", hash = "sha256:27c491cc05d968d271d5a1db13e3b5a184636d9d930f148c50b038f0d0646202", size = 286342 }
 wheels = [
@@ -876,8 +875,6 @@ dependencies = [
     { name = "aiohttp" },
     { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "click", version = "8.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
@@ -891,9 +888,6 @@ all = [
 ]
 benchmark = [
     { name = "docker" },
-    { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "matplotlib", version = "3.10.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "pandas" },
     { name = "psutil" },
 ]
 daytona = [
@@ -911,6 +905,13 @@ dev = [
 e2b = [
     { name = "e2b" },
 ]
+examples = [
+    { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "matplotlib", version = "3.10.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "pandas" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -920,10 +921,10 @@ requires-dist = [
     { name = "docker", marker = "extra == 'benchmark'", specifier = ">=6.0.0" },
     { name = "e2b", marker = "extra == 'e2b'", specifier = ">=0.13.0" },
     { name = "grainchain", extras = ["e2b", "daytona"], marker = "extra == 'all'" },
-    { name = "matplotlib", marker = "extra == 'benchmark'", specifier = ">=3.7.0" },
+    { name = "matplotlib", marker = "extra == 'examples'", specifier = ">=3.7.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
-    { name = "numpy", specifier = ">=2.0.2" },
-    { name = "pandas", marker = "extra == 'benchmark'", specifier = ">=2.0.0" },
+    { name = "numpy", marker = "extra == 'examples'", specifier = ">=2.0.2" },
+    { name = "pandas", marker = "extra == 'examples'", specifier = ">=2.0.0" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.0.0" },
     { name = "psutil", marker = "extra == 'benchmark'", specifier = ">=5.9.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
@@ -936,7 +937,6 @@ requires-dist = [
     { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.0" },
     { name = "typing-extensions", specifier = ">=4.0.0" },
 ]
-provides-extras = ["e2b", "daytona", "all", "dev", "benchmark"]
 
 [[package]]
 name = "h11"
