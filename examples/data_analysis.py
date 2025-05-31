@@ -6,19 +6,20 @@ tasks, similar to what you might do with Jupyter notebooks or data science envir
 """
 
 import asyncio
+
 from grainchain import Sandbox, SandboxConfig
 
 
 async def setup_data_environment(sandbox: Sandbox):
     """Set up a data analysis environment with required packages."""
     print("📦 Setting up data analysis environment...")
-    
+
     # Install required packages
     result = await sandbox.execute("pip install pandas numpy matplotlib seaborn")
     if not result.success:
         print(f"Package installation failed: {result.stderr}")
         return False
-    
+
     print("✅ Packages installed successfully")
     return True
 
@@ -26,7 +27,7 @@ async def setup_data_environment(sandbox: Sandbox):
 async def create_sample_data(sandbox: Sandbox):
     """Create sample data for analysis."""
     print("📊 Creating sample data...")
-    
+
     # Create a Python script to generate sample data
     data_script = """
 import pandas as pd
@@ -55,23 +56,23 @@ df.to_csv('sales_data.csv', index=False)
 print(f"Created dataset with {len(df)} rows")
 print(df.head())
 """
-    
+
     await sandbox.upload_file("create_data.py", data_script)
     result = await sandbox.execute("python create_data.py")
-    
+
     if result.success:
         print("✅ Sample data created")
         print(result.stdout)
     else:
         print(f"❌ Data creation failed: {result.stderr}")
-    
+
     return result.success
 
 
 async def analyze_data(sandbox: Sandbox):
     """Perform data analysis."""
     print("🔍 Performing data analysis...")
-    
+
     analysis_script = """
 import pandas as pd
 import numpy as np
@@ -155,23 +156,23 @@ product_metrics = df.groupby('product').agg({
 }).round(2)
 print(product_metrics)
 """
-    
+
     await sandbox.upload_file("analyze_data.py", analysis_script)
     result = await sandbox.execute("python analyze_data.py")
-    
+
     if result.success:
         print("✅ Analysis completed")
         print(result.stdout)
     else:
         print(f"❌ Analysis failed: {result.stderr}")
-    
+
     return result.success
 
 
 async def generate_report(sandbox: Sandbox):
     """Generate a summary report."""
     print("📝 Generating summary report...")
-    
+
     report_script = """
 import pandas as pd
 from datetime import datetime
@@ -211,14 +212,14 @@ with open('analysis_report.md', 'w') as f:
 print("📄 Report saved to analysis_report.md")
 print(report)
 """
-    
+
     await sandbox.upload_file("generate_report.py", report_script)
     result = await sandbox.execute("python generate_report.py")
-    
+
     if result.success:
         print("✅ Report generated")
         print(result.stdout)
-        
+
         # Download the report
         report_content = await sandbox.download_file("analysis_report.md")
         print("\n" + "="*50)
@@ -227,7 +228,7 @@ print(report)
         print(report_content.decode())
     else:
         print(f"❌ Report generation failed: {result.stderr}")
-    
+
     return result.success
 
 
@@ -235,7 +236,7 @@ async def data_analysis_workflow():
     """Complete data analysis workflow."""
     print("🔬 Starting Data Analysis Workflow with Grainchain")
     print("="*60)
-    
+
     # Configure sandbox for data analysis
     config = SandboxConfig(
         timeout=300,  # 5 minutes for longer operations
@@ -245,36 +246,36 @@ async def data_analysis_workflow():
             "MPLBACKEND": "Agg"  # Use non-interactive matplotlib backend
         }
     )
-    
+
     try:
         async with Sandbox(provider="local", config=config) as sandbox:
             print(f"🏗️  Created sandbox: {sandbox.sandbox_id}")
-            
+
             # Step 1: Setup environment
             if not await setup_data_environment(sandbox):
                 return
-            
+
             # Step 2: Create sample data
             if not await create_sample_data(sandbox):
                 return
-            
+
             # Step 3: Analyze data
             if not await analyze_data(sandbox):
                 return
-            
+
             # Step 4: Generate report
             if not await generate_report(sandbox):
                 return
-            
+
             # List all generated files
             print("\n📁 Generated files:")
             files = await sandbox.list_files("/workspace")
             for file in files:
                 if not file.is_directory:
                     print(f"  - {file.name} ({file.size} bytes)")
-            
+
             print("\n🎉 Data analysis workflow completed successfully!")
-            
+
     except Exception as e:
         print(f"\n❌ Workflow failed: {e}")
         import traceback
@@ -285,7 +286,7 @@ async def ai_code_execution_example():
     """Example of executing AI-generated code."""
     print("\n🤖 AI Code Execution Example")
     print("="*40)
-    
+
     # Simulate AI-generated code for data processing
     ai_generated_code = """
 # AI-generated data processing code
@@ -295,7 +296,7 @@ import numpy as np
 def process_sales_data(filename):
     '''Process sales data and return insights'''
     df = pd.read_csv(filename)
-    
+
     insights = {
         'total_records': len(df),
         'total_revenue': df['revenue'].sum(),
@@ -303,7 +304,7 @@ def process_sales_data(filename):
         'top_product': df.groupby('product')['revenue'].sum().idxmax(),
         'revenue_growth': calculate_growth_rate(df)
     }
-    
+
     return insights
 
 def calculate_growth_rate(df):
@@ -327,12 +328,12 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Error in AI code: {e}")
 """
-    
+
     async with Sandbox(provider="local") as sandbox:
         # Upload and execute AI-generated code
         await sandbox.upload_file("ai_analysis.py", ai_generated_code)
         result = await sandbox.execute("python ai_analysis.py")
-        
+
         if result.success:
             print("✅ AI-generated code executed successfully:")
             print(result.stdout)

@@ -10,34 +10,32 @@ This script benchmarks different sandbox providers (Local, E2B, Modal, Daytona) 
 5. Error rates and reliability
 """
 
-import os
-import sys
-import json
-import time
-import asyncio
-import logging
 import argparse
+import asyncio
+import json
+import logging
+import os
+import statistics
+import sys
+import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
-import psutil
-import statistics
+from typing import Any
 
 # Add the parent directory to Python path to import grainchain
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from grainchain import Sandbox
-from grainchain.core.exceptions import SandboxError, ProviderError
 
 
 class GrainchainBenchmark:
     """Benchmarking suite for Grainchain sandbox providers"""
-    
+
     def __init__(self, config_path: str = None):
         self.config = self._load_config(config_path)
         self.results_dir = Path("benchmarks/results")
         self.results_dir.mkdir(exist_ok=True)
-        
+
         # Setup logging
         logging.basicConfig(
             level=logging.INFO,
@@ -48,7 +46,7 @@ class GrainchainBenchmark:
             ]
         )
         self.logger = logging.getLogger(__name__)
-        
+
         # Test scenarios
         self.test_scenarios = [
             {
@@ -91,8 +89,8 @@ class GrainchainBenchmark:
                 ]
             }
         ]
-    
-    def _load_config(self, config_path: str) -> Dict[str, Any]:
+
+    def _load_config(self, config_path: str) -> dict[str, Any]:
         """Load configuration from file or use defaults"""
         default_config = {
             "providers": ["local", "e2b", "modal", "daytona"],  # Add "modal" when available
@@ -102,18 +100,18 @@ class GrainchainBenchmark:
             "detailed_metrics": True,
             "export_formats": ["json", "markdown", "html"]
         }
-        
+
         if config_path and os.path.exists(config_path):
-            with open(config_path, 'r') as f:
+            with open(config_path) as f:
                 user_config = json.load(f)
                 default_config.update(user_config)
-        
+
         return default_config
-    
-    async def run_full_benchmark(self) -> Dict[str, Any]:
+
+    async def run_full_benchmark(self) -> dict[str, Any]:
         """Run complete benchmark suite across all providers"""
         self.logger.info("🚀 Starting Grainchain Provider Benchmark Suite")
-        
+
         start_time = time.time()
         results = {
             "benchmark_info": {
@@ -126,7 +124,7 @@ class GrainchainBenchmark:
             "summary": {},
             "status": "running"
         }
-        
+
         # Test each provider
         for provider in self.config["providers"]:
             self.logger.info(f"📊 Benchmarking provider: {provider}")
@@ -141,17 +139,17 @@ class GrainchainBenchmark:
                     "error": str(e),
                     "scenarios": {}
                 }
-        
+
         # Generate summary
         results["summary"] = self._generate_summary(results["provider_results"])
         results["benchmark_info"]["end_time"] = datetime.now().isoformat()
         results["benchmark_info"]["duration_seconds"] = time.time() - start_time
         results["status"] = "completed"
-        
+
         self.logger.info(f"🎉 Benchmark completed in {results['benchmark_info']['duration_seconds']:.2f} seconds")
         return results
-    
-    async def _benchmark_provider(self, provider: str) -> Dict[str, Any]:
+
+    async def _benchmark_provider(self, provider: str) -> dict[str, Any]:
         """Benchmark a specific provider"""
         provider_results = {
             "provider": provider,
@@ -159,22 +157,22 @@ class GrainchainBenchmark:
             "scenarios": {},
             "overall_metrics": {}
         }
-        
+
         # Test provider availability
         try:
-            async with Sandbox(provider=provider) as sandbox:
+            async with Sandbox(provider=provider):
                 self.logger.info(f"✅ {provider} provider is available")
         except Exception as e:
             self.logger.error(f"❌ {provider} provider unavailable: {e}")
             provider_results["status"] = "unavailable"
             provider_results["error"] = str(e)
             return provider_results
-        
+
         # Run each test scenario
         for scenario in self.test_scenarios:
             scenario_name = scenario["name"]
             self.logger.info(f"  🧪 Running scenario: {scenario_name}")
-            
+
             scenario_results = []
             for iteration in range(self.config["iterations"]):
                 try:
@@ -187,21 +185,21 @@ class GrainchainBenchmark:
                         "status": "failed",
                         "error": str(e)
                     })
-            
+
             # Aggregate scenario results
             provider_results["scenarios"][scenario_name] = {
                 "description": scenario["description"],
                 "iterations": scenario_results,
                 "aggregated": self._aggregate_scenario_results(scenario_results)
             }
-        
+
         # Calculate overall metrics
         provider_results["overall_metrics"] = self._calculate_overall_metrics(provider_results["scenarios"])
         provider_results["status"] = "completed"
-        
+
         return provider_results
-    
-    async def _run_scenario(self, provider: str, scenario: Dict[str, Any], iteration: int) -> Dict[str, Any]:
+
+    async def _run_scenario(self, provider: str, scenario: dict[str, Any], iteration: int) -> dict[str, Any]:
         """Run a single test scenario"""
         start_time = time.time()
         result = {
@@ -218,13 +216,13 @@ class GrainchainBenchmark:
                 "success_rate": 0
             }
         }
-        
+
         try:
             # Measure sandbox creation time
             creation_start = time.time()
             async with Sandbox(provider=provider) as sandbox:
                 result["metrics"]["sandbox_creation_time"] = time.time() - creation_start
-                
+
                 # Run commands if present
                 if "commands" in scenario:
                     for cmd in scenario["commands"]:
@@ -245,7 +243,7 @@ class GrainchainBenchmark:
                                 "success": False,
                                 "error": str(e)
                             })
-                
+
                 # Run file operations if present
                 if "files" in scenario:
                     for file_info in scenario["files"]:
@@ -254,15 +252,15 @@ class GrainchainBenchmark:
                         try:
                             await sandbox.upload_file(file_info["name"], file_info["content"])
                             upload_time = time.time() - upload_start
-                            
+
                             # Download file
                             download_start = time.time()
                             downloaded_content = await sandbox.download_file(file_info["name"])
                             download_time = time.time() - download_start
-                            
+
                             # Verify content
                             content_match = downloaded_content.strip() == file_info["content"].strip()
-                            
+
                             result["metrics"]["file_operation_times"].append({
                                 "file": file_info["name"],
                                 "size": file_info["size"],
@@ -281,7 +279,7 @@ class GrainchainBenchmark:
                                 "error": str(e),
                                 "content_verified": False
                             })
-                
+
                 # Calculate success rate
                 total_operations = len(result["metrics"]["command_execution_times"]) + len(result["metrics"]["file_operation_times"])
                 successful_operations = (
@@ -289,21 +287,21 @@ class GrainchainBenchmark:
                     sum(1 for file_op in result["metrics"]["file_operation_times"] if file_op.get("content_verified", False))
                 )
                 result["metrics"]["success_rate"] = successful_operations / total_operations if total_operations > 0 else 1.0
-            
+
             result["metrics"]["total_time"] = time.time() - start_time
             result["status"] = "completed"
-            
+
         except Exception as e:
             result["metrics"]["total_time"] = time.time() - start_time
             result["status"] = "failed"
             result["error"] = str(e)
-        
+
         return result
-    
-    def _aggregate_scenario_results(self, scenario_results: List[Dict[str, Any]]) -> Dict[str, Any]:
+
+    def _aggregate_scenario_results(self, scenario_results: list[dict[str, Any]]) -> dict[str, Any]:
         """Aggregate results from multiple iterations of a scenario"""
         successful_results = [r for r in scenario_results if r.get("status") == "completed"]
-        
+
         if not successful_results:
             return {
                 "success_rate": 0,
@@ -311,12 +309,12 @@ class GrainchainBenchmark:
                 "avg_sandbox_creation_time": 0,
                 "error_rate": 1.0
             }
-        
+
         # Calculate averages
         total_times = [r["metrics"]["total_time"] for r in successful_results]
         creation_times = [r["metrics"]["sandbox_creation_time"] for r in successful_results]
         success_rates = [r["metrics"]["success_rate"] for r in successful_results]
-        
+
         return {
             "iterations_completed": len(successful_results),
             "iterations_total": len(scenario_results),
@@ -327,13 +325,13 @@ class GrainchainBenchmark:
             "avg_sandbox_creation_time": statistics.mean(creation_times) if creation_times else 0,
             "error_rate": 1 - (len(successful_results) / len(scenario_results))
         }
-    
-    def _calculate_overall_metrics(self, scenarios: Dict[str, Any]) -> Dict[str, Any]:
+
+    def _calculate_overall_metrics(self, scenarios: dict[str, Any]) -> dict[str, Any]:
         """Calculate overall metrics across all scenarios"""
         all_success_rates = []
         all_total_times = []
         all_creation_times = []
-        
+
         for scenario_data in scenarios.values():
             agg = scenario_data.get("aggregated", {})
             if agg.get("success_rate") is not None:
@@ -342,22 +340,22 @@ class GrainchainBenchmark:
                 all_total_times.append(agg["avg_total_time"])
             if agg.get("avg_sandbox_creation_time") is not None:
                 all_creation_times.append(agg["avg_sandbox_creation_time"])
-        
+
         return {
             "overall_success_rate": statistics.mean(all_success_rates) if all_success_rates else 0,
             "avg_scenario_time": statistics.mean(all_total_times) if all_total_times else 0,
             "avg_sandbox_creation_time": statistics.mean(all_creation_times) if all_creation_times else 0,
             "scenarios_completed": len([s for s in scenarios.values() if s.get("aggregated", {}).get("success_rate", 0) > 0])
         }
-    
-    def _generate_summary(self, provider_results: Dict[str, Any]) -> Dict[str, Any]:
+
+    def _generate_summary(self, provider_results: dict[str, Any]) -> dict[str, Any]:
         """Generate summary comparison across providers"""
         summary = {
             "provider_comparison": {},
             "best_performer": {},
             "recommendations": []
         }
-        
+
         # Compare providers
         for provider, results in provider_results.items():
             if results.get("status") == "completed":
@@ -368,79 +366,79 @@ class GrainchainBenchmark:
                     "creation_time": overall.get("avg_sandbox_creation_time", 0),
                     "scenarios_completed": overall.get("scenarios_completed", 0)
                 }
-        
+
         # Find best performers
         if summary["provider_comparison"]:
             # Best success rate
-            best_success = max(summary["provider_comparison"].items(), 
+            best_success = max(summary["provider_comparison"].items(),
                              key=lambda x: x[1]["success_rate"])
             summary["best_performer"]["reliability"] = best_success[0]
-            
+
             # Fastest average time
-            fastest = min(summary["provider_comparison"].items(), 
+            fastest = min(summary["provider_comparison"].items(),
                          key=lambda x: x[1]["avg_time"] if x[1]["avg_time"] > 0 else float('inf'))
             summary["best_performer"]["speed"] = fastest[0]
-            
+
             # Fastest creation time
-            fastest_creation = min(summary["provider_comparison"].items(), 
+            fastest_creation = min(summary["provider_comparison"].items(),
                                  key=lambda x: x[1]["creation_time"] if x[1]["creation_time"] > 0 else float('inf'))
             summary["best_performer"]["startup"] = fastest_creation[0]
-        
+
         return summary
-    
-    def save_results(self, results: Dict[str, Any]) -> None:
+
+    def save_results(self, results: dict[str, Any]) -> None:
         """Save benchmark results in multiple formats"""
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        
+
         # Save JSON
         json_file = self.results_dir / f"grainchain_benchmark_{timestamp}.json"
         with open(json_file, 'w') as f:
             json.dump(results, f, indent=2, default=str)
-        
+
         # Save as latest
         latest_json = self.results_dir / "latest_grainchain.json"
         with open(latest_json, 'w') as f:
             json.dump(results, f, indent=2, default=str)
-        
+
         # Generate markdown report
         if "markdown" in self.config["export_formats"]:
             md_content = self._generate_markdown_report(results)
             md_file = self.results_dir / f"grainchain_benchmark_{timestamp}.md"
             with open(md_file, 'w') as f:
                 f.write(md_content)
-            
+
             # Save as latest
             latest_md = self.results_dir / "latest_grainchain.md"
             with open(latest_md, 'w') as f:
                 f.write(md_content)
-        
+
         self.logger.info(f"📁 Results saved to {json_file}")
-    
-    def _generate_markdown_report(self, results: Dict[str, Any]) -> str:
+
+    def _generate_markdown_report(self, results: dict[str, Any]) -> str:
         """Generate a markdown report from benchmark results"""
         md = f"""# Grainchain Provider Benchmark Report
 
-**Generated:** {results['benchmark_info']['start_time']}  
-**Duration:** {results['benchmark_info']['duration_seconds']:.2f} seconds  
-**Providers Tested:** {', '.join(results['benchmark_info']['providers'])}  
-**Test Scenarios:** {results['benchmark_info']['test_scenarios']}  
+**Generated:** {results['benchmark_info']['start_time']}
+**Duration:** {results['benchmark_info']['duration_seconds']:.2f} seconds
+**Providers Tested:** {', '.join(results['benchmark_info']['providers'])}
+**Test Scenarios:** {results['benchmark_info']['test_scenarios']}
 
 ## Executive Summary
 
 """
-        
+
         # Add summary table
         if results["summary"]["provider_comparison"]:
             md += "| Provider | Success Rate | Avg Time (s) | Creation Time (s) | Status |\n"
             md += "|----------|--------------|--------------|-------------------|--------|\n"
-            
+
             for provider, metrics in results["summary"]["provider_comparison"].items():
                 status = "✅" if metrics["success_rate"] > 0.8 else "⚠️" if metrics["success_rate"] > 0.5 else "❌"
                 md += f"| {provider} | {metrics['success_rate']:.1%} | {metrics['avg_time']:.2f} | {metrics['creation_time']:.2f} | {status} |\n"
-        
+
         # Best performers
         if results["summary"]["best_performer"]:
-            md += f"\n## 🏆 Best Performers\n\n"
+            md += "\n## 🏆 Best Performers\n\n"
             best = results["summary"]["best_performer"]
             if "reliability" in best:
                 md += f"- **Most Reliable:** {best['reliability']}\n"
@@ -448,24 +446,24 @@ class GrainchainBenchmark:
                 md += f"- **Fastest Execution:** {best['speed']}\n"
             if "startup" in best:
                 md += f"- **Fastest Startup:** {best['startup']}\n"
-        
+
         # Detailed results
         md += "\n## Detailed Results\n\n"
-        
+
         for provider, provider_data in results["provider_results"].items():
             md += f"### {provider.upper()} Provider\n\n"
-            
+
             if provider_data.get("status") != "completed":
                 md += f"❌ **Status:** {provider_data.get('status', 'unknown')}\n"
                 if "error" in provider_data:
                     md += f"**Error:** {provider_data['error']}\n\n"
                 continue
-            
+
             overall = provider_data.get("overall_metrics", {})
             md += f"- **Overall Success Rate:** {overall.get('overall_success_rate', 0):.1%}\n"
             md += f"- **Average Scenario Time:** {overall.get('avg_scenario_time', 0):.2f}s\n"
             md += f"- **Average Creation Time:** {overall.get('avg_sandbox_creation_time', 0):.2f}s\n\n"
-            
+
             # Scenario details
             for scenario_name, scenario_data in provider_data["scenarios"].items():
                 agg = scenario_data.get("aggregated", {})
@@ -473,11 +471,11 @@ class GrainchainBenchmark:
                 md += f"- **Success Rate:** {agg.get('success_rate', 0):.1%}\n"
                 md += f"- **Average Time:** {agg.get('avg_total_time', 0):.2f}s\n"
                 md += f"- **Iterations:** {agg.get('iterations_completed', 0)}/{agg.get('iterations_total', 0)}\n\n"
-        
+
         # Configuration
         md += "## Configuration\n\n"
         md += f"```json\n{json.dumps(results['benchmark_info']['config'], indent=2)}\n```\n"
-        
+
         return md
 
 
@@ -485,41 +483,41 @@ async def main():
     """Main entry point for Grainchain benchmarking"""
     parser = argparse.ArgumentParser(description="Grainchain Provider Benchmarking")
     parser.add_argument("--config", help="Path to configuration file")
-    parser.add_argument("--providers", nargs="+", help="Providers to test", 
+    parser.add_argument("--providers", nargs="+", help="Providers to test",
                        choices=["local", "e2b", "modal", "daytona"], default=["local", "e2b"])
     parser.add_argument("--iterations", type=int, default=3, help="Number of iterations per test")
     parser.add_argument("--output-dir", help="Output directory for results")
     args = parser.parse_args()
-    
+
     # Create custom config if needed
     config = {}
     if args.providers:
         config["providers"] = args.providers
     if args.iterations:
         config["iterations"] = args.iterations
-    
+
     # Save temporary config if needed
     config_path = None
     if config:
         config_path = "temp_benchmark_config.json"
         with open(config_path, 'w') as f:
             json.dump(config, f)
-    
+
     try:
         # Run benchmark
         benchmark = GrainchainBenchmark(config_path or args.config)
         results = await benchmark.run_full_benchmark()
         benchmark.save_results(results)
-        
+
         print("\n🎉 Grainchain benchmark completed successfully!")
         print(f"📊 Results saved to: {benchmark.results_dir}")
-        
+
         # Print quick summary
         if results["summary"]["provider_comparison"]:
             print("\n📈 Quick Summary:")
             for provider, metrics in results["summary"]["provider_comparison"].items():
                 print(f"  {provider}: {metrics['success_rate']:.1%} success, {metrics['avg_time']:.2f}s avg")
-    
+
     finally:
         # Cleanup temporary config
         if config_path and os.path.exists(config_path):

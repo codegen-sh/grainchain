@@ -13,7 +13,7 @@ class SandboxError(GrainchainError):
 
 class ProviderError(GrainchainError):
     """Provider-specific error."""
-    
+
     def __init__(self, message: str, provider: str, original_error: Exception = None):
         super().__init__(message)
         self.provider = provider
@@ -27,7 +27,7 @@ class ConfigurationError(GrainchainError):
 
 class TimeoutError(GrainchainError):
     """Operation timed out."""
-    
+
     def __init__(self, message: str, timeout_seconds: int):
         super().__init__(message)
         self.timeout_seconds = timeout_seconds
@@ -35,7 +35,7 @@ class TimeoutError(GrainchainError):
 
 class AuthenticationError(GrainchainError):
     """Authentication failed."""
-    
+
     def __init__(self, message: str, provider: str):
         super().__init__(message)
         self.provider = provider

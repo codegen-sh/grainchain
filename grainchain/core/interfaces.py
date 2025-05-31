@@ -1,10 +1,10 @@
 """Core interfaces and data structures for Grainchain."""
 
+import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Union, Dict, Any
-import time
+from typing import Optional, Union
 
 
 class SandboxStatus(Enum):
@@ -26,16 +26,16 @@ class ExecutionResult:
     success: bool
     command: str
     timestamp: float = None
-    
+
     def __post_init__(self):
         if self.timestamp is None:
             self.timestamp = time.time()
-    
+
     @property
     def output(self) -> str:
         """Combined stdout and stderr."""
         return f"{self.stdout}\n{self.stderr}".strip()
-    
+
     @property
     def failed(self) -> bool:
         """Whether the execution failed."""
@@ -51,7 +51,7 @@ class FileInfo:
     is_directory: bool
     modified_time: float
     permissions: str = ""
-    
+
     @property
     def is_file(self) -> bool:
         """Whether this is a file (not a directory)."""
@@ -65,16 +65,16 @@ class SandboxConfig:
     timeout: Optional[int] = 300  # seconds
     memory_limit: Optional[str] = None  # e.g., "2GB"
     cpu_limit: Optional[float] = None  # CPU cores
-    
+
     # Environment
     image: Optional[str] = None
     working_directory: str = "/workspace"
-    environment_vars: Dict[str, str] = None
-    
+    environment_vars: dict[str, str] = None
+
     # Behavior
     auto_cleanup: bool = True
     keep_alive: bool = False
-    
+
     def __post_init__(self):
         if self.environment_vars is None:
             self.environment_vars = {}
@@ -82,28 +82,28 @@ class SandboxConfig:
 
 class SandboxProvider(ABC):
     """Abstract base class for sandbox providers."""
-    
+
     @property
     @abstractmethod
     def name(self) -> str:
         """Provider name."""
         pass
-    
+
     @abstractmethod
     async def create_sandbox(self, config: SandboxConfig) -> "SandboxSession":
         """Create a new sandbox session."""
         pass
-    
+
     @abstractmethod
-    async def list_sandboxes(self) -> List[str]:
+    async def list_sandboxes(self) -> list[str]:
         """List active sandbox IDs."""
         pass
-    
+
     @abstractmethod
     async def get_sandbox_status(self, sandbox_id: str) -> SandboxStatus:
         """Get the status of a sandbox."""
         pass
-    
+
     @abstractmethod
     async def cleanup(self) -> None:
         """Clean up provider resources."""
@@ -112,69 +112,69 @@ class SandboxProvider(ABC):
 
 class SandboxSession(ABC):
     """Abstract base class for sandbox sessions."""
-    
+
     @property
     @abstractmethod
     def sandbox_id(self) -> str:
         """Unique identifier for this sandbox."""
         pass
-    
+
     @property
     @abstractmethod
     def status(self) -> SandboxStatus:
         """Current sandbox status."""
         pass
-    
+
     @abstractmethod
     async def execute(
-        self, 
-        command: str, 
+        self,
+        command: str,
         timeout: Optional[int] = None,
         working_dir: Optional[str] = None,
-        environment: Optional[Dict[str, str]] = None
+        environment: Optional[dict[str, str]] = None
     ) -> ExecutionResult:
         """Execute a command in the sandbox."""
         pass
-    
+
     @abstractmethod
     async def upload_file(
-        self, 
-        path: str, 
+        self,
+        path: str,
         content: Union[str, bytes],
         mode: str = "w"
     ) -> None:
         """Upload a file to the sandbox."""
         pass
-    
+
     @abstractmethod
     async def download_file(self, path: str) -> bytes:
         """Download a file from the sandbox."""
         pass
-    
+
     @abstractmethod
-    async def list_files(self, path: str = "/") -> List[FileInfo]:
+    async def list_files(self, path: str = "/") -> list[FileInfo]:
         """List files in the sandbox."""
         pass
-    
+
     @abstractmethod
     async def create_snapshot(self) -> str:
         """Create a snapshot of the current sandbox state."""
         pass
-    
+
     @abstractmethod
     async def restore_snapshot(self, snapshot_id: str) -> None:
         """Restore sandbox to a previous snapshot."""
         pass
-    
+
     @abstractmethod
     async def close(self) -> None:
         """Close and cleanup the sandbox session."""
         pass
-    
+
     async def __aenter__(self) -> "SandboxSession":
         """Async context manager entry."""
         return self
-    
+
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         """Async context manager exit."""
         await self.close()

@@ -1,6 +1,6 @@
 """Utility functions for Grainchain."""
 
-from grainchain.utils.logging import setup_logging, get_logger
+from grainchain.utils.logging import get_logger, setup_logging
 
 __all__ = [
     "setup_logging",
