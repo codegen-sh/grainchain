@@ -82,7 +82,7 @@ async def stream_command_output(sandbox, command: str, description: str) -> floa
                 if line.strip():
                     print(f"  {line}")
 
-    if result.stderr:
+    if result.stderr and result.stderr.strip():
         print(f"{Colors.RED}📥 STDERR:{Colors.NC}")
         for line in result.stderr.split("\n")[:10]:
             if line.strip():
