@@ -198,9 +198,9 @@ class BenchmarkRunner:
             )
             if result.exit_code == 0:
                 size_output = result.output.decode().strip()
-                snapshot["metrics"]["filesystem"][
-                    "node_modules_size"
-                ] = size_output.split()[0]
+                snapshot["metrics"]["filesystem"]["node_modules_size"] = (
+                    size_output.split()[0]
+                )
 
             # Package count
             result = self.container.exec_run(
@@ -224,9 +224,9 @@ class BenchmarkRunner:
             }
 
             if result.exit_code != 0:
-                snapshot["metrics"]["performance"][
-                    "build_error"
-                ] = result.output.decode()
+                snapshot["metrics"]["performance"]["build_error"] = (
+                    result.output.decode()
+                )
 
             # Test run time (if tests exist)
             start_time = time.time()
