@@ -1,14 +1,81 @@
 # Grainchain Benchmarks
 
-This directory contains benchmarking infrastructure for testing and comparing different sandbox providers in the Grainchain project.
+This directory contains benchmarking infrastructure for testing and comparing different sandbox providers in the Grainchain project, with support for multiple repositories and programming languages.
 
 ## Overview
 
-The benchmark suite evaluates sandbox providers across multiple scenarios:
+The benchmark suite evaluates sandbox providers across multiple scenarios and repositories:
+- **Multi-Repository Support**: Test TypeScript, Python, and other language repositories
 - **Basic Commands**: Simple shell commands and system information
 - **Python Execution**: Python script execution and package management
 - **File Operations**: File creation, reading, writing, and manipulation
 - **Computational Tasks**: CPU-intensive operations and mathematical computations
+- **Per-Repository Output**: Generate separate results for each tested repository
+
+## Supported Repositories
+
+### TypeScript Repositories
+- **outline**: Knowledge base application (default)
+
+### Python Repositories
+- **requests**: Popular HTTP library
+- **fastapi**: Modern web framework
+
+## Multi-Repository Benchmarking
+
+### Quick Start
+
+Run benchmarks for all configured repositories:
+```bash
+# Using grainchain (recommended)
+source .venv/bin/activate
+python benchmarks/scripts/grainchain_multi_repo_benchmark.py
+
+# Using Docker (requires docker installation)
+python benchmarks/scripts/multi_repo_benchmark_runner.py
+```
+
+Run benchmark for a specific repository:
+```bash
+# Using grainchain
+source .venv/bin/activate
+python benchmarks/scripts/grainchain_multi_repo_benchmark.py --repo requests
+
+# Using Docker
+python benchmarks/scripts/multi_repo_benchmark_runner.py --repo requests
+```
+
+Test multi-repo setup with E2B:
+```bash
+source .venv/bin/activate
+python test_multi_repo_dockerfile.py
+```
+
+Test specific repository setup:
+```bash
+source .venv/bin/activate
+python test_multi_repo_dockerfile.py --repo fastapi
+```
+
+### Configuration
+
+Repository configurations are stored in `benchmarks/configs/`:
+- `outline.json` - TypeScript/Node.js repository
+- `requests.json` - Python HTTP library
+- `fastapi.json` - Python web framework
+
+Each configuration includes:
+- Repository URL and branch
+- Language and package manager
+- Install and test commands
+- Trivial changes for snapshot testing
+- Metrics collection settings
+
+### Results
+
+Results are generated per repository in `benchmarks/results/`:
+- `multi_benchmark_results_TIMESTAMP.json` - Overall results
+- `{repo_name}_benchmark_TIMESTAMP.json` - Per-repository results
 
 ## Supported Providers
 
