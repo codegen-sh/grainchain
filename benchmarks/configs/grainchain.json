@@ -1,0 +1,41 @@
+{
+  "providers": ["local", "e2b"],
+  "iterations": 3,
+  "timeout": 30,
+  "parallel_tests": false,
+  "detailed_metrics": true,
+  "export_formats": ["json", "markdown", "html"],
+  "test_scenarios": {
+    "basic_commands": {
+      "enabled": true,
+      "timeout": 10
+    },
+    "python_execution": {
+      "enabled": true,
+      "timeout": 15
+    },
+    "file_operations": {
+      "enabled": true,
+      "timeout": 20,
+      "test_files": [
+        {"name": "small.txt", "size": 100},
+        {"name": "medium.txt", "size": 10000},
+        {"name": "large.txt", "size": 100000}
+      ]
+    },
+    "computational_tasks": {
+      "enabled": true,
+      "timeout": 30
+    }
+  },
+  "environment": {
+    "E2B_API_KEY": "from_env",
+    "E2B_TEMPLATE": "base"
+  },
+  "reporting": {
+    "include_raw_data": true,
+    "generate_charts": false,
+    "auto_commit": false
+  }
+}
+
