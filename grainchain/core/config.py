@@ -109,6 +109,11 @@ class ConfigManager:
             "modal": {
                 "token_id": "MODAL_TOKEN_ID", 
                 "token_secret": "MODAL_TOKEN_SECRET",
+            },
+            "daytona": {
+                "api_key": "DAYTONA_API_KEY",
+                "api_url": "DAYTONA_API_URL",
+                "target": "DAYTONA_TARGET",
             }
         }
         
