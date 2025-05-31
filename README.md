@@ -36,6 +36,7 @@ Compare sandbox providers with comprehensive performance testing:
 grainchain benchmark --provider local
 grainchain benchmark --provider e2b
 grainchain benchmark --provider daytona
+grainchain benchmark --provider morph
 
 # Generate timestamped results
 grainchain benchmark --provider local --output benchmarks/results/
@@ -50,7 +51,7 @@ Run comprehensive benchmarks across all providers:
 
 ```bash
 # Quick: Run all providers and save results
-for provider in local e2b daytona; do
+for provider in local e2b daytona morph; do
     echo "🚀 Testing $provider..."
     grainchain benchmark --provider $provider --output benchmarks/results/
 done
@@ -59,7 +60,7 @@ done
 ./scripts/benchmark_all.sh
 
 # Advanced: Use the detailed benchmark script
-./benchmarks/scripts/run_grainchain_benchmark.sh "local e2b daytona" 3
+./benchmarks/scripts/run_grainchain_benchmark.sh "local e2b daytona morph" 3
 ```
 
 The `benchmark_all.sh` script generates timestamped reports in `benchmarks/results/` that include:
@@ -78,18 +79,20 @@ Latest benchmark results (updated 2024-05-31):
 | **Local**   | 0.036s     | 0.007s     | 0.021s      | 0.008s   | ⚡ Fastest       |
 | **E2B**     | 0.599s     | 0.331s     | 0.111s      | 0.156s   | 🚀 Balanced      |
 | **Daytona** | 1.012s     | 0.305s     | 0.156s      | 0.551s   | 🛡️ Comprehensive |
+| **Morph**   | 0.250s     | 0.005s     | 0.010s      | 0.005s   | 🚀 Instant Snapshots |
 
 > **Performance Notes**:
 >
 > - Local: Best for development/testing (17x faster than E2B, 28x faster than Daytona)
 > - E2B: Production-ready with good speed and reliability
 > - Daytona: Full workspace environments with comprehensive tooling
+> - Morph: Custom base images, instant snapshots, <250ms startup
 
 Results are automatically saved to `benchmarks/results/` and can be committed to track performance over time.
 
 ## 🎯 Why Grainchain?
 
-The sandbox ecosystem is rapidly expanding with providers like [E2B](https://e2b.dev/), [Daytona](https://daytona.io/), and others. Each has different APIs and capabilities, creating:
+The sandbox ecosystem is rapidly expanding with providers like [E2B](https://e2b.dev/), [Daytona](https://daytona.io/), [Morph](https://morph.dev/), and others. Each has different APIs and capabilities, creating:
 
 - **Vendor Lock-in**: Applications become tightly coupled to specific providers
 - **Learning Curve**: Developers must learn multiple APIs
@@ -103,7 +106,7 @@ Grainchain solves these problems with a unified interface that abstracts provide
 ```
 ┌─────────────────┐
 │   Application   │
-└─────────────────┘
+�����─────────────────┘
          │
 ┌─────────────────┐
 │   Grainchain    │
@@ -135,6 +138,15 @@ pip install grainchain[e2b]
 
 # With Daytona support
 pip install grainchain[daytona]
+
+# With Morph support
+pip install grainchain[morph]
+
+# With Local provider support
+pip install grainchain[local]
+
+# With Docker provider support
+pip install grainchain[docker]
 
 # With all sandbox providers
 pip install grainchain[all]
@@ -179,6 +191,7 @@ grainchain install-hooks
 | ----------- | ------------ | ------------------------------------------------ |
 | **E2B**     | ✅ Supported | Code interpreter, custom images, file operations |
 | **Daytona** | ✅ Supported | Development environments, workspace management   |
+| **Morph**   | ✅ Supported | Custom base images, instant snapshots, <250ms startup |
 | **Local**   | ✅ Supported | Local development and testing                    |
 | **Docker**  | 🚧 Planned   | Local Docker containers                          |
 
@@ -197,6 +210,39 @@ This typically indicates:
 3. **Network Issues**: Check if you're behind a corporate firewall
 
 **Solution**: Verify your Daytona API key is for the correct environment and contact Daytona support if the issue persists.
+
+### Morph Configuration
+
+Morph.so provides instant snapshots and custom base images with <250ms startup times. Key configuration options:
+
+```python
+from grainchain import Sandbox, SandboxConfig
+
+# Basic Morph configuration
+config = SandboxConfig(
+    provider_config={
+        "image_id": "morphvm-minimal",  # or your custom base image
+        "vcpus": 2,                     # CPU cores
+        "memory": 2048,                 # Memory in MB
+        "disk_size": 8192,              # Disk size in MB
+    }
+)
+
+async with Sandbox(provider="morph", config=config) as sandbox:
+    # Your code here
+    pass
+```
+
+**Key Features:**
+- **Custom Base Images**: Use `image_id` to specify your custom-configured base image
+- **Instant Snapshots**: Create and restore snapshots in milliseconds
+- **Fast Startup**: <250ms startup times for rapid development cycles
+- **Resource Control**: Fine-tune CPU, memory, and disk allocation
+
+**Environment Variables:**
+```bash
+export MORPH_API_KEY=your-morph-api-key
+```
 
 ## 📖 Usage Examples
 
@@ -225,6 +271,9 @@ async with Sandbox(provider="daytona") as sandbox:
 
 async with Sandbox(provider="local") as sandbox:
     result = await sandbox.execute("echo 'Using Local'")
+
+async with Sandbox(provider="morph") as sandbox:
+    result = await sandbox.execute("echo 'Using Morph'")
 ```
 
 ### Advanced Configuration
@@ -297,6 +346,10 @@ export E2B_TEMPLATE=python-data-science
 # Daytona configuration
 export DAYTONA_API_KEY=your-daytona-key
 export DAYTONA_WORKSPACE_TEMPLATE=python-dev
+
+# Morph configuration
+export MORPH_API_KEY=your-morph-key
+export MORPH_TEMPLATE=custom-base-image
 ```
 
 ### Configuration File
@@ -314,6 +367,11 @@ providers:
 
   daytona:
     api_key: ${DAYTONA_API_KEY}
+    timeout: 300
+
+  morph:
+    api_key: ${MORPH_API_KEY}
+    template: custom-base-image
     timeout: 300
 
 sandbox_defaults:
@@ -403,6 +461,7 @@ All code is automatically checked with:
 - [x] Configuration system
 - [x] E2B provider implementation
 - [x] Daytona provider implementation
+- [x] Morph provider implementation
 - [x] Local provider for testing
 
 ### Phase 2: Enhanced Features 🚧
@@ -437,7 +496,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## 🙏 Acknowledgments
 
 - Inspired by [Langchain](https://github.com/langchain-ai/langchain) for LLM abstraction
-- Built for the [E2B](https://e2b.dev/) and [Daytona](https://daytona.io/) communities
+- Built for the [E2B](https://e2b.dev/), [Daytona](https://daytona.io/), and [Morph](https://morph.dev/) communities
 - Thanks to all contributors and early adopters
 
 ---

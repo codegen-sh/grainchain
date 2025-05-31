@@ -117,6 +117,9 @@ class ConfigManager:
             "daytona": {
                 "api_key": "DAYTONA_API_KEY",
             },
+            "morph": {
+                "api_key": "MORPH_API_KEY",
+            },
         }
 
         for provider, env_vars in provider_env_vars.items():

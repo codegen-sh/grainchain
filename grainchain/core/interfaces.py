@@ -160,15 +160,38 @@ class SandboxSession(ABC):
         """List files in the sandbox."""
         pass
 
-    @abstractmethod
     async def create_snapshot(self) -> str:
-        """Create a snapshot of the current sandbox state."""
-        pass
+        """Create a snapshot of the current sandbox state.
 
-    @abstractmethod
+        Returns:
+            str: Snapshot ID that can be used to restore the state
+        """
+        raise NotImplementedError("Snapshot creation not implemented")
+
     async def restore_snapshot(self, snapshot_id: str) -> None:
-        """Restore sandbox to a previous snapshot."""
-        pass
+        """Restore sandbox to a previous snapshot state.
+
+        Args:
+            snapshot_id: ID of the snapshot to restore
+        """
+        raise NotImplementedError("Snapshot restoration not implemented")
+
+    async def terminate(self) -> None:
+        """Terminate the sandbox while preserving snapshots.
+
+        This stops the sandbox instance but keeps snapshots available
+        for later restoration via wake_up().
+        """
+        raise NotImplementedError("Sandbox termination not implemented")
+
+    async def wake_up(self, snapshot_id: Optional[str] = None) -> None:
+        """Wake up a terminated sandbox, optionally from a specific snapshot.
+
+        Args:
+            snapshot_id: Optional snapshot ID to restore from. If None,
+                        wakes up from the most recent state.
+        """
+        raise NotImplementedError("Sandbox wake up not implemented")
 
     @abstractmethod
     async def close(self) -> None:

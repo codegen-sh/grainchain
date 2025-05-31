@@ -43,7 +43,8 @@ langgraph = [
     "langchain>=0.3.0",
 ]
 modal = ["modal>=0.64.0"]
-all = ["grainchain[e2b,daytona,modal,langgraph]"]
+morph = ["morphcloud>=0.1.38"]
+all = ["grainchain[e2b,daytona,modal,morph,langgraph]"]
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
