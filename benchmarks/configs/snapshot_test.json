@@ -1,0 +1,25 @@
+{
+  "providers": ["local", "e2b", "daytona"],
+  "iterations": 1,
+  "timeout": 30,
+  "parallel_tests": false,
+  "detailed_metrics": true,
+  "export_formats": ["json", "markdown"],
+  "test_scenarios": {
+    "snapshot_lifecycle": {
+      "enabled": true,
+      "timeout": 120,
+      "description": "Git clone, file creation, snapshot, kill, and restore operations"
+    }
+  },
+  "environment": {
+    "E2B_API_KEY": "from_env",
+    "E2B_TEMPLATE": "base",
+    "DAYTONA_API_KEY": "from_env"
+  },
+  "reporting": {
+    "include_raw_data": true,
+    "generate_charts": false,
+    "auto_commit": false
+  }
+}

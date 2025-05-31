@@ -1,7 +1,7 @@
 # Grainchain Provider Benchmark Report
 
-**Generated:** 2025-05-31T20:09:02.305354
-**Duration:** 58.68 seconds
+**Generated:** 2025-05-31T20:07:57.490468
+**Duration:** 60.40 seconds
 **Providers Tested:** local, e2b, daytona
 **Test Scenarios:** 5
 
@@ -9,9 +9,9 @@
 
 | Provider | Success Rate | Avg Time (s) | Creation Time (s) | Status |
 |----------|--------------|--------------|-------------------|--------|
-| local | 73.3% | 0.08 | 0.00 | ⚠️ |
-| e2b | 93.3% | 3.14 | 0.45 | ✅ |
-| daytona | 96.7% | 7.39 | 0.46 | ✅ |
+| local | 73.3% | 0.07 | 0.00 | ⚠️ |
+| e2b | 93.3% | 2.72 | 0.29 | ✅ |
+| daytona | 96.7% | 8.29 | 0.45 | ✅ |
 
 ## 🏆 Best Performers
 
@@ -24,7 +24,7 @@
 ### LOCAL Provider
 
 - **Overall Success Rate:** 73.3%
-- **Average Scenario Time:** 0.08s
+- **Average Scenario Time:** 0.07s
 - **Average Creation Time:** 0.00s
 
 #### Basic Commands
@@ -44,7 +44,7 @@
 
 #### Computational Tasks
 - **Success Rate:** 100.0%
-- **Average Time:** 0.15s
+- **Average Time:** 0.14s
 - **Iterations:** 1/1
 
 #### Snapshot Lifecycle
@@ -55,17 +55,17 @@
 ### E2B Provider
 
 - **Overall Success Rate:** 93.3%
-- **Average Scenario Time:** 3.14s
-- **Average Creation Time:** 0.45s
+- **Average Scenario Time:** 2.72s
+- **Average Creation Time:** 0.29s
 
 #### Basic Commands
 - **Success Rate:** 100.0%
-- **Average Time:** 1.36s
+- **Average Time:** 0.95s
 - **Iterations:** 1/1
 
 #### Python Execution
 - **Success Rate:** 100.0%
-- **Average Time:** 1.11s
+- **Average Time:** 1.06s
 - **Iterations:** 1/1
 
 #### File Operations
@@ -75,43 +75,43 @@
 
 #### Computational Tasks
 - **Success Rate:** 100.0%
-- **Average Time:** 1.63s
+- **Average Time:** 1.39s
 - **Iterations:** 1/1
 
 #### Snapshot Lifecycle
 - **Success Rate:** 66.7%
-- **Average Time:** 10.53s
+- **Average Time:** 9.10s
 - **Iterations:** 1/1
 
 ### DAYTONA Provider
 
 - **Overall Success Rate:** 96.7%
-- **Average Scenario Time:** 7.39s
-- **Average Creation Time:** 0.46s
+- **Average Scenario Time:** 8.29s
+- **Average Creation Time:** 0.45s
 
 #### Basic Commands
 - **Success Rate:** 100.0%
-- **Average Time:** 2.96s
+- **Average Time:** 2.71s
 - **Iterations:** 1/1
 
 #### Python Execution
 - **Success Rate:** 100.0%
-- **Average Time:** 1.22s
+- **Average Time:** 2.44s
 - **Iterations:** 1/1
 
 #### File Operations
 - **Success Rate:** 100.0%
-- **Average Time:** 3.50s
+- **Average Time:** 1.88s
 - **Iterations:** 1/1
 
 #### Computational Tasks
 - **Success Rate:** 100.0%
-- **Average Time:** 2.36s
+- **Average Time:** 3.24s
 - **Iterations:** 1/1
 
 #### Snapshot Lifecycle
 - **Success Rate:** 83.3%
-- **Average Time:** 26.90s
+- **Average Time:** 31.16s
 - **Iterations:** 1/1
 
 ## Configuration
