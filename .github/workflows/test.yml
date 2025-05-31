@@ -1,0 +1,179 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Set up virtual environment
+      run: |
+        uv venv
+        echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
+        echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      run: |
+        uv sync --extra dev
+
+    - name: Run linting
+      run: |
+        uv run ruff check .
+        uv run ruff format --check .
+
+    - name: Run unit tests
+      run: |
+        uv run pytest tests/unit/ -v --cov=grainchain --cov-report=xml --cov-report=term-missing
+
+    - name: Run integration tests (local only)
+      run: |
+        uv run pytest tests/integration/test_local_provider.py -v -m "not slow"
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  test-with-providers:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Set up virtual environment
+      run: |
+        uv venv
+        echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
+        echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies with all providers
+      run: |
+        uv sync --extra dev --extra all
+
+    - name: Run integration tests with E2B
+      if: env.E2B_API_KEY != ''
+      env:
+        E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+      run: |
+        uv run pytest tests/integration/test_e2b_provider.py -v -m "not slow"
+
+    - name: Run integration tests with Modal
+      if: env.MODAL_TOKEN_ID != '' && env.MODAL_TOKEN_SECRET != ''
+      env:
+        MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+        MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+      run: |
+        uv run pytest tests/integration/test_modal_provider.py -v -m "not slow"
+
+    - name: Run integration tests with Daytona
+      if: env.DAYTONA_API_KEY != ''
+      env:
+        DAYTONA_API_KEY: ${{ secrets.DAYTONA_API_KEY }}
+      run: |
+        uv run pytest tests/integration/test_daytona_provider.py -v -m "not slow"
+
+  performance-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Set up virtual environment
+      run: |
+        uv venv
+        echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
+        echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      run: |
+        uv sync --extra dev --extra benchmark
+
+    - name: Run performance tests
+      run: |
+        uv run pytest tests/ -v -m "slow" --timeout=300
+
+    - name: Run benchmark
+      run: |
+        uv run grainchain benchmark --provider local --output benchmarks/results/
+
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Set up virtual environment
+      run: |
+        uv venv
+        echo "VIRTUAL_ENV=.venv" >> $GITHUB_ENV
+        echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      run: |
+        uv sync --extra dev
+
+    - name: Run security scan with bandit
+      run: |
+        uv run pip install bandit[toml]
+        uv run bandit -r grainchain/ -f json -o bandit-report.json || true
+
+    - name: Upload security scan results
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-scan-results
+        path: bandit-report.json
