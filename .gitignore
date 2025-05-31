@@ -165,6 +165,23 @@ cython_debug/
 # VS Code
 .vscode/
 
+# Additional IDE files
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+
 # Grainchain specific
 grainchain.yaml
 grainchain.yml
@@ -181,4 +198,25 @@ examples/*.png
 examples/*.csv
 examples/*.json
 examples/*.md
+
+# Benchmark results (keep structure but ignore large files)
+benchmarks/results/*.json
+benchmarks/results/*.html
+benchmarks/results/benchmark_*
+!benchmarks/results/.gitkeep
+!benchmarks/results/SUMMARY.md
+!benchmarks/results/latest.*
+
+# Docker
+.dockerignore
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Development configs
+benchmarks/configs/dev_*
+benchmarks/configs/local_*
 
