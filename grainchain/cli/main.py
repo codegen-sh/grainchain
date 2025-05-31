@@ -92,14 +92,25 @@ def typecheck(path: str):
 )
 @click.option("--config", help="Path to benchmark config file")
 @click.option("--output", help="Output directory for results")
-def benchmark(provider: str, config: str, output: str):
+@click.option("--codegen", help="Run special codegen benchmark (e.g., 'outline')")
+def benchmark(provider: str, config: str, output: str, codegen: str):
     """Run performance benchmarks."""
     try:
         from grainchain.cli.benchmark import run_benchmark
 
-        click.echo(f"🚀 Running benchmarks with {provider} provider...")
-
-        result = run_benchmark(provider=provider, config_path=config, output_dir=output)
+        if codegen:
+            click.echo(f"🚀 Running special codegen benchmark: {codegen}")
+            result = run_benchmark(
+                provider=provider,
+                config_path=config,
+                output_dir=output,
+                codegen_benchmark=codegen,
+            )
+        else:
+            click.echo(f"🚀 Running benchmarks with {provider} provider...")
+            result = run_benchmark(
+                provider=provider, config_path=config, output_dir=output
+            )
 
         if result:
             click.echo("✅ Benchmarks completed successfully!")

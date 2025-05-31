@@ -1,0 +1,31 @@
+{
+  "providers": ["e2b", "daytona"],
+  "iterations": 3,
+  "timeout": 300,
+  "parallel_tests": false,
+  "detailed_metrics": true,
+  "export_formats": ["json", "markdown"],
+  "test_scenarios": {
+    "codegen_outline_benchmark": {
+      "enabled": true,
+      "timeout": 600,
+      "description": "Special Codegen benchmark: Clone outline repo, make trivial modifications, snapshot, and reboot",
+      "dockerfile": "benchmarks/dockerfiles/codegen-base.dockerfile",
+      "repo_url": "https://github.com/codegen-sh/outline.git",
+      "repo_path": "/workspace/outline",
+      "modification_file": "README.md",
+      "modification_content": "/* Grainchain Codegen benchmark test - {timestamp} */"
+    }
+  },
+  "environment": {
+    "E2B_API_KEY": "from_env",
+    "E2B_TEMPLATE": "base",
+    "DAYTONA_API_KEY": "from_env"
+  },
+  "reporting": {
+    "include_raw_data": true,
+    "generate_charts": true,
+    "auto_commit": false,
+    "compare_providers": true
+  }
+}

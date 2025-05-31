@@ -40,6 +40,9 @@ grainchain benchmark --provider daytona
 # Generate timestamped results
 grainchain benchmark --provider local --output benchmarks/results/
 
+# Special Codegen benchmarks
+grainchain benchmark --codegen outline  # Compare E2B vs Daytona for outline repo workflow
+
 # Check latest benchmark status (without running new tests)
 ./scripts/benchmark_status.sh
 ```
@@ -363,6 +366,9 @@ grainchain check
 # Run benchmarks
 grainchain benchmark --provider local
 
+# Run special codegen outline benchmark
+grainchain benchmark --codegen outline
+
 # Generate comprehensive performance report (committable)
 ./scripts/benchmark_all.sh
 
@@ -382,6 +388,7 @@ grainchain lint               # Run ruff linting
 grainchain format             # Format with ruff
 grainchain typecheck          # Type checking (temporarily disabled)
 grainchain benchmark          # Run performance benchmarks
+grainchain benchmark --codegen outline  # Run special codegen outline benchmark
 grainchain install-hooks      # Install pre-commit hooks
 grainchain check             # Run all quality checks
 ```
