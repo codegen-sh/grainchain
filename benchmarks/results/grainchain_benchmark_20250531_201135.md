@@ -14,7 +14,7 @@
 
 ## 🏆 Best Performers
 
-- **Most Reliable:** daytona
+- **Most Reliable:** e2b
 - **Fastest Execution:** local
 - **Fastest Startup:** local
 
@@ -39,7 +39,7 @@
 #### File Operations
 - **Success Rate:** 0.0%
 - **Average Time:** 0.00s
-- **Iterations:** 1/1
+- **Iterations:** 3/3
 
 #### Computational Tasks
 - **Success Rate:** 100.0%
@@ -78,10 +78,9 @@
 {
   "providers": [
     "local",
-    "e2b",
-    "daytona"
+    "e2b"
   ],
-  "iterations": 1,
+  "iterations": 3,
   "timeout": 30,
   "parallel_tests": false,
   "detailed_metrics": true,
