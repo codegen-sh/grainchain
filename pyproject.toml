@@ -37,7 +37,12 @@ dependencies = [
 [project.optional-dependencies]
 e2b = ["e2b>=0.13.0"]
 daytona = ["daytona-sdk>=0.1.0"]
-all = ["grainchain[e2b,daytona]"]
+langgraph = [
+    "langgraph>=0.2.0",
+    "langchain-core>=0.3.0",
+    "langchain>=0.3.0",
+]
+all = ["grainchain[e2b,daytona,langgraph]"]
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
