@@ -1,21 +1,20 @@
 # Grainchain Provider Benchmark Report
 
-**Generated:** 2025-05-31T20:19:13.184892
-**Duration:** 109.17 seconds
-**Providers Tested:** local, e2b, daytona, modal
+**Generated:** 2025-05-31T20:18:08.291323
+**Duration:** 51.69 seconds
+**Providers Tested:** local, e2b
 **Test Scenarios:** 5
 
 ## Executive Summary
 
 | Provider | Success Rate | Avg Time (s) | Creation Time (s) | Status |
 |----------|--------------|--------------|-------------------|--------|
-| local | 73.3% | 0.03 | 0.00 | ⚠️ |
-| e2b | 93.3% | 3.12 | 0.36 | ✅ |
-| daytona | 96.7% | 3.87 | 0.23 | ✅ |
+| local | 74.4% | 0.39 | 0.00 | ⚠️ |
+| e2b | 93.3% | 2.97 | 0.33 | ✅ |
 
 ## 🏆 Best Performers
 
-- **Most Reliable:** daytona
+- **Most Reliable:** e2b
 - **Fastest Execution:** local
 - **Fastest Startup:** local
 
@@ -23,8 +22,8 @@
 
 ### LOCAL Provider
 
-- **Overall Success Rate:** 73.3%
-- **Average Scenario Time:** 0.03s
+- **Overall Success Rate:** 74.4%
+- **Average Scenario Time:** 0.39s
 - **Average Creation Time:** 0.00s
 
 #### Basic Commands
@@ -48,76 +47,40 @@
 - **Iterations:** 3/3
 
 #### Snapshot Lifecycle
-- **Success Rate:** 66.7%
-- **Average Time:** 0.01s
+- **Success Rate:** 72.2%
+- **Average Time:** 1.81s
 - **Iterations:** 3/3
 
 ### E2B Provider
 
 - **Overall Success Rate:** 93.3%
-- **Average Scenario Time:** 3.12s
-- **Average Creation Time:** 0.36s
+- **Average Scenario Time:** 2.97s
+- **Average Creation Time:** 0.33s
 
 #### Basic Commands
 - **Success Rate:** 100.0%
-- **Average Time:** 0.98s
+- **Average Time:** 1.48s
 - **Iterations:** 3/3
 
 #### Python Execution
 - **Success Rate:** 100.0%
-- **Average Time:** 1.74s
+- **Average Time:** 1.39s
 - **Iterations:** 3/3
 
 #### File Operations
 - **Success Rate:** 100.0%
-- **Average Time:** 1.49s
+- **Average Time:** 1.44s
 - **Iterations:** 3/3
 
 #### Computational Tasks
 - **Success Rate:** 100.0%
-- **Average Time:** 1.62s
+- **Average Time:** 1.01s
 - **Iterations:** 3/3
 
 #### Snapshot Lifecycle
 - **Success Rate:** 66.7%
-- **Average Time:** 9.78s
+- **Average Time:** 9.52s
 - **Iterations:** 3/3
-
-### DAYTONA Provider
-
-- **Overall Success Rate:** 96.7%
-- **Average Scenario Time:** 3.87s
-- **Average Creation Time:** 0.23s
-
-#### Basic Commands
-- **Success Rate:** 100.0%
-- **Average Time:** 0.91s
-- **Iterations:** 3/3
-
-#### Python Execution
-- **Success Rate:** 100.0%
-- **Average Time:** 1.11s
-- **Iterations:** 3/3
-
-#### File Operations
-- **Success Rate:** 100.0%
-- **Average Time:** 0.69s
-- **Iterations:** 3/3
-
-#### Computational Tasks
-- **Success Rate:** 100.0%
-- **Average Time:** 0.78s
-- **Iterations:** 3/3
-
-#### Snapshot Lifecycle
-- **Success Rate:** 83.3%
-- **Average Time:** 15.88s
-- **Iterations:** 3/3
-
-### MODAL Provider
-
-❌ **Status:** unavailable
-**Error:** Modal provider requires the 'modal' package. Install it with: pip install grainchain[modal]
 
 ## Configuration
 
@@ -125,9 +88,7 @@
 {
   "providers": [
     "local",
-    "e2b",
-    "daytona",
-    "modal"
+    "e2b"
   ],
   "iterations": 3,
   "timeout": 30,
