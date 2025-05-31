@@ -4,28 +4,19 @@ build-backend = "hatchling.build"
 
 [project]
 name = "grainchain"
-dynamic = ["version"]
-description = "Langchain for sandboxes - A unified interface for sandbox providers"
+version = "0.1.0"
+description = "Langchain for sandboxes - A unified Python interface for sandbox providers"
 readme = "README.md"
-license = "MIT"
+license = { text = "MIT" }
 requires-python = ">=3.9"
 authors = [
-    { name = "Codegen Team", email = "team@codegen.com" },
+    { name = "Codegen Team", email = "team@codegen.com" }
 ]
-keywords = [
-    "sandbox",
-    "containers",
-    "code-execution",
-    "ai",
-    "langchain",
-    "e2b",
-    "modal",
-]
+keywords = ["sandbox", "code-execution", "e2b", "modal", "containers"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -39,6 +30,7 @@ dependencies = [
     "pydantic>=2.0.0",
     "pyyaml>=6.0",
     "typing-extensions>=4.0.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -136,4 +128,3 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
-
