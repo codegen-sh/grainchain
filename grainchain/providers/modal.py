@@ -39,12 +39,12 @@ class ModalProvider(BaseSandboxProvider):
 
         # Modal authentication is typically handled via environment variables
         # or modal token files, so we don't require explicit credentials here
-        self.image_name = self.get_config_value("image", "python:3.11")
+        self.image_name = self.get_config_value("image", "python:3.12")
         self.cpu = self.get_config_value("cpu", 1.0)
         self.memory = self.get_config_value("memory", "1GB")
 
-        # Create Modal app for sandbox management
-        self.app = App(f"grainchain-{uuid.uuid4().hex[:8]}")
+        # Create Modal app using lookup for lazy initialization
+        # self.app = App(f"grainchain-{uuid.uuid4().hex[:8]}")
 
     @property
     def name(self) -> str:
@@ -55,17 +55,21 @@ class ModalProvider(BaseSandboxProvider):
         """Create a new Modal sandbox session."""
         try:
             # Configure Modal image
-            image = modal.Image.from_registry(config.image or self.image_name)
+            image = modal.Image.from_registry("ubuntu:22.04")
 
             # Add any additional packages or setup
             if config.environment_vars:
                 # Modal handles environment variables differently
                 pass
 
+            # Create Modal app using lookup for lazy initialization
+            app_name = f"grainchain-{uuid.uuid4().hex[:8]}"
+            app = modal.App.lookup(app_name, create_if_missing=True)
+
             # Create Modal sandbox
             modal_sandbox = ModalSandbox.create(
                 image=image,
-                app=self.app,
+                app=app,
                 timeout=config.timeout,
                 cpu=config.cpu_limit or self.cpu,
                 # memory=config.memory_limit or self.memory,  # Uncomment when Modal supports it
@@ -134,7 +138,7 @@ class ModalSandboxSession(BaseSandboxSession):
 
             # Execute via Modal sandbox
             process = self.modal_sandbox.exec(
-                final_command, timeout=timeout or self.config.timeout
+                "bash", "-c", final_command, timeout=timeout or self.config.timeout
             )
 
             # Wait for completion and get results
