@@ -210,6 +210,33 @@ sandbox_defaults:
   auto_cleanup: true
 ```
 
+## 📊 Benchmarking Infrastructure
+
+This repository includes a comprehensive benchmarking infrastructure for the [Outline](https://github.com/outline/outline) application. The system automatically measures performance impacts using the codex-universal base image.
+
+### Quick Start
+
+```bash
+# Install dependencies
+make install
+
+# Run benchmarks
+make benchmark
+
+# Run and publish results
+make publish
+```
+
+### Features
+
+- 🐳 **Docker-based**: Uses codex-universal base image for consistent environments
+- 📈 **Comprehensive Metrics**: Measures build time, memory usage, file system stats
+- 🤖 **Automated**: GitHub Actions for scheduled execution and result publishing
+- 📊 **Multiple Formats**: Generates HTML, JSON, and Markdown reports
+- 🔄 **Change Impact**: Tests performance impact of trivial code changes
+
+See [`benchmarks/README.md`](benchmarks/README.md) for detailed documentation.
+
 ## 🧪 Examples
 
 Check out the [examples](./examples/) directory for comprehensive usage examples:
