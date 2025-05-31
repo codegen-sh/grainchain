@@ -26,6 +26,11 @@
     "computational_tasks": {
       "enabled": true,
       "timeout": 30
+    },
+    "snapshot_lifecycle": {
+      "enabled": true,
+      "timeout": 120,
+      "description": "Git clone, file creation, snapshot, kill, and restore operations"
     }
   },
   "environment": {
