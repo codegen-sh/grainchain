@@ -25,7 +25,7 @@ async def test_daytona_provider():
     print(f"✅ Created Daytona provider: {provider.name}")
 
     # Create sandbox configuration
-    sandbox_config = SandboxConfig(timeout=60, working_directory="/workspace")
+    sandbox_config = SandboxConfig(timeout=60, working_directory="~")
 
     try:
         # Create sandbox session

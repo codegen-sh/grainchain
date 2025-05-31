@@ -29,7 +29,7 @@ async def test_daytona_simplified():
 
     try:
         # Create sandbox configuration
-        config = SandboxConfig(timeout=60, working_directory="/workspace")
+        config = SandboxConfig(timeout=60, working_directory="~")
 
         # Test sandbox creation and basic operation
         async with Sandbox(provider="daytona", config=config) as sandbox:
