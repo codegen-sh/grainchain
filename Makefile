@@ -31,6 +31,10 @@ grainchain-e2b: ## Benchmark only E2B provider
 	@echo "🌐 Benchmarking E2B Provider..."
 	./benchmarks/scripts/run_grainchain_benchmark.sh "e2b" 3
 
+grainchain-daytona: ## Benchmark only Daytona provider
+	@echo "🚀 Benchmarking Daytona Provider..."
+	./benchmarks/scripts/run_grainchain_benchmark.sh "daytona" 3
+
 grainchain-compare: ## Compare all available providers
 	@echo "⚖️  Comparing All Providers..."
 	./benchmarks/scripts/run_grainchain_benchmark.sh "local e2b" 5

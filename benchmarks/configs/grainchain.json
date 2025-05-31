@@ -1,5 +1,5 @@
 {
-  "providers": ["local", "e2b"],
+  "providers": ["local", "e2b", "daytona"],
   "iterations": 3,
   "timeout": 30,
   "parallel_tests": false,
@@ -30,7 +30,10 @@
   },
   "environment": {
     "E2B_API_KEY": "from_env",
-    "E2B_TEMPLATE": "base"
+    "E2B_TEMPLATE": "base",
+    "DAYTONA_API_KEY": "from_env",
+    "DAYTONA_API_URL": "https://api.daytona.io",
+    "DAYTONA_TARGET": "us"
   },
   "reporting": {
     "include_raw_data": true,

@@ -24,6 +24,7 @@ This document provides comprehensive instructions for running and understanding 
    # Edit .env with your API keys
    # For E2B: Set E2B_API_KEY
    # For Modal: Set MODAL_TOKEN_ID and MODAL_TOKEN_SECRET
+   # For Daytona: Set DAYTONA_API_KEY, DAYTONA_API_URL, DAYTONA_TARGET
    ```
 
 ### Running Benchmarks
@@ -39,6 +40,12 @@ make grainchain-local
 
 # Test only E2B provider  
 make grainchain-e2b
+
+# Test only Daytona provider
+make grainchain-daytona
+
+# Test only Modal provider (when available)
+make grainchain-modal
 
 # Compare all providers with more iterations
 make grainchain-compare
@@ -131,20 +138,21 @@ python benchmarks/scripts/grainchain_benchmark.py --config my_config.json
 
 ### Environment Variables
 
-Required for different providers:
+Set up your provider credentials:
 
 ```bash
 # E2B Provider
 E2B_API_KEY=your_e2b_api_key_here
 E2B_TEMPLATE=base
 
-# Modal Provider (when available)
-MODAL_TOKEN_ID=your_modal_token_id
-MODAL_TOKEN_SECRET=your_modal_token_secret
+# Modal Provider  
+MODAL_TOKEN_ID=your_modal_token_id_here
+MODAL_TOKEN_SECRET=your_modal_token_secret_here
 
-# Optional
-GRAINCHAIN_DEFAULT_PROVIDER=local
-GRAINCHAIN_LOG_LEVEL=INFO
+# Daytona Provider
+DAYTONA_API_KEY=your_daytona_api_key_here
+DAYTONA_API_URL=https://api.daytona.io
+DAYTONA_TARGET=us
 ```
 
 ## 📈 Interpreting Results
@@ -291,4 +299,3 @@ Set up cron job for regular benchmarking:
 **Benchmark Version**: 1.0  
 **Supported Providers**: Local, E2B  
 **Future Providers**: Modal, Docker, AWS Lambda
-

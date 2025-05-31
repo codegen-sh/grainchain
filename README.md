@@ -49,7 +49,7 @@ Grainchain solves these problems with a unified interface that abstracts provide
 └─────────────────┘
          │
 ┌─────────────────┐
-│   Provider      │
+│   Provider      ���������
 │   Adapters      │
 └─────────────────┘
          │
@@ -71,6 +71,9 @@ pip install grainchain[e2b]
 
 # With Modal support
 pip install grainchain[modal]
+
+# With Daytona support
+pip install grainchain[daytona]
 
 # With all providers
 pip install grainchain[all]
@@ -111,6 +114,9 @@ async with Sandbox(provider="e2b") as sandbox:
 
 async with Sandbox(provider="modal") as sandbox:
     result = await sandbox.execute("echo 'Using Modal'")
+
+async with Sandbox(provider="daytona") as sandbox:
+    result = await sandbox.execute("echo 'Using Daytona'")
 ```
 
 ### Advanced Configuration
@@ -183,6 +189,11 @@ export E2B_TEMPLATE=python-data-science
 # Modal configuration
 export MODAL_TOKEN_ID=your-modal-token-id
 export MODAL_TOKEN_SECRET=your-modal-token-secret
+
+# Daytona configuration
+export DAYTONA_API_KEY=your-daytona-api-key
+export DAYTONA_API_URL=https://api.daytona.io
+export DAYTONA_TARGET=us
 ```
 
 ### Configuration File
@@ -204,6 +215,12 @@ providers:
     image: python:3.11
     cpu: 2.0
     memory: 4GB
+
+  daytona:
+    api_key: ${DAYTONA_API_KEY}
+    api_url: ${DAYTONA_API_URL}
+    target: ${DAYTONA_TARGET}
+    timeout: 300
 
 sandbox_defaults:
   timeout: 180
