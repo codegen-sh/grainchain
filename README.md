@@ -16,7 +16,7 @@ async def main():
         # Execute code
         result = await sandbox.execute("echo 'Hello, Grainchain!'")
         print(result.stdout)  # "Hello, Grainchain!"
-        
+
         # Upload and run a Python script
         await sandbox.upload_file("script.py", "print('Hello from Python!')")
         result = await sandbox.execute("python script.py")
@@ -69,7 +69,7 @@ pip install grainchain
 # With E2B support
 pip install grainchain[e2b]
 
-# With Modal support  
+# With Modal support
 pip install grainchain[modal]
 
 # With all providers
@@ -78,13 +78,14 @@ pip install grainchain[all]
 
 ## 🔧 Supported Providers
 
-| Provider | Status | Features |
-|----------|--------|----------|
-| **E2B** | ✅ Supported | Code interpreter, custom images, file operations |
-| **Modal** | ✅ Supported | Serverless execution, GPU support, custom environments |
-| **Local** | ✅ Supported | Local development and testing |
-| **Docker** | 🚧 Planned | Local Docker containers |
-| **AWS Lambda** | 🚧 Planned | Serverless execution |
+| Provider    | Status       | Features                                               |
+| ----------- | ------------ | ------------------------------------------------------ |
+| **E2B**     | ✅ Supported | Code interpreter, custom images, file operations       |
+| **Modal**   | ✅ Supported | Serverless execution, GPU support, custom environments |
+| **Blaxel**  | ✅ Supported | Cloud sandbox environments, scalable execution         |
+| **Daytona** | ✅ Supported | Development environments, collaborative coding         |
+| **Local**   | ✅ Supported | Local development and testing                          |
+| **Docker**  | 🚧 Planned   | Local Docker containers                                |
 
 ## 📖 Usage Examples
 
@@ -136,13 +137,13 @@ async with Sandbox() as sandbox:
     # Upload files
     await sandbox.upload_file("data.csv", csv_content)
     await sandbox.upload_file("script.py", python_code)
-    
+
     # Execute uploaded script
     result = await sandbox.execute("python script.py")
-    
+
     # Download results
     output = await sandbox.download_file("results.json")
-    
+
     # List files
     files = await sandbox.list_files("/workspace")
     for file in files:
@@ -156,13 +157,13 @@ async with Sandbox(provider="local") as sandbox:
     # Set up environment
     await sandbox.execute("pip install numpy")
     await sandbox.upload_file("data.py", "import numpy as np")
-    
+
     # Create snapshot
     snapshot_id = await sandbox.create_snapshot()
-    
+
     # Make changes
     await sandbox.execute("pip install pandas")
-    
+
     # Restore to snapshot
     await sandbox.restore_snapshot(snapshot_id)
 ```
@@ -179,7 +180,7 @@ export GRAINCHAIN_DEFAULT_PROVIDER=e2b
 export E2B_API_KEY=your-e2b-key
 export E2B_TEMPLATE=python-data-science
 
-# Modal configuration  
+# Modal configuration
 export MODAL_TOKEN_ID=your-modal-token-id
 export MODAL_TOKEN_SECRET=your-modal-token-secret
 ```
@@ -196,7 +197,7 @@ providers:
     api_key: ${E2B_API_KEY}
     template: python-data-science
     timeout: 300
-    
+
   modal:
     token_id: ${MODAL_TOKEN_ID}
     token_secret: ${MODAL_TOKEN_SECRET}
@@ -272,6 +273,7 @@ ruff grainchain/
 ## 🗺️ Roadmap
 
 ### Phase 1: Foundation ✅
+
 - [x] Core interface design
 - [x] Base provider abstraction
 - [x] Configuration system
@@ -280,14 +282,15 @@ ruff grainchain/
 - [x] Local provider for testing
 
 ### Phase 2: Enhanced Features 🚧
+
 - [ ] Comprehensive test suite
 - [ ] Error handling improvements
 - [ ] Performance optimizations
 - [ ] Documentation website
 
 ### Phase 3: Ecosystem 🔮
+
 - [ ] Docker provider
-- [ ] AWS Lambda provider
 - [ ] Plugin system for custom providers
 - [ ] Monitoring and observability
 - [ ] Cost optimization features
@@ -315,4 +318,3 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 **Built with ❤️ by the [Codegen](https://codegen.com) team**
-
