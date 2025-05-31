@@ -73,6 +73,10 @@ class Sandbox:
             from grainchain.providers.daytona import DaytonaProvider
 
             return DaytonaProvider(provider_config)
+        elif provider_name == "morph":
+            from grainchain.providers.morph import MorphProvider
+
+            return MorphProvider(provider_config)
         elif provider_name == "local":
             from grainchain.providers.local import LocalProvider
 

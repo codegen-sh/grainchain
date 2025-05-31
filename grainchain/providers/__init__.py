@@ -49,6 +49,19 @@ def get_daytona_provider():
         ) from e
 
 
+def get_morph_provider():
+    """Get Morph provider (lazy import)."""
+    try:
+        from grainchain.providers.morph import MorphProvider
+
+        return MorphProvider
+    except ImportError as e:
+        raise ImportError(
+            "Morph provider requires the 'morphcloud' package. "
+            "Install it with: pip install morphcloud"
+        ) from e
+
+
 def get_local_provider():
     """Get Local provider."""
     from grainchain.providers.local import LocalProvider
