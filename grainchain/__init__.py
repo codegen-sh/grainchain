@@ -18,6 +18,14 @@ from grainchain.core.exceptions import (
 )
 from grainchain.core.sandbox import Sandbox
 
+# LangGraph integration (optional import)
+try:
+    from grainchain import langgraph  # noqa: F401
+
+    _LANGGRAPH_AVAILABLE = True
+except ImportError:
+    _LANGGRAPH_AVAILABLE = False
+
 __all__ = [
     "Sandbox",
     "SandboxConfig",
@@ -28,3 +36,7 @@ __all__ = [
     "TimeoutError",
     "AuthenticationError",
 ]
+
+# Add langgraph to __all__ if available
+if _LANGGRAPH_AVAILABLE:
+    __all__.append("langgraph")
