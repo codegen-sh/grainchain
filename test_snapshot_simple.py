@@ -1,25 +1,24 @@
 #!/usr/bin/env python3
 """
-E2B Snapshot Testing Script with Codegen Environment - Outline Setup
+E2B Custom Template Testing Script - Outline Setup with Pre-built Environment
 
 This script demonstrates:
-1. Custom E2B template based on codegen.Dockerfile with modern tooling
-2. Node.js 22, uv, comprehensive development environment
+1. Custom E2B template (codegen-dev-v2) with Node.js 20.18.0, uv, modern tooling
+2. Pre-installed development environment verification
 3. Repository cloning with streaming output
-4. Dependency installation (yarn install)
+4. Dependency installation using pre-built tools
 5. Trivial edits and snapshot simulation
 6. Sandbox lifecycle management with timing
 
 Usage: python test_snapshot_simple.py
 Requires: E2B_API_KEY environment variable
+Template: codegen-dev-v2 (custom-built with comprehensive dev environment)
 """
 
 import asyncio
 import os
 import sys
-import tempfile
 import time
-from pathlib import Path
 from typing import Optional
 
 try:
@@ -198,48 +197,41 @@ RUN export NVM_DIR="$HOME/.nvm" && \
 
 async def create_custom_template() -> Optional[str]:
     """Create custom E2B template with Codegen Dockerfile"""
-    print_step(1, "Creating Codegen-Based E2B Template", Colors.MAGENTA)
+    print_step(1, "Using Custom E2B Template", Colors.MAGENTA)
 
-    # Create temporary directory for template
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dockerfile_path = Path(temp_dir) / "e2b.Dockerfile"
+    # Use our built custom template
+    template_id = "codegen-dev-v2"
 
-        print_substep("Writing Codegen-inspired E2B Dockerfile")
-        with open(dockerfile_path, "w") as f:
-            f.write(create_codegen_e2b_dockerfile())
+    print_substep(f"Using custom E2B template: {template_id}")
+    print("🎯 Features: Node.js 20.18.0, uv, yarn, pnpm, typescript, dev tools")
+    print("✅ Template built with comprehensive codegen environment")
 
-        print_substep("Dockerfile created with Node.js 20 + uv + modern dev tools")
-        print(f"📁 Location: {dockerfile_path}")
-
-        # For this demo, we'll use the base template
-        # In practice, you'd run: e2b template build --name codegen-dev
-        print_substep("Using base template (will set up environment dynamically)")
-        print("💡 In practice, run: e2b template build --name codegen-dev")
-        print("🎯 Features: Node.js 20, uv, yarn, pnpm, typescript, dev tools")
-
-        return "base"  # Use base template for this demo
+    return template_id
 
 
 async def setup_modern_environment(sandbox) -> float:
-    """Set up modern development environment with Node.js 20 and tooling"""
-    print_step(2, "Setting Up Modern Development Environment", Colors.BLUE)
+    """Verify modern development environment pre-installed in custom template"""
+    print_step(2, "Verifying Pre-installed Development Environment", Colors.BLUE)
 
-    # Install NVM and Node.js 22 in the current session
+    # Verify Node.js 22 and tooling in the custom template
     setup_duration = await stream_command_output(
         sandbox,
         """
         export NVM_DIR="$HOME/.nvm" &&
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash &&
         source "$NVM_DIR/nvm.sh" &&
-        nvm install 20.18.0 &&
-        nvm use 20.18.0 &&
-        nvm alias default 20.18.0 &&
-        npm install -g yarn@latest pnpm@latest &&
+        echo "=== Pre-installed Environment Verification ===" &&
+        echo "Node.js version:" && node --version &&
+        echo "NPM version:" && npm --version &&
+        echo "Yarn version:" && yarn --version &&
+        echo "PNPM version:" && pnpm --version &&
+        echo "TypeScript version:" && npx tsc --version &&
+        echo "Python version:" && python3 --version &&
+        echo "UV version:" && uv --version &&
         mkdir -p ~/projects &&
-        echo "Modern environment ready!" &&
-        node --version && npm --version && yarn --version
+        echo "Custom template environment verified!" &&
+        echo "Working directory: $(pwd)"
         """,
-        "Modern tooling setup",
+        "Pre-installed environment verification",
     )
 
     return setup_duration
@@ -286,22 +278,23 @@ async def setup_outline_environment(sandbox, template_id: str) -> dict[str, floa
 
 
 async def install_dependencies_modern(sandbox) -> float:
-    """Install Outline dependencies with modern Node.js and Yarn"""
-    print_step(4, "Installing Dependencies with Modern Tooling", Colors.CYAN)
+    """Install Outline dependencies with pre-installed Node.js 22 and Yarn"""
+    print_step(4, "Installing Dependencies with Pre-installed Tooling", Colors.CYAN)
 
-    # Install dependencies with proper Node.js environment
+    # Install dependencies with pre-built Node.js environment
     install_duration = await stream_command_output(
         sandbox,
         """
         cd ~/projects/outline &&
         export NVM_DIR="$HOME/.nvm" &&
         source "$NVM_DIR/nvm.sh" &&
-        echo "Using Node.js version:" && node --version &&
-        echo "Using Yarn version:" && yarn --version &&
+        echo "Using pre-installed tools from custom template:" &&
+        echo "Node.js version:" && node --version &&
+        echo "Yarn version:" && yarn --version &&
         echo "Starting dependency installation..." &&
         yarn install --frozen-lockfile
         """,
-        "Yarn install with Node.js 20",
+        "Yarn install with pre-installed Node.js 22",
     )
 
     # Verify installation and show dependency stats
@@ -403,12 +396,12 @@ async def create_comprehensive_snapshot(sandbox, snapshot_name: str) -> float:
 
 
 async def main():
-    """Main execution flow for E2B Codegen snapshot testing"""
+    """Main execution flow for E2B custom template snapshot testing"""
     start_time = time.time()
 
     print(f"{Colors.WHITE}{'=' * 80}")
-    print("🚀 GRAINCHAIN E2B CODEGEN SNAPSHOT TESTING SUITE")
-    print("📦 Testing: Codegen Environment + Outline + Modern Tooling + Snapshots")
+    print("🚀 GRAINCHAIN E2B CUSTOM TEMPLATE SNAPSHOT TESTING SUITE")
+    print("📦 Testing: Custom Template (codegen-dev-v2) + Outline + Snapshots")
     print(f"{'=' * 80}{Colors.NC}")
 
     # Check E2B API key
@@ -441,11 +434,27 @@ async def main():
             },
         )
 
+        # Create E2B provider with our custom template
+        from grainchain.core.config import ProviderConfig
+        from grainchain.providers.e2b import E2BProvider
+
+        e2b_config = ProviderConfig(
+            name="e2b",
+            config={
+                "api_key": os.getenv("E2B_API_KEY"),
+                "template": template_id,  # Use our custom template
+            },
+        )
+
+        e2b_provider = E2BProvider(e2b_config)
+
         # Step 1: Create first sandbox with modern environment
-        print_step(7, "Creating E2B Sandbox with Codegen Environment", Colors.GREEN)
+        print_step(
+            7, f"Creating E2B Sandbox with Template: {template_id}", Colors.GREEN
+        )
         creation_start = time.time()
 
-        async with Sandbox(provider="e2b", config=config) as sandbox:
+        async with Sandbox(provider=e2b_provider, config=config) as sandbox:
             creation_duration = time.time() - creation_start
             timings["sandbox_creation"] = creation_duration
             print_timing("Sandbox creation", creation_duration)
@@ -479,7 +488,7 @@ async def main():
         print_step(9, "Creating New Sandbox from 'Snapshot'", Colors.GREEN)
 
         restore_start = time.time()
-        async with Sandbox(provider="e2b", config=config) as new_sandbox:
+        async with Sandbox(provider=e2b_provider, config=config) as new_sandbox:
             restore_duration = time.time() - restore_start
             timings["sandbox_restore"] = restore_duration
             print_timing("New sandbox creation", restore_duration)
