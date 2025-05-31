@@ -1,0 +1,38 @@
+{
+  "repo_name": "fastapi",
+  "repo_url": "https://github.com/tiangolo/fastapi.git",
+  "repo_branch": "master",
+  "language": "python",
+  "package_manager": "pip",
+  "install_command": "pip install -e .",
+  "test_command": "python -m pytest tests/ -x",
+  "base_image": "ghcr.io/openai/codex-universal:latest",
+  "container_name": "fastapi-benchmark",
+  "workspace_path": "/workspace",
+  "python_version": "3.12",
+  "benchmark_iterations": 3,
+  "trivial_changes": [
+    {
+      "type": "comment",
+      "file": "README.md",
+      "content": "# Benchmark test comment"
+    },
+    {
+      "type": "whitespace",
+      "file": "pyproject.toml",
+      "content": "\n"
+    },
+    {
+      "type": "log",
+      "file": "fastapi/__init__.py",
+      "content": "# Benchmark test log"
+    }
+  ],
+  "metrics": {
+    "collect_build_time": true,
+    "collect_memory_usage": true,
+    "collect_filesystem_stats": true,
+    "collect_network_stats": true,
+    "run_tests": true
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "repo_name": "outline",
+  "repo_url": "https://github.com/outline/outline.git",
+  "repo_branch": "main",
+  "language": "typescript",
+  "package_manager": "yarn",
+  "install_command": "yarn install --frozen-lockfile",
+  "test_command": "yarn test",
+  "base_image": "ghcr.io/openai/codex-universal:latest",
+  "container_name": "outline-benchmark",
+  "workspace_path": "/workspace",
+  "node_version": "20",
+  "python_version": "3.12",
+  "benchmark_iterations": 3,
+  "trivial_changes": [
+    {
+      "type": "comment",
+      "file": "README.md",
+      "content": "# Benchmark test comment"
+    },
+    {
+      "type": "whitespace",
+      "file": "package.json",
+      "content": "\n"
+    },
+    {
+      "type": "log",
+      "file": "app/index.js",
+      "content": "console.log('benchmark test');"
+    }
+  ],
+  "metrics": {
+    "collect_build_time": true,
+    "collect_memory_usage": true,
+    "collect_filesystem_stats": true,
+    "collect_network_stats": true,
+    "run_tests": true
+  }
+}
