@@ -3,11 +3,13 @@
 
 class GrainchainError(Exception):
     """Base exception for all Grainchain errors."""
+
     pass
 
 
 class SandboxError(GrainchainError):
     """Sandbox operation failed."""
+
     pass
 
 
@@ -22,6 +24,7 @@ class ProviderError(GrainchainError):
 
 class ConfigurationError(GrainchainError):
     """Configuration error."""
+
     pass
 
 
@@ -43,10 +46,11 @@ class AuthenticationError(GrainchainError):
 
 class ResourceError(GrainchainError):
     """Resource allocation or management error."""
+
     pass
 
 
 class NetworkError(GrainchainError):
     """Network-related error."""
-    pass
 
+    pass

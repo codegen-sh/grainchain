@@ -20,7 +20,7 @@ This document provides comprehensive instructions for running and understanding 
    ```bash
    # Copy the example environment file
    cp .env.example .env
-   
+
    # Edit .env with your API keys
    # For E2B: Set E2B_API_KEY
    # For Modal: Set MODAL_TOKEN_ID and MODAL_TOKEN_SECRET
@@ -38,7 +38,7 @@ make grainchain-benchmark
 # Test only local provider
 make grainchain-local
 
-# Test only E2B provider  
+# Test only E2B provider
 make grainchain-e2b
 
 # Test only Daytona provider
@@ -81,7 +81,7 @@ python benchmarks/scripts/grainchain_benchmark.py \
 Benchmark results are saved in `benchmarks/results/` in multiple formats:
 
 - **`latest_grainchain.json`** - Latest results in JSON format
-- **`latest_grainchain.md`** - Latest results in Markdown format  
+- **`latest_grainchain.md`** - Latest results in Markdown format
 - **`grainchain_benchmark_YYYYMMDD_HHMMSS.json`** - Timestamped JSON results
 - **`grainchain_benchmark_YYYYMMDD_HHMMSS.md`** - Timestamped Markdown reports
 
@@ -145,7 +145,7 @@ Set up your provider credentials:
 E2B_API_KEY=your_e2b_api_key_here
 E2B_TEMPLATE=base
 
-# Modal Provider  
+# Modal Provider
 MODAL_TOKEN_ID=your_modal_token_id_here
 MODAL_TOKEN_SECRET=your_modal_token_secret_here
 
@@ -167,7 +167,7 @@ Based on recent benchmark results:
 - 🚀 **Startup**: ~0.26s sandbox creation time
 - 💡 **Best for**: Production workloads requiring high reliability
 
-#### Local Provider  
+#### Local Provider
 - ⚠️ **Reliability**: 75% success rate (file operations failing)
 - ⚡ **Performance**: ~0.03s average execution time (43x faster)
 - 🚀 **Startup**: ~0.00s sandbox creation time (instant)
@@ -272,7 +272,7 @@ Set up cron job for regular benchmarking:
 ### Modifying Metrics
 
 1. **Update `_run_scenario`** method for new metrics collection
-2. **Modify `_aggregate_scenario_results`** for new aggregations  
+2. **Modify `_aggregate_scenario_results`** for new aggregations
 3. **Update report generation** in `_generate_markdown_report`
 4. **Test with sample runs** to verify output
 
@@ -295,7 +295,7 @@ Set up cron job for regular benchmarking:
 
 ---
 
-**Last Updated**: 2025-05-31  
-**Benchmark Version**: 1.0  
-**Supported Providers**: Local, E2B  
+**Last Updated**: 2025-05-31
+**Benchmark Version**: 1.0
+**Supported Providers**: Local, E2B
 **Future Providers**: Modal, Docker, AWS Lambda

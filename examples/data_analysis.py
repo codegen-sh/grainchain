@@ -222,9 +222,9 @@ print(report)
 
         # Download the report
         report_content = await sandbox.download_file("analysis_report.md")
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("DOWNLOADED REPORT:")
-        print("="*50)
+        print("=" * 50)
         print(report_content.decode())
     else:
         print(f"❌ Report generation failed: {result.stderr}")
@@ -235,7 +235,7 @@ print(report)
 async def data_analysis_workflow():
     """Complete data analysis workflow."""
     print("🔬 Starting Data Analysis Workflow with Grainchain")
-    print("="*60)
+    print("=" * 60)
 
     # Configure sandbox for data analysis
     config = SandboxConfig(
@@ -243,8 +243,8 @@ async def data_analysis_workflow():
         working_directory="/workspace",
         environment_vars={
             "PYTHONPATH": "/workspace",
-            "MPLBACKEND": "Agg"  # Use non-interactive matplotlib backend
-        }
+            "MPLBACKEND": "Agg",  # Use non-interactive matplotlib backend
+        },
     )
 
     try:
@@ -279,13 +279,14 @@ async def data_analysis_workflow():
     except Exception as e:
         print(f"\n❌ Workflow failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
 async def ai_code_execution_example():
     """Example of executing AI-generated code."""
     print("\n🤖 AI Code Execution Example")
-    print("="*40)
+    print("=" * 40)
 
     # Simulate AI-generated code for data processing
     ai_generated_code = """
@@ -349,4 +350,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-

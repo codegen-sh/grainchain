@@ -18,7 +18,7 @@ from pathlib import Path
 
 # Add the scripts directory to Python path
 sys.path.append(str(Path(__file__).parent))
-from benchmark_runner import BenchmarkRunner
+from benchmark_runner import BenchmarkRunner  # noqa: E402
 
 
 class AutoPublisher:
@@ -29,8 +29,7 @@ class AutoPublisher:
         self.results_dir = self.repo_root / "benchmarks" / "results"
 
         logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s'
+            level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
         )
         self.logger = logging.getLogger(__name__)
 
@@ -63,19 +62,23 @@ class AutoPublisher:
 
             # Configure git if needed
             subprocess.run(["git", "config", "user.name", "Benchmark Bot"], check=True)
-            subprocess.run(["git", "config", "user.email", "benchmark@grainchain.dev"], check=True)
+            subprocess.run(
+                ["git", "config", "user.email", "benchmark@grainchain.dev"], check=True
+            )
 
             # Add results files
             subprocess.run(["git", "add", "benchmarks/results/"], check=True)
 
             # Check if there are changes to commit
-            result = subprocess.run(["git", "diff", "--cached", "--quiet"], capture_output=True)
+            result = subprocess.run(
+                ["git", "diff", "--cached", "--quiet"], capture_output=True
+            )
             if result.returncode == 0:
                 self.logger.info("No new benchmark results to commit")
                 return True
 
             # Commit results
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             commit_message = f"📊 Automated benchmark results - {timestamp}"
             subprocess.run(["git", "commit", "-m", commit_message], check=True)
 
@@ -121,7 +124,7 @@ class AutoPublisher:
 
             # Save summary
             summary_file = self.results_dir / "SUMMARY.md"
-            with open(summary_file, 'w') as f:
+            with open(summary_file, "w") as f:
                 f.write(summary_md)
 
             self.logger.info(f"Summary report generated: {summary_file}")
@@ -133,7 +136,7 @@ class AutoPublisher:
         """Generate summary markdown from all results"""
         md_content = f"""# Outline Benchmark Summary
 
-**Last Updated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+**Last Updated:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 **Total Benchmark Runs:** {len(results)}
 
 ## Recent Results
@@ -156,7 +159,9 @@ class AutoPublisher:
 
             for snapshot in snapshots:
                 if "metrics" in snapshot and "performance" in snapshot["metrics"]:
-                    build_time = snapshot["metrics"]["performance"].get("build_time_seconds")
+                    build_time = snapshot["metrics"]["performance"].get(
+                        "build_time_seconds"
+                    )
                     if build_time and isinstance(build_time, (int, float)):
                         build_times.append(build_time)
 
@@ -165,12 +170,20 @@ class AutoPublisher:
                     if memory and isinstance(memory, (int, float)):
                         memory_usages.append(memory / 1024 / 1024)  # Convert to MB
 
-            avg_build = round(sum(build_times) / len(build_times), 2) if build_times else "N/A"
-            avg_memory = round(sum(memory_usages) / len(memory_usages), 2) if memory_usages else "N/A"
+            avg_build = (
+                round(sum(build_times) / len(build_times), 2) if build_times else "N/A"
+            )
+            avg_memory = (
+                round(sum(memory_usages) / len(memory_usages), 2)
+                if memory_usages
+                else "N/A"
+            )
 
             notes = "Failed" if result.get("status") != "completed" else "OK"
 
-            md_content += f"| {date} | {status} | {avg_build} | {avg_memory} | {notes} |\n"
+            md_content += (
+                f"| {date} | {status} | {avg_build} | {avg_memory} | {notes} |\n"
+            )
 
         md_content += """
 ## Configuration
@@ -202,8 +215,12 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Automated benchmark publishing")
-    parser.add_argument("--run-benchmark", action="store_true", help="Run benchmark and publish results")
-    parser.add_argument("--generate-summary", action="store_true", help="Generate summary report only")
+    parser.add_argument(
+        "--run-benchmark", action="store_true", help="Run benchmark and publish results"
+    )
+    parser.add_argument(
+        "--generate-summary", action="store_true", help="Generate summary report only"
+    )
     args = parser.parse_args()
 
     publisher = AutoPublisher()
@@ -221,4 +238,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

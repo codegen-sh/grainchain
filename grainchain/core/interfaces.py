@@ -9,6 +9,7 @@ from typing import Optional, Union
 
 class SandboxStatus(Enum):
     """Sandbox status enumeration."""
+
     CREATING = "creating"
     RUNNING = "running"
     STOPPED = "stopped"
@@ -19,6 +20,7 @@ class SandboxStatus(Enum):
 @dataclass
 class ExecutionResult:
     """Result of command execution in a sandbox."""
+
     stdout: str
     stderr: str
     return_code: int
@@ -45,6 +47,7 @@ class ExecutionResult:
 @dataclass
 class FileInfo:
     """Information about a file in the sandbox."""
+
     path: str
     name: str
     size: int
@@ -61,6 +64,7 @@ class FileInfo:
 @dataclass
 class SandboxConfig:
     """Configuration for sandbox creation and management."""
+
     # Resource limits
     timeout: Optional[int] = 300  # seconds
     memory_limit: Optional[str] = None  # e.g., "2GB"
@@ -131,17 +135,14 @@ class SandboxSession(ABC):
         command: str,
         timeout: Optional[int] = None,
         working_dir: Optional[str] = None,
-        environment: Optional[dict[str, str]] = None
+        environment: Optional[dict[str, str]] = None,
     ) -> ExecutionResult:
         """Execute a command in the sandbox."""
         pass
 
     @abstractmethod
     async def upload_file(
-        self,
-        path: str,
-        content: Union[str, bytes],
-        mode: str = "w"
+        self, path: str, content: Union[str, bytes], mode: str = "w"
     ) -> None:
         """Upload a file to the sandbox."""
         pass
@@ -178,4 +179,3 @@ class SandboxSession(ABC):
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         """Async context manager exit."""
         await self.close()
-

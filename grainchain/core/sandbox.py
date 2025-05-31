@@ -28,7 +28,7 @@ class Sandbox:
     def __init__(
         self,
         provider: Optional[Union[str, SandboxProvider]] = None,
-        config: Optional[SandboxConfig] = None
+        config: Optional[SandboxConfig] = None,
     ):
         """
         Initialize a new Sandbox instance.
@@ -43,7 +43,9 @@ class Sandbox:
         self._session: Optional[SandboxSession] = None
         self._closed = False
 
-    def _resolve_provider(self, provider: Optional[Union[str, SandboxProvider]]) -> SandboxProvider:
+    def _resolve_provider(
+        self, provider: Optional[Union[str, SandboxProvider]]
+    ) -> SandboxProvider:
         """Resolve provider from string name or return provider instance."""
         if provider is None:
             provider_name = self._config_manager.default_provider
@@ -61,15 +63,19 @@ class Sandbox:
 
         if provider_name == "e2b":
             from grainchain.providers.e2b import E2BProvider
+
             return E2BProvider(provider_config)
         elif provider_name == "modal":
             from grainchain.providers.modal import ModalProvider
+
             return ModalProvider(provider_config)
         elif provider_name == "daytona":
             from grainchain.providers.daytona import DaytonaProvider
+
             return DaytonaProvider(provider_config)
         elif provider_name == "local":
             from grainchain.providers.local import LocalProvider
+
             return LocalProvider(provider_config)
         else:
             raise ConfigurationError(f"Unknown provider: {provider_name}")
@@ -81,7 +87,9 @@ class Sandbox:
 
         try:
             self._session = await self._provider.create_sandbox(self._config)
-            logger.info(f"Created sandbox {self._session.sandbox_id} using provider {self._provider.name}")
+            logger.info(
+                f"Created sandbox {self._session.sandbox_id} using provider {self._provider.name}"
+            )
             return self
         except Exception as e:
             logger.error(f"Failed to create sandbox: {e}")
@@ -106,7 +114,9 @@ class Sandbox:
     def _ensure_session(self) -> SandboxSession:
         """Ensure we have an active session."""
         if self._session is None:
-            raise SandboxError("Sandbox session not initialized. Use 'async with Sandbox()' or call create() first.")
+            raise SandboxError(
+                "Sandbox session not initialized. Use 'async with Sandbox()' or call create() first."
+            )
         return self._session
 
     async def create(self) -> "Sandbox":
@@ -115,7 +125,9 @@ class Sandbox:
             raise SandboxError("Sandbox session already exists")
 
         self._session = await self._provider.create_sandbox(self._config)
-        logger.info(f"Created sandbox {self._session.sandbox_id} using provider {self._provider.name}")
+        logger.info(
+            f"Created sandbox {self._session.sandbox_id} using provider {self._provider.name}"
+        )
         return self
 
     async def execute(
@@ -123,7 +135,7 @@ class Sandbox:
         command: str,
         timeout: Optional[int] = None,
         working_dir: Optional[str] = None,
-        environment: Optional[dict[str, str]] = None
+        environment: Optional[dict[str, str]] = None,
     ) -> ExecutionResult:
         """
         Execute a command in the sandbox.
@@ -147,19 +159,18 @@ class Sandbox:
                 command=command,
                 timeout=effective_timeout,
                 working_dir=working_dir,
-                environment=environment
+                environment=environment,
             )
-            logger.debug(f"Executed command '{command}' with return code {result.return_code}")
+            logger.debug(
+                f"Executed command '{command}' with return code {result.return_code}"
+            )
             return result
         except Exception as e:
             logger.error(f"Command execution failed: {e}")
             raise SandboxError(f"Command execution failed: {e}") from e
 
     async def upload_file(
-        self,
-        path: str,
-        content: Union[str, bytes],
-        mode: str = "w"
+        self, path: str, content: Union[str, bytes], mode: str = "w"
     ) -> None:
         """
         Upload a file to the sandbox.

@@ -8,7 +8,7 @@ from typing import Optional
 def setup_logging(
     level: str = "INFO",
     format_string: Optional[str] = None,
-    include_timestamp: bool = True
+    include_timestamp: bool = True,
 ) -> None:
     """
     Set up logging for Grainchain.
@@ -25,9 +25,7 @@ def setup_logging(
             format_string = "%(name)s - %(levelname)s - %(message)s"
 
     logging.basicConfig(
-        level=getattr(logging, level.upper()),
-        format=format_string,
-        stream=sys.stdout
+        level=getattr(logging, level.upper()), format=format_string, stream=sys.stdout
     )
 
     # Set specific loggers to appropriate levels
@@ -49,4 +47,3 @@ def get_logger(name: str) -> logging.Logger:
         Logger instance
     """
     return logging.getLogger(name)
-

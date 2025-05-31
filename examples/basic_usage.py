@@ -63,7 +63,7 @@ async def configuration_example():
         timeout=60,
         working_directory="/tmp",
         environment_vars={"MY_VAR": "test_value"},
-        auto_cleanup=True
+        auto_cleanup=True,
     )
 
     async with Sandbox(provider="local", config=config) as sandbox:
@@ -143,9 +143,9 @@ async def main():
     except Exception as e:
         print(f"\n❌ Example failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-

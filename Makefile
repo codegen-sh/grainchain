@@ -44,8 +44,8 @@ dev-benchmark: ## Run benchmark with development settings
 	python benchmarks/scripts/benchmark_runner.py --config benchmarks/configs/default.json --output-dir benchmarks/results/dev
 
 lint: ## Lint Python code
-	python -m flake8 benchmarks/scripts/ --max-line-length=120 --ignore=E501,W503
+	python -m ruff check benchmarks/scripts/
 
 format: ## Format Python code
-	python -m black benchmarks/scripts/
-
+	python -m ruff check --fix benchmarks/scripts/
+	python -m ruff format benchmarks/scripts/

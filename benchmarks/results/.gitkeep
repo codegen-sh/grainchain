@@ -1,3 +1,2 @@
 # This file ensures the results directory is tracked in git
 # Actual benchmark results are ignored by .gitignore but this structure is preserved
-

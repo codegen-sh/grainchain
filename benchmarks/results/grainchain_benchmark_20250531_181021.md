@@ -1,9 +1,9 @@
 # Grainchain Provider Benchmark Report
 
-**Generated:** 2025-05-31T18:10:10.548207  
-**Duration:** 11.21 seconds  
-**Providers Tested:** local, e2b  
-**Test Scenarios:** 4  
+**Generated:** 2025-05-31T18:10:10.548207
+**Duration:** 11.21 seconds
+**Providers Tested:** local, e2b
+**Test Scenarios:** 4
 
 ## Executive Summary
 

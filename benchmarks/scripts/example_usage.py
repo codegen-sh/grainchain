@@ -11,7 +11,7 @@ from pathlib import Path
 
 # Add the scripts directory to Python path
 sys.path.append(str(Path(__file__).parent))
-from benchmark_runner import BenchmarkRunner
+from benchmark_runner import BenchmarkRunner  # noqa: E402
 
 
 def example_basic_benchmark():
@@ -29,8 +29,17 @@ def example_basic_benchmark():
         if snapshots:
             baseline = snapshots[0]
             if "metrics" in baseline:
-                build_time = baseline["metrics"].get("performance", {}).get("build_time_seconds", "N/A")
-                memory_mb = round(baseline["metrics"].get("container", {}).get("memory_usage", 0) / 1024 / 1024, 2)
+                build_time = (
+                    baseline["metrics"]
+                    .get("performance", {})
+                    .get("build_time_seconds", "N/A")
+                )
+                memory_mb = round(
+                    baseline["metrics"].get("container", {}).get("memory_usage", 0)
+                    / 1024
+                    / 1024,
+                    2,
+                )
                 print(f"📊 Baseline build time: {build_time}s")
                 print(f"💾 Baseline memory usage: {memory_mb}MB")
 
@@ -53,15 +62,16 @@ def example_custom_config():
             {
                 "type": "comment",
                 "file": "README.md",
-                "content": "# Custom benchmark comment"
+                "content": "# Custom benchmark comment",
             }
-        ]
+        ],
     }
 
     # Save custom config
     config_path = "benchmarks/configs/example.json"
     import json
-    with open(config_path, 'w') as f:
+
+    with open(config_path, "w") as f:
         json.dump(custom_config, f, indent=2)
 
     # Run with custom config
@@ -112,9 +122,15 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Benchmark usage examples")
-    parser.add_argument("--basic", action="store_true", help="Run basic benchmark example")
-    parser.add_argument("--custom", action="store_true", help="Run custom config example")
-    parser.add_argument("--snapshot", action="store_true", help="Run snapshot-only example")
+    parser.add_argument(
+        "--basic", action="store_true", help="Run basic benchmark example"
+    )
+    parser.add_argument(
+        "--custom", action="store_true", help="Run custom config example"
+    )
+    parser.add_argument(
+        "--snapshot", action="store_true", help="Run snapshot-only example"
+    )
     parser.add_argument("--all", action="store_true", help="Run all examples")
 
     args = parser.parse_args()
@@ -141,4 +157,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

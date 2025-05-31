@@ -70,13 +70,13 @@ async with Sandbox() as sandbox:
     # Execute code
     result = await sandbox.execute("print('Hello, World!')")
     print(result.stdout)  # "Hello, World!"
-    
+
     # Upload files
     await sandbox.upload_file("script.py", content="print('uploaded')")
-    
+
     # Execute uploaded file
     result = await sandbox.execute("python script.py")
-    
+
     # Download files
     content = await sandbox.download_file("output.txt")
 ```
@@ -90,7 +90,7 @@ from grainchain.providers import E2BProvider, ModalProvider
 # Use specific provider
 async with Sandbox(provider=E2BProvider()) as sandbox:
     result = await sandbox.execute("pip install numpy")
-    
+
 # Or configure via string
 async with Sandbox(provider="modal") as sandbox:
     result = await sandbox.execute("echo 'Using Modal'")
@@ -127,41 +127,41 @@ async with Sandbox(provider=provider, config=config) as sandbox:
 ```python
 class Sandbox:
     """Main sandbox interface"""
-    
+
     async def __aenter__(self) -> 'Sandbox':
         """Async context manager entry"""
-        
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit"""
-        
+
     async def execute(
-        self, 
-        command: str, 
+        self,
+        command: str,
         timeout: Optional[int] = None,
         working_dir: Optional[str] = None
     ) -> ExecutionResult:
         """Execute a command in the sandbox"""
-        
+
     async def upload_file(
-        self, 
-        path: str, 
+        self,
+        path: str,
         content: Union[str, bytes],
         mode: str = "w"
     ) -> None:
         """Upload a file to the sandbox"""
-        
+
     async def download_file(self, path: str) -> bytes:
         """Download a file from the sandbox"""
-        
+
     async def list_files(self, path: str = "/") -> List[FileInfo]:
         """List files in the sandbox"""
-        
+
     async def create_snapshot(self) -> str:
         """Create a snapshot of the current sandbox state"""
-        
+
     async def restore_snapshot(self, snapshot_id: str) -> None:
         """Restore sandbox to a previous snapshot"""
-        
+
     @property
     def status(self) -> SandboxStatus:
         """Get current sandbox status"""
@@ -178,7 +178,7 @@ class ExecutionResult:
     return_code: int
     execution_time: float
     success: bool
-    
+
     @property
     def output(self) -> str:
         """Combined stdout and stderr"""
@@ -235,7 +235,7 @@ providers:
     api_key: ${E2B_API_KEY}
     template: python-data-science
     timeout: 300
-    
+
   modal:
     token_id: ${MODAL_TOKEN_ID}
     token_secret: ${MODAL_TOKEN_SECRET}
@@ -375,4 +375,3 @@ grainchain/
 ---
 
 This design document serves as the foundation for building Grainchain. It will be updated as the project evolves and new requirements emerge.
-

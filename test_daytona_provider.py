@@ -14,21 +14,20 @@ async def test_daytona_provider():
     """Test basic Daytona provider functionality"""
 
     # Set up configuration with the provided API key
-    config = ProviderConfig({
-        "api_key": "dtn_7ff34af9c746f96e2f43ffe698e0b97af87bb5cc47b2376a1873935ac12f416a",
-        "api_url": "https://api.daytona.io",
-        "target": "us"
-    })
+    config = ProviderConfig(
+        {
+            "api_key": "dtn_7ff34af9c746f96e2f43ffe698e0b97af87bb5cc47b2376a1873935ac12f416a",
+            "api_url": "https://api.daytona.io",
+            "target": "us",
+        }
+    )
 
     # Create provider
     provider = DaytonaProvider(config)
     print(f"✅ Created Daytona provider: {provider.name}")
 
     # Create sandbox configuration
-    sandbox_config = SandboxConfig(
-        timeout=60,
-        working_directory="/workspace"
-    )
+    sandbox_config = SandboxConfig(timeout=60, working_directory="/workspace")
 
     try:
         # Create sandbox session
@@ -45,7 +44,9 @@ async def test_daytona_provider():
 
         # Test Python execution
         print("🐍 Testing Python execution...")
-        result = await session.execute("python3 -c \"print('Python works in Daytona!')\"")
+        result = await session.execute(
+            "python3 -c \"print('Python works in Daytona!')\""
+        )
         print(f"✅ Python result: {result.stdout.strip()}")
 
         # Test file operations
@@ -71,12 +72,13 @@ async def test_daytona_provider():
     except Exception as e:
         print(f"❌ Test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
     return True
 
+
 if __name__ == "__main__":
     success = asyncio.run(test_daytona_provider())
     exit(0 if success else 1)
-

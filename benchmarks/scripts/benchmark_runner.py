@@ -174,12 +174,12 @@ class BenchmarkRunner:
                 "cpu_usage": stats["cpu_stats"]["cpu_usage"]["total_usage"],
                 "memory_usage": stats["memory_stats"]["usage"],
                 "memory_limit": stats["memory_stats"]["limit"],
-                "network_rx": stats["networks"]["eth0"]["rx_bytes"]
-                if "networks" in stats
-                else 0,
-                "network_tx": stats["networks"]["eth0"]["tx_bytes"]
-                if "networks" in stats
-                else 0,
+                "network_rx": (
+                    stats["networks"]["eth0"]["rx_bytes"] if "networks" in stats else 0
+                ),
+                "network_tx": (
+                    stats["networks"]["eth0"]["tx_bytes"] if "networks" in stats else 0
+                ),
             }
 
             # File system metrics
@@ -198,9 +198,9 @@ class BenchmarkRunner:
             )
             if result.exit_code == 0:
                 size_output = result.output.decode().strip()
-                snapshot["metrics"]["filesystem"]["node_modules_size"] = (
-                    size_output.split()[0]
-                )
+                snapshot["metrics"]["filesystem"][
+                    "node_modules_size"
+                ] = size_output.split()[0]
 
             # Package count
             result = self.container.exec_run(
@@ -224,9 +224,9 @@ class BenchmarkRunner:
             }
 
             if result.exit_code != 0:
-                snapshot["metrics"]["performance"]["build_error"] = (
-                    result.output.decode()
-                )
+                snapshot["metrics"]["performance"][
+                    "build_error"
+                ] = result.output.decode()
 
             # Test run time (if tests exist)
             start_time = time.time()

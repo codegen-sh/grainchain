@@ -265,4 +265,3 @@ The HTML and Markdown report templates can be customized by modifying:
 ## 📄 License
 
 This benchmarking infrastructure is part of the grainchain project and follows the same licensing terms.
-

@@ -62,6 +62,8 @@ Grainchain solves these problems with a unified interface that abstracts provide
 
 ## 📦 Installation
 
+### For Users
+
 ```bash
 # Basic installation
 pip install grainchain
@@ -74,6 +76,24 @@ pip install grainchain[daytona]
 
 # With all providers
 pip install grainchain[all]
+```
+
+### For Development
+
+```bash
+# Clone the repository
+git clone https://github.com/codegen-sh/grainchain.git
+cd grainchain
+
+# Set up development environment with uv
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install all dependencies (including dev tools)
+uv sync --all-extras
+
+# Install pre-commit hooks
+grainchain install-hooks
 ```
 
 ## 🔧 Supported Providers
@@ -219,28 +239,62 @@ Check out the [examples](./examples/) directory for comprehensive usage examples
 
 ## 🛠️ Development
 
-### Setup
+### Development Workflow
 
 ```bash
-git clone https://github.com/codegen-sh/grainchain.git
-cd grainchain
-pip install -e ".[dev]"
+# Set up development environment
+uv venv
+source .venv/bin/activate
+uv sync --all-extras
+
+# Install pre-commit hooks
+grainchain install-hooks
+
+# Run tests
+grainchain test
+
+# Run tests with coverage
+grainchain test --cov
+
+# Format and fix code
+grainchain format
+
+# Lint code
+grainchain lint --fix
+
+# Type check (currently disabled)
+grainchain typecheck
+
+# Run all quality checks
+grainchain check
+
+# Run benchmarks
+grainchain benchmark --provider local
 ```
 
-### Running Tests
+### CLI Commands
+
+Grainchain includes a comprehensive CLI for development:
 
 ```bash
-pytest
+grainchain --help              # Show all commands
+grainchain test               # Run pytest
+grainchain test --cov         # Run tests with coverage
+grainchain lint               # Run ruff linting
+grainchain format             # Format with ruff
+grainchain typecheck          # Type checking (temporarily disabled)
+grainchain benchmark          # Run performance benchmarks
+grainchain install-hooks      # Install pre-commit hooks
+grainchain check             # Run all quality checks
 ```
 
 ### Code Quality
 
-```bash
-black grainchain/
-isort grainchain/
-mypy grainchain/
-ruff grainchain/
-```
+All code is automatically checked with:
+
+- **Ruff** - Fast Python linting, formatting, and import sorting
+- **mypy** - Static type checking (temporarily disabled)
+- **Pre-commit hooks** - Automated quality checks
 
 ## 🗺️ Roadmap
 
@@ -273,9 +327,10 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+3. Set up development environment: `uv sync --all-extras`
+4. Make your changes
+5. Run quality checks: `grainchain check`
+6. Submit a pull request
 
 ## 📄 License
 

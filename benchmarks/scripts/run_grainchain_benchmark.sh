@@ -57,7 +57,7 @@ if [ $? -eq 0 ]; then
     echo -e "${GREEN}🎉 Benchmark completed successfully!${NC}"
     echo -e "${BLUE}📁 Results saved to: benchmarks/results/${NC}"
     echo ""
-    
+
     # Show latest results if available
     if [ -f "benchmarks/results/latest_grainchain.md" ]; then
         echo -e "${BLUE}📈 Latest Results Summary:${NC}"
@@ -70,4 +70,3 @@ else
     echo -e "${RED}❌ Benchmark failed!${NC}"
     exit 1
 fi
-
