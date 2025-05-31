@@ -251,20 +251,25 @@ class Sandbox:
             raise SandboxError(f"Snapshot creation failed: {e}") from e
 
     async def restore_snapshot(self, snapshot_id: str) -> None:
-        """
-        Restore sandbox to a previous snapshot.
-
-        Args:
-            snapshot_id: ID of snapshot to restore
-        """
-        session = self._ensure_session()
-
+        """Restore sandbox to a previous snapshot."""
         try:
-            await session.restore_snapshot(snapshot_id)
-            logger.info(f"Restored snapshot {snapshot_id}")
+            await self._session.restore_snapshot(snapshot_id)
         except Exception as e:
-            logger.error(f"Snapshot restoration failed: {e}")
             raise SandboxError(f"Snapshot restoration failed: {e}") from e
+
+    async def terminate(self) -> None:
+        """Terminate the sandbox while preserving snapshots."""
+        try:
+            await self._session.terminate()
+        except Exception as e:
+            raise SandboxError(f"Sandbox termination failed: {e}") from e
+
+    async def wake_up(self, snapshot_id: Optional[str] = None) -> None:
+        """Wake up a terminated sandbox, optionally from a specific snapshot."""
+        try:
+            await self._session.wake_up(snapshot_id)
+        except Exception as e:
+            raise SandboxError(f"Sandbox wake up failed: {e}") from e
 
     @property
     def status(self) -> SandboxStatus:

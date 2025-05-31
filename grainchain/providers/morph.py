@@ -16,8 +16,8 @@ from grainchain.core.interfaces import (
 from grainchain.providers.base import BaseSandboxProvider, BaseSandboxSession
 
 try:
+    from morphcloud.api import ApiError as MorphApiError
     from morphcloud.api import MorphCloudClient
-    from morphcloud.exceptions import AuthenticationError as MorphAuthError
 
     MORPH_AVAILABLE = True
 except ImportError:
@@ -85,7 +85,7 @@ class MorphProvider(BaseSandboxProvider):
 
             return session
 
-        except MorphAuthError as e:
+        except MorphApiError as e:
             raise AuthenticationError(
                 f"Morph authentication failed: {e}", self.name
             ) from e
@@ -294,35 +294,30 @@ class MorphSandboxSession(BaseSandboxSession):
             ) from e
 
     async def create_snapshot(self) -> str:
-        """Create a snapshot of the current Morph sandbox state."""
-        self._ensure_not_closed()
-
+        """Create a snapshot of the current sandbox state."""
         try:
-            # Use Morph's instance snapshot functionality
+            # Create snapshot from current instance
             loop = asyncio.get_event_loop()
             snapshot = await loop.run_in_executor(
-                None, lambda: self._provider.client.instances.snapshot(self.instance.id)
+                None,
+                lambda: self.instance.snapshot(
+                    digest=f"grainchain-snapshot-{uuid.uuid4().hex[:8]}"
+                ),
             )
-
             return snapshot.id
-
         except Exception as e:
             raise ProviderError(
-                f"Snapshot creation failed: {e}", self._provider.name, e
+                f"Morph snapshot creation failed: {e}", self._provider.name, e
             ) from e
 
     async def restore_snapshot(self, snapshot_id: str) -> None:
-        """Restore Morph sandbox to a previous snapshot."""
-        self._ensure_not_closed()
-
+        """Restore sandbox to a previous snapshot state."""
         try:
             # Stop current instance
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(
-                None, lambda: self._provider.client.instances.stop(self.instance.id)
-            )
+            await self.terminate()
 
             # Start new instance from snapshot
+            loop = asyncio.get_event_loop()
             new_instance = await loop.run_in_executor(
                 None,
                 lambda: self._provider.client.instances.start(snapshot_id=snapshot_id),
@@ -330,12 +325,55 @@ class MorphSandboxSession(BaseSandboxSession):
 
             # Update our instance reference
             self.instance = new_instance
-            self._sandbox_id = new_instance.id
+            self._sandbox_id = new_instance.id  # Update the internal sandbox ID
             self._ssh_connection = None  # Reset SSH connection
+            self._set_status(SandboxStatus.RUNNING)
 
         except Exception as e:
             raise ProviderError(
-                f"Snapshot restoration failed: {e}", self._provider.name, e
+                f"Morph snapshot restoration failed: {e}", self._provider.name, e
+            ) from e
+
+    async def terminate(self) -> None:
+        """Terminate the sandbox while preserving snapshots."""
+        try:
+            if self.status == SandboxStatus.RUNNING:
+                # Close SSH connection
+                if self._ssh_connection:
+                    self._ssh_connection.close()
+                    self._ssh_connection = None
+
+                # Stop the instance
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(
+                    None, lambda: self._provider.client.instances.stop(self.instance.id)
+                )
+
+                self._set_status(SandboxStatus.STOPPED)
+
+        except Exception as e:
+            raise ProviderError(
+                f"Morph sandbox termination failed: {e}", self._provider.name, e
+            ) from e
+
+    async def wake_up(self, snapshot_id: Optional[str] = None) -> None:
+        """Wake up a terminated sandbox, optionally from a specific snapshot."""
+        try:
+            if snapshot_id:
+                # Start from specific snapshot
+                await self.restore_snapshot(snapshot_id)
+            else:
+                # For Morph, we can't just "wake up" an instance - we need to start from a snapshot
+                # This is because Morph's architecture is snapshot-based
+                raise ProviderError(
+                    "Morph requires a snapshot_id to wake up. Use wake_up(snapshot_id) instead.",
+                    self._provider.name,
+                    None,
+                )
+
+        except Exception as e:
+            raise ProviderError(
+                f"Morph sandbox wake up failed: {e}", self._provider.name, e
             ) from e
 
     async def _cleanup(self) -> None:

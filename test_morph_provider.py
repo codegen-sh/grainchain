@@ -1,78 +1,79 @@
 #!/usr/bin/env python3
 """
-Simple test script for Morph provider
+Test script for Morph provider functionality.
 """
 
 import asyncio
+import os
 
-from grainchain.core.config import ProviderConfig
 from grainchain.core.interfaces import SandboxConfig
-from grainchain.providers.morph import MorphProvider
+from grainchain.core.sandbox import Sandbox
 
 
 async def test_morph_provider():
     """Test basic Morph provider functionality"""
 
-    # Set up configuration with the provided API key
-    config = ProviderConfig(
-        {
-            "api_key": "morph_FtaB080sGdGQKcpvNWUSkw",
-            "image_id": "morphvm-minimal",  # Use minimal image for faster testing
-            "vcpus": 1,
-            "memory": 1024,  # 1GB
-            "disk_size": 8192,  # 8GB
-        }
-    )
+    # Make sure API key is set
+    if not os.getenv("MORPH_API_KEY"):
+        print("❌ MORPH_API_KEY environment variable not set")
+        return False
 
-    # Create provider
-    provider = MorphProvider(config)
-    print(f"✅ Created Morph provider: {provider.name}")
-
-    # Create sandbox configuration
-    sandbox_config = SandboxConfig(timeout=60, working_directory="~")
+    print("🚀 Testing Morph provider...")
 
     try:
-        # Create sandbox session
-        print("🚀 Creating Morph sandbox...")
-        session = await provider.create_sandbox(sandbox_config)
-        print(f"✅ Created sandbox: {session.sandbox_id}")
+        # Create sandbox config
+        config = SandboxConfig(
+            timeout=300,
+            provider_config={
+                "image_id": "morphvm-minimal",  # Use minimal image for faster testing
+                "vcpus": 1,
+                "memory": 1024,  # 1GB
+                "disk_size": 8192,  # 8GB
+            },
+        )
 
-        # Test basic command execution
-        print("🔧 Testing command execution...")
-        result = await session.execute("echo 'Hello from Morph!'")
-        print(f"✅ Command result: {result.stdout.strip()}")
-        print(f"   Return code: {result.return_code}")
-        print(f"   Success: {result.success}")
+        # Create sandbox using the factory (this will use environment variables)
+        async with Sandbox(provider="morph", config=config) as sandbox:
+            print(f"✅ Created Morph sandbox: {sandbox.sandbox_id}")
 
-        # Test Python execution
-        print("🐍 Testing Python execution...")
-        result = await session.execute("python3 -c \"print('Python works in Morph!')\"")
-        print(f"✅ Python result: {result.stdout.strip()}")
+            # Test basic command execution
+            print("🔧 Testing command execution...")
+            result = await sandbox.execute("echo 'Hello from Morph!'")
+            print(f"✅ Command result: {result.stdout.strip()}")
+            print(f"   Return code: {result.return_code}")
+            print(f"   Success: {result.success}")
 
-        # Test file operations
-        print("📁 Testing file operations...")
-        await session.upload_file("/tmp/test.txt", "Hello Morph from Grainchain!")
-        result = await session.execute("cat /tmp/test.txt")
-        print(f"✅ File content: {result.stdout.strip()}")
+            # Test Python execution
+            print("🐍 Testing Python execution...")
+            result = await sandbox.execute(
+                "python3 -c \"print('Python works in Morph!')\""
+            )
+            print(f"✅ Python result: {result.stdout.strip()}")
 
-        # Test file listing
-        print("📋 Testing file listing...")
-        files = await session.list_files("/tmp")
-        test_files = [f for f in files if f.name == "test.txt"]
-        if test_files:
-            print(f"✅ Found test file: {test_files[0].name}")
+            # Test file operations
+            print("📁 Testing file operations...")
+            await sandbox.upload_file("/tmp/test.txt", "Hello Morph from Grainchain!")
+            result = await sandbox.execute("cat /tmp/test.txt")
+            print(f"✅ File content: {result.stdout.strip()}")
 
-        # Test snapshot functionality (key feature of Morph)
-        print("📸 Testing snapshot creation...")
-        snapshot_id = await session.create_snapshot()
-        print(f"✅ Created snapshot: {snapshot_id}")
+            # Test file listing
+            print("📋 Testing file listing...")
+            files = await sandbox.list_files("/tmp")
+            test_files = [f for f in files if f.name == "test.txt"]
+            if test_files:
+                print(f"✅ Found test file: {test_files[0].name}")
 
-        # Clean up
-        print("🧹 Cleaning up...")
-        await session.close()
-        print("✅ Session closed successfully")
+            # Test snapshot functionality (key feature of Morph)
+            print("📸 Testing snapshot creation...")
+            snapshot_id = await sandbox.create_snapshot()
+            print(f"✅ Created snapshot: {snapshot_id}")
 
-        print("\n🎉 All tests passed! Morph provider is working correctly.")
+            # Clean up
+            print("🧹 Cleaning up...")
+            await sandbox.close()
+            print("✅ Session closed successfully")
+
+            print("\n🎉 All tests passed! Morph provider is working correctly.")
 
     except Exception as e:
         print(f"❌ Test failed: {e}")
