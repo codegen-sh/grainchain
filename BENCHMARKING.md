@@ -297,5 +297,5 @@ Set up cron job for regular benchmarking:
 
 **Last Updated**: 2025-05-31  
 **Benchmark Version**: 1.0  
-**Supported Providers**: Local, E2B  
+**Supported Providers**: Local, E2B, Daytona  
 **Future Providers**: Modal, Docker, AWS Lambda
