@@ -5,9 +5,12 @@ import yaml
 from pathlib import Path
 from typing import Dict, Any, Optional, Union
 from dataclasses import dataclass, field
+from dotenv import load_dotenv
 
 from grainchain.core.exceptions import ConfigurationError
 
+# Load environment variables from .env file
+load_dotenv()
 
 @dataclass
 class ProviderConfig:
@@ -163,4 +166,3 @@ def set_config_manager(config_manager: ConfigManager) -> None:
     """Set the global configuration manager instance."""
     global _config_manager
     _config_manager = config_manager
-

@@ -10,8 +10,8 @@ from grainchain.core.exceptions import ProviderError, AuthenticationError
 from grainchain.providers.base import BaseSandboxProvider, BaseSandboxSession
 
 try:
-    from e2b import Sandbox as E2BSandbox
-    from e2b.exceptions import E2BError, AuthenticationError as E2BAuthError
+    from e2b import AsyncSandbox as E2BSandbox
+    from e2b.exceptions import SandboxException as E2BError, AuthenticationException as E2BAuthError
     E2B_AVAILABLE = True
 except ImportError:
     E2B_AVAILABLE = False
@@ -42,7 +42,7 @@ class E2BProvider(BaseSandboxProvider):
     async def _create_session(self, config: SandboxConfig) -> "E2BSandboxSession":
         """Create a new E2B sandbox session."""
         try:
-            # Create E2B sandbox
+            # Create E2B sandbox using the create() class method
             e2b_sandbox = await E2BSandbox.create(
                 template=self.template,
                 api_key=self.api_key,
@@ -50,7 +50,7 @@ class E2BProvider(BaseSandboxProvider):
             )
             
             session = E2BSandboxSession(
-                sandbox_id=e2b_sandbox.id,
+                sandbox_id=e2b_sandbox.sandbox_id,
                 provider=self,
                 config=config,
                 e2b_sandbox=e2b_sandbox
@@ -87,31 +87,16 @@ class E2BSandboxSession(BaseSandboxSession):
         environment: Optional[Dict[str, str]] = None
     ) -> ExecutionResult:
         """Execute a command in the E2B sandbox."""
-        self._ensure_not_closed()
-        
+        import time
         start_time = time.time()
         
         try:
-            # Set working directory if specified
-            if working_dir:
-                await self.e2b_sandbox.filesystem.write(
-                    f"/tmp/grainchain_workdir", 
-                    working_dir
-                )
-                command = f"cd {working_dir} && {command}"
-            
-            # Set environment variables if specified
-            if environment:
-                env_commands = []
-                for key, value in environment.items():
-                    env_commands.append(f"export {key}='{value}'")
-                if env_commands:
-                    command = " && ".join(env_commands) + " && " + command
-            
-            # Execute command
-            result = await self.e2b_sandbox.process.start_and_wait(
+            # Use E2B commands API
+            result = await self.e2b_sandbox.commands.run(
                 cmd=command,
-                timeout=timeout or self.config.timeout
+                timeout=timeout or self._config.timeout,
+                cwd=working_dir,
+                envs=environment or {}
             )
             
             execution_time = time.time() - start_time
@@ -127,89 +112,102 @@ class E2BSandboxSession(BaseSandboxSession):
             
         except Exception as e:
             execution_time = time.time() - start_time
-            return ExecutionResult(
-                stdout="",
-                stderr=str(e),
-                return_code=-1,
-                execution_time=execution_time,
-                success=False,
-                command=command
-            )
+            
+            # Handle E2B-specific errors
+            if "timeout" in str(e).lower():
+                return ExecutionResult(
+                    stdout="",
+                    stderr=f"Command timed out after {timeout or self._config.timeout} seconds",
+                    return_code=-1,
+                    execution_time=execution_time,
+                    success=False,
+                    command=command
+                )
+            else:
+                return ExecutionResult(
+                    stdout="",
+                    stderr=str(e),
+                    return_code=-1,
+                    execution_time=execution_time,
+                    success=False,
+                    command=command
+                )
     
     async def upload_file(
         self, 
         path: str, 
-        content: Union[str, bytes],
-        mode: str = "w"
+        content: Union[str, bytes], 
+        mode: str = "text"
     ) -> None:
         """Upload a file to the E2B sandbox."""
-        self._ensure_not_closed()
-        
         try:
-            if isinstance(content, str):
-                await self.e2b_sandbox.filesystem.write(path, content)
+            if mode == "text":
+                # Upload text content directly
+                await self.e2b_sandbox.files.write(path, content)
             else:
-                # For binary content, write as text with base64 encoding
+                # Handle binary content
+                if isinstance(content, str):
+                    content = content.encode('utf-8')
+                # For binary files, we need to encode and decode
                 import base64
                 encoded_content = base64.b64encode(content).decode('utf-8')
-                await self.e2b_sandbox.filesystem.write(f"{path}.b64", encoded_content)
-                # Decode on the sandbox side
+                await self.e2b_sandbox.files.write(f"{path}.b64", encoded_content)
+                # Decode the file using base64 command
                 await self.execute(f"base64 -d {path}.b64 > {path} && rm {path}.b64")
                 
         except Exception as e:
             raise ProviderError(f"File upload failed: {e}", self._provider.name, e)
     
-    async def download_file(self, path: str) -> bytes:
+    async def download_file(self, path: str) -> str:
         """Download a file from the E2B sandbox."""
-        self._ensure_not_closed()
-        
         try:
-            content = await self.e2b_sandbox.filesystem.read(path)
-            if isinstance(content, str):
-                return content.encode('utf-8')
+            content = await self.e2b_sandbox.files.read(path)
             return content
-            
         except Exception as e:
             raise ProviderError(f"File download failed: {e}", self._provider.name, e)
     
-    async def list_files(self, path: str = "/") -> List[FileInfo]:
+    async def list_files(self, path: str = ".") -> List[FileInfo]:
         """List files in the E2B sandbox."""
-        self._ensure_not_closed()
-        
         try:
-            # Use ls command to get file information
-            result = await self.execute(f"ls -la {path}")
+            # Use E2B files API to list directory contents
+            files = await self.e2b_sandbox.files.list(path)
             
-            if not result.success:
-                raise ProviderError(f"Failed to list files: {result.stderr}", self._provider.name)
+            file_infos = []
+            for file in files:
+                file_infos.append(FileInfo(
+                    name=file.name,
+                    path=file.path,
+                    size=getattr(file, 'size', 0),
+                    is_directory=file.type == 'dir',
+                    modified_time=getattr(file, 'modified_time', None)
+                ))
             
-            files = []
-            lines = result.stdout.strip().split('\n')[1:]  # Skip total line
-            
-            for line in lines:
-                if not line.strip():
-                    continue
-                    
-                parts = line.split()
-                if len(parts) >= 9:
-                    permissions = parts[0]
-                    size = int(parts[4]) if parts[4].isdigit() else 0
-                    name = ' '.join(parts[8:])
-                    is_directory = permissions.startswith('d')
-                    
-                    files.append(FileInfo(
-                        path=f"{path.rstrip('/')}/{name}",
-                        name=name,
-                        size=size,
-                        is_directory=is_directory,
-                        modified_time=time.time(),  # E2B doesn't provide exact time
-                        permissions=permissions
-                    ))
-            
-            return files
+            return file_infos
             
         except Exception as e:
-            raise ProviderError(f"File listing failed: {e}", self._provider.name, e)
+            # Fallback to using ls command
+            result = await self.execute(f"ls -la {path}")
+            if not result.success:
+                raise ProviderError(f"Failed to list files: {e}", self._provider.name, e)
+            
+            # Parse ls output (basic implementation)
+            file_infos = []
+            lines = result.stdout.strip().split('\n')[1:]  # Skip total line
+            for line in lines:
+                if line.strip():
+                    parts = line.split()
+                    if len(parts) >= 9:
+                        name = ' '.join(parts[8:])
+                        if name not in ['.', '..']:
+                            file_infos.append(FileInfo(
+                                name=name,
+                                path=f"{path}/{name}" if path != "." else name,
+                                size=int(parts[4]) if parts[4].isdigit() else 0,
+                                is_directory=parts[0].startswith('d'),
+                                modified_time=None
+                            ))
+            
+            return file_infos
     
     async def create_snapshot(self) -> str:
         """Create a snapshot of the current E2B sandbox state."""
@@ -245,4 +243,14 @@ class E2BSandboxSession(BaseSandboxSession):
             # Log but don't raise - cleanup should be best effort
             import logging
             logging.getLogger(__name__).warning(f"Error closing E2B sandbox: {e}")
-
+    
+    async def close(self) -> None:
+        """Close the E2B sandbox session."""
+        if self.e2b_sandbox and not self._closed:
+            try:
+                await self.e2b_sandbox.kill()
+            except Exception as e:
+                # Log error but don't raise - cleanup should be best effort
+                print(f"Error closing E2B sandbox: {e}")
+            finally:
+                self._closed = True
