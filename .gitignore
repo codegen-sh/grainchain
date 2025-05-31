@@ -202,9 +202,9 @@ examples/*.md
 # Benchmark results (keep structure but ignore large files)
 benchmarks/results/*.json
 benchmarks/results/*.html
-benchmarks/results/benchmark_*
 !benchmarks/results/.gitkeep
 !benchmarks/results/SUMMARY.md
+!benchmarks/results/benchmark_report_*.md
 !benchmarks/results/latest.*
 
 # Docker

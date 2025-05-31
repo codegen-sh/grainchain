@@ -1,2 +1,2 @@
-# This file ensures the results directory is tracked in git
-# Actual benchmark results are ignored by .gitignore but this structure is preserved
+# This file ensures the benchmarks/results directory is included in git
+# Benchmark reports are saved here by ./scripts/benchmark_all.sh

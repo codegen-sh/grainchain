@@ -25,6 +25,68 @@ async def main():
 asyncio.run(main())
 ```
 
+## ⚡ Performance Benchmarks
+
+Compare sandbox providers with comprehensive performance testing:
+
+### Quick Performance Test
+
+```bash
+# Test individual providers
+grainchain benchmark --provider local
+grainchain benchmark --provider e2b
+grainchain benchmark --provider daytona
+
+# Generate timestamped results
+grainchain benchmark --provider local --output benchmarks/results/
+
+# Check latest benchmark status (without running new tests)
+./scripts/benchmark_status.sh
+```
+
+### Full Benchmark Suite
+
+Run comprehensive benchmarks across all providers:
+
+```bash
+# Quick: Run all providers and save results
+for provider in local e2b daytona; do
+    echo "🚀 Testing $provider..."
+    grainchain benchmark --provider $provider --output benchmarks/results/
+done
+
+# Comprehensive: Generate a full report that can be committed
+./scripts/benchmark_all.sh
+
+# Advanced: Use the detailed benchmark script
+./benchmarks/scripts/run_grainchain_benchmark.sh "local e2b daytona" 3
+```
+
+The `benchmark_all.sh` script generates timestamped reports in `benchmarks/results/` that include:
+
+- Performance comparison tables
+- Environment details (OS, commit hash)
+- Analysis and recommendations
+- Raw benchmark data for tracking trends
+
+### Current Performance Baseline
+
+Latest benchmark results (updated 2024-05-31):
+
+| Provider    | Total Time | Basic Echo | Python Test | File Ops | Performance      |
+| ----------- | ---------- | ---------- | ----------- | -------- | ---------------- |
+| **Local**   | 0.036s     | 0.007s     | 0.021s      | 0.008s   | ⚡ Fastest       |
+| **E2B**     | 0.599s     | 0.331s     | 0.111s      | 0.156s   | 🚀 Balanced      |
+| **Daytona** | 1.012s     | 0.305s     | 0.156s      | 0.551s   | 🛡️ Comprehensive |
+
+> **Performance Notes**:
+>
+> - Local: Best for development/testing (17x faster than E2B, 28x faster than Daytona)
+> - E2B: Production-ready with good speed and reliability
+> - Daytona: Full workspace environments with comprehensive tooling
+
+Results are automatically saved to `benchmarks/results/` and can be committed to track performance over time.
+
 ## 🎯 Why Grainchain?
 
 The sandbox ecosystem is rapidly expanding with providers like [E2B](https://e2b.dev/), [Daytona](https://daytona.io/), and others. Each has different APIs and capabilities, creating:
@@ -300,6 +362,12 @@ grainchain check
 
 # Run benchmarks
 grainchain benchmark --provider local
+
+# Generate comprehensive performance report (committable)
+./scripts/benchmark_all.sh
+
+# Check latest performance status
+./scripts/benchmark_status.sh
 ```
 
 ### CLI Commands
