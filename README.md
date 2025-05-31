@@ -447,7 +447,7 @@ export DAYTONA_API_KEY=your-daytona-api-key
 
 Tests run automatically on GitHub Actions for:
 
-- **All Python versions** (3.9, 3.10, 3.11, 3.12) on pull requests
+- **Python 3.12** on pull requests and main branch pushes
 - **Integration tests** with real providers on main branch pushes
 - **Performance tests** and benchmarks on releases
 - **Security scans** with bandit on all commits
