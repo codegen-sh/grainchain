@@ -17,6 +17,20 @@ from grainchain.core.config import (
 from grainchain.core.exceptions import ConfigurationError
 
 
+@pytest.fixture
+def clean_env():
+    """Fixture to temporarily unset GRAINCHAIN_DEFAULT_PROVIDER for testing."""
+    original_value = os.environ.get("GRAINCHAIN_DEFAULT_PROVIDER")
+    if "GRAINCHAIN_DEFAULT_PROVIDER" in os.environ:
+        del os.environ["GRAINCHAIN_DEFAULT_PROVIDER"]
+
+    yield
+
+    # Restore original value
+    if original_value is not None:
+        os.environ["GRAINCHAIN_DEFAULT_PROVIDER"] = original_value
+
+
 class TestProviderConfig:
     """Test cases for ProviderConfig."""
 
@@ -132,8 +146,20 @@ class TestConfigManager:
     @pytest.mark.unit
     def test_config_manager_default_provider(self):
         """Test default provider configuration."""
-        manager = ConfigManager()
-        assert manager.default_provider == "e2b"  # Default fallback
+        # Temporarily unset environment variable to test default
+        import os
+
+        original_value = os.environ.get("GRAINCHAIN_DEFAULT_PROVIDER")
+        if "GRAINCHAIN_DEFAULT_PROVIDER" in os.environ:
+            del os.environ["GRAINCHAIN_DEFAULT_PROVIDER"]
+
+        try:
+            manager = ConfigManager()
+            assert manager.default_provider == "e2b"  # Default fallback
+        finally:
+            # Restore original value
+            if original_value is not None:
+                os.environ["GRAINCHAIN_DEFAULT_PROVIDER"] = original_value
 
     @pytest.mark.unit
     def test_config_manager_custom_default_provider(self):
@@ -195,7 +221,7 @@ class TestConfigManager:
         assert manager.get("test_key") == "test_value"
 
     @pytest.mark.unit
-    def test_load_config_file_yaml(self):
+    def test_load_config_file_yaml(self, clean_env):
         """Test loading configuration from YAML file."""
         config_data = {
             "default_provider": "test",
@@ -233,9 +259,9 @@ class TestConfigManager:
     @pytest.mark.unit
     def test_load_config_file_not_found(self):
         """Test loading non-existent configuration file."""
-        # Should not raise error, just use defaults
-        manager = ConfigManager("/nonexistent/config.yaml")
-        assert manager.default_provider == "e2b"
+        # Should raise ConfigurationError for explicit non-existent file
+        with pytest.raises(ConfigurationError, match="Failed to load config file"):
+            ConfigManager("/nonexistent/config.yaml")
 
     @pytest.mark.unit
     def test_load_env_config(self, env_vars):
@@ -285,7 +311,7 @@ class TestConfigManager:
         assert ConfigManager.DEFAULT_CONFIG_PATHS == expected_paths
 
     @pytest.mark.unit
-    def test_load_config_from_default_paths(self):
+    def test_load_config_from_default_paths(self, clean_env):
         """Test loading config from default paths."""
         config_data = {"default_provider": "from_file"}
 
@@ -378,6 +404,7 @@ class TestConfigurationIntegration:
             {
                 "E2B_API_KEY": "env_e2b_key",
                 "GRAINCHAIN_DEFAULT_PROVIDER": "local",
+                "E2B_TEMPLATE": "env_template",  # Override file template
             },
         ):
             manager = ConfigManager(str(config_file))
@@ -388,7 +415,7 @@ class TestConfigurationIntegration:
             # Environment should override file for API key
             e2b_config = manager.get_provider_config("e2b")
             assert e2b_config.get("api_key") == "env_e2b_key"
-            assert e2b_config.get("template") == "python"  # From file
+            assert e2b_config.get("template") == "env_template"  # From environment
 
             # Sandbox defaults from file
             sandbox_config = manager.get_sandbox_defaults()
@@ -448,7 +475,7 @@ class TestConfigurationIntegration:
                 ConfigManager("test.yaml")
 
     @pytest.mark.unit
-    def test_empty_config_file(self, temp_dir):
+    def test_empty_config_file(self, temp_dir, clean_env):
         """Test handling of empty configuration file."""
         config_file = temp_dir / "empty.yaml"
         config_file.write_text("")

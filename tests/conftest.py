@@ -125,6 +125,7 @@ class MockSandboxSession(BaseSandboxSession):
                 stdout="Hello, World!\n",
                 stderr="",
                 execution_time=0.1,
+                success=True,
             )
         elif command.startswith("python -c"):
             return ExecutionResult(
@@ -133,6 +134,7 @@ class MockSandboxSession(BaseSandboxSession):
                 stdout="Python output\n",
                 stderr="",
                 execution_time=0.2,
+                success=True,
             )
         elif command == "exit 1":
             return ExecutionResult(
@@ -141,6 +143,7 @@ class MockSandboxSession(BaseSandboxSession):
                 stdout="",
                 stderr="Command failed\n",
                 execution_time=0.1,
+                success=False,
             )
         elif "timeout" in command:
             # Simulate timeout
@@ -152,6 +155,7 @@ class MockSandboxSession(BaseSandboxSession):
                 stdout=f"Output for: {command}\n",
                 stderr="",
                 execution_time=0.1,
+                success=True,
             )
 
     async def upload_file(
@@ -236,6 +240,7 @@ class MockSandboxProvider(BaseSandboxProvider):
         super().__init__(config)
         self._name = name
         self.created_sessions = []
+        self.cleanup_called = False
 
     @property
     def name(self) -> str:
@@ -247,6 +252,11 @@ class MockSandboxProvider(BaseSandboxProvider):
         session = MockSandboxSession(sandbox_id, self, config)
         self.created_sessions.append(session)
         return session
+
+    async def cleanup(self) -> None:
+        """Mock cleanup method."""
+        self.cleanup_called = True
+        await super().cleanup()
 
 
 @pytest.fixture

@@ -21,8 +21,8 @@ class TestSandbox:
         with patch(
             "grainchain.core.sandbox.get_config_manager", return_value=config_manager
         ):
-            sandbox = Sandbox(provider="test")
-            assert sandbox.provider_name == "test"
+            sandbox = Sandbox(provider="local")
+            assert sandbox.provider_name == "local"
 
     @pytest.mark.unit
     def test_sandbox_init_with_provider_instance(self, mock_provider):

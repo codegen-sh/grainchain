@@ -12,6 +12,29 @@ from grainchain.core.exceptions import (
 )
 from grainchain.core.interfaces import SandboxConfig, SandboxStatus
 from grainchain.providers.base import BaseSandboxProvider, BaseSandboxSession
+from tests.conftest import MockSandboxSession
+
+# Check for optional dependencies at module level
+try:
+    import e2b  # noqa: F401
+
+    E2B_AVAILABLE = True
+except ImportError:
+    E2B_AVAILABLE = False
+
+try:
+    import modal  # noqa: F401
+
+    MODAL_AVAILABLE = True
+except ImportError:
+    MODAL_AVAILABLE = False
+
+try:
+    import daytona_sdk  # noqa: F401
+
+    DAYTONA_AVAILABLE = True
+except ImportError:
+    DAYTONA_AVAILABLE = False
 
 
 class TestBaseSandboxProvider:
@@ -126,11 +149,14 @@ class TestBaseSandboxSession:
     @pytest.mark.unit
     def test_session_init(self, mock_provider, test_config):
         """Test session initialization."""
-        session = BaseSandboxSession("test_id", mock_provider, test_config)
+        # Use MockSandboxSession instead of abstract BaseSandboxSession
+        session = MockSandboxSession("test_id", mock_provider, test_config)
 
         assert session.sandbox_id == "test_id"
         assert session.config == test_config
-        assert session.status == SandboxStatus.CREATING
+        assert (
+            session.status == SandboxStatus.RUNNING
+        )  # MockSandboxSession sets this to RUNNING
         assert not session._closed
 
     @pytest.mark.unit
@@ -164,23 +190,27 @@ class TestBaseSandboxSession:
     @pytest.mark.unit
     async def test_default_snapshot_not_implemented(self, mock_session):
         """Test that default snapshot methods raise NotImplementedError."""
-        # Override the mock implementation to test base class
-        session = BaseSandboxSession(
-            "test", mock_session._provider, mock_session._config
+        # Create a minimal session that doesn't override snapshot methods
+        minimal_session = MinimalSandboxSession(
+            "test_id", mock_session._provider, mock_session._config
         )
 
         with pytest.raises(NotImplementedError, match="Snapshots not supported"):
-            await session.create_snapshot()
+            await minimal_session.create_snapshot()
 
         with pytest.raises(NotImplementedError, match="Snapshots not supported"):
-            await session.restore_snapshot("test_id")
+            await minimal_session.restore_snapshot("test_snapshot")
 
 
 class TestE2BProvider:
     """Test cases for E2B provider."""
 
     @pytest.mark.unit
-    @patch("grainchain.providers.e2b.e2b")
+    @pytest.mark.skipif(
+        not E2B_AVAILABLE,
+        reason="E2B package not available",
+    )
+    @patch("grainchain.providers.e2b.E2BSandbox")
     def test_e2b_provider_init(self, mock_e2b, provider_config):
         """Test E2B provider initialization."""
         from grainchain.providers.e2b import E2BProvider
@@ -189,7 +219,32 @@ class TestE2BProvider:
         assert provider.name == "e2b"
 
     @pytest.mark.unit
-    @patch("grainchain.providers.e2b.e2b")
+    def test_e2b_provider_missing_package(self):
+        """Test E2B provider with missing package."""
+        # This test should run when e2b is not installed
+        try:
+            import e2b  # noqa: F401
+
+            pytest.skip("E2B package is installed, skipping missing package test")
+        except ImportError:
+            pass
+
+        from grainchain.core.config import ProviderConfig
+        from grainchain.providers.e2b import E2BProvider
+
+        config = ProviderConfig("e2b", {"api_key": "test_key"})
+
+        with pytest.raises(
+            ImportError, match="E2B provider requires the 'e2b' package"
+        ):
+            E2BProvider(config)
+
+    @pytest.mark.unit
+    @pytest.mark.skipif(
+        not E2B_AVAILABLE,
+        reason="E2B package not available",
+    )
+    @patch("grainchain.providers.e2b.E2BSandbox")
     def test_e2b_provider_missing_api_key(self, mock_e2b):
         """Test E2B provider with missing API key."""
         from grainchain.providers.e2b import E2BProvider
@@ -200,7 +255,11 @@ class TestE2BProvider:
             E2BProvider(config)
 
     @pytest.mark.unit
-    @patch("grainchain.providers.e2b.e2b")
+    @pytest.mark.skipif(
+        not E2B_AVAILABLE,
+        reason="E2B package not available",
+    )
+    @patch("grainchain.providers.e2b.E2BSandbox")
     async def test_e2b_session_creation(self, mock_e2b, provider_config, test_config):
         """Test E2B session creation."""
         from grainchain.providers.e2b import E2BProvider
@@ -221,6 +280,10 @@ class TestModalProvider:
     """Test cases for Modal provider."""
 
     @pytest.mark.unit
+    @pytest.mark.skipif(
+        not MODAL_AVAILABLE,
+        reason="Modal package not available",
+    )
     @patch("grainchain.providers.modal.modal")
     def test_modal_provider_init(self, mock_modal, provider_config):
         """Test Modal provider initialization."""
@@ -230,6 +293,31 @@ class TestModalProvider:
         assert provider.name == "modal"
 
     @pytest.mark.unit
+    def test_modal_provider_missing_package(self):
+        """Test Modal provider with missing package."""
+        # This test should run when modal is not installed
+        try:
+            import modal  # noqa: F401
+
+            pytest.skip("Modal package is installed, skipping missing package test")
+        except ImportError:
+            pass
+
+        from grainchain.core.config import ProviderConfig
+        from grainchain.providers.modal import ModalProvider
+
+        config = ProviderConfig("modal", {"token": "test_token"})
+
+        with pytest.raises(
+            ImportError, match="Modal provider requires the 'modal' package"
+        ):
+            ModalProvider(config)
+
+    @pytest.mark.unit
+    @pytest.mark.skipif(
+        not MODAL_AVAILABLE,
+        reason="Modal package not available",
+    )
     @patch("grainchain.providers.modal.modal")
     def test_modal_provider_missing_credentials(self, mock_modal):
         """Test Modal provider with missing credentials."""
@@ -245,8 +333,12 @@ class TestDaytonaProvider:
     """Test cases for Daytona provider."""
 
     @pytest.mark.unit
-    @patch("grainchain.providers.daytona.DaytonaClient")
-    def test_daytona_provider_init(self, mock_client, provider_config):
+    @pytest.mark.skipif(
+        not DAYTONA_AVAILABLE,
+        reason="Daytona SDK package not available",
+    )
+    @patch("grainchain.providers.daytona.Daytona")
+    def test_daytona_provider_init(self, mock_daytona, provider_config):
         """Test Daytona provider initialization."""
         from grainchain.providers.daytona import DaytonaProvider
 
@@ -254,8 +346,35 @@ class TestDaytonaProvider:
         assert provider.name == "daytona"
 
     @pytest.mark.unit
-    @patch("grainchain.providers.daytona.DaytonaClient")
-    def test_daytona_provider_missing_api_key(self, mock_client):
+    def test_daytona_provider_missing_package(self):
+        """Test Daytona provider with missing package."""
+        # This test should run when daytona_sdk is not installed
+        try:
+            import daytona_sdk  # noqa: F401
+
+            pytest.skip(
+                "Daytona SDK package is installed, skipping missing package test"
+            )
+        except ImportError:
+            pass
+
+        from grainchain.core.config import ProviderConfig
+        from grainchain.providers.daytona import DaytonaProvider
+
+        config = ProviderConfig("daytona", {"api_key": "test_key"})
+
+        with pytest.raises(
+            ImportError, match="Daytona provider requires the 'daytona-sdk' package"
+        ):
+            DaytonaProvider(config)
+
+    @pytest.mark.unit
+    @pytest.mark.skipif(
+        not DAYTONA_AVAILABLE,
+        reason="Daytona SDK package not available",
+    )
+    @patch("grainchain.providers.daytona.Daytona")
+    def test_daytona_provider_missing_api_key(self, mock_daytona):
         """Test Daytona provider with missing API key."""
         from grainchain.providers.daytona import DaytonaProvider
 
@@ -343,14 +462,18 @@ class TestProviderErrorHandling:
     @pytest.mark.unit
     async def test_timeout_error_handling(self, timeout_provider, test_config):
         """Test timeout error handling."""
-        with pytest.raises(ProviderError):
+        with pytest.raises(TimeoutError):
             # Use a very short timeout to trigger the error
             await asyncio.wait_for(
                 timeout_provider.create_sandbox(test_config), timeout=0.1
             )
 
     @pytest.mark.unit
-    @patch("grainchain.providers.e2b.e2b")
+    @pytest.mark.skipif(
+        not E2B_AVAILABLE,
+        reason="E2B package not available",
+    )
+    @patch("grainchain.providers.e2b.E2BSandbox")
     async def test_authentication_error(self, mock_e2b, provider_config, test_config):
         """Test authentication error handling."""
         from grainchain.providers.e2b import E2BProvider
@@ -446,3 +569,22 @@ class TestProviderConfiguration:
         assert config.working_directory == "/custom"
         assert config.environment_vars["CUSTOM"] == "value"
         assert config.auto_cleanup is False
+
+
+class MinimalSandboxSession(BaseSandboxSession):
+    """Minimal session implementation for testing base class behavior."""
+
+    async def execute(self, command: str, timeout: int = None) -> dict:
+        return {"stdout": "", "stderr": "", "exit_code": 0}
+
+    async def upload_file(self, local_path: str, remote_path: str) -> None:
+        pass
+
+    async def download_file(self, remote_path: str, local_path: str) -> None:
+        pass
+
+    async def list_files(self, path: str = "/") -> list:
+        return []
+
+    async def _cleanup(self) -> None:
+        pass

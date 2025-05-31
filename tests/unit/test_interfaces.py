@@ -16,7 +16,7 @@ class TestExecutionResult:
     """Test cases for ExecutionResult."""
 
     @pytest.mark.unit
-    def test_execution_result_basic(self):
+    def test_execution_result_creation(self):
         """Test basic ExecutionResult creation."""
         result = ExecutionResult(
             command="echo 'hello'",
@@ -24,6 +24,7 @@ class TestExecutionResult:
             stdout="hello\n",
             stderr="",
             execution_time=0.1,
+            success=True,
         )
 
         assert result.command == "echo 'hello'"
@@ -31,6 +32,7 @@ class TestExecutionResult:
         assert result.stdout == "hello\n"
         assert result.stderr == ""
         assert result.execution_time == 0.1
+        assert result.success is True
 
     @pytest.mark.unit
     def test_execution_result_with_error(self):
@@ -41,6 +43,7 @@ class TestExecutionResult:
             stdout="",
             stderr="Command failed\n",
             execution_time=0.05,
+            success=False,
         )
 
         assert result.command == "exit 1"
@@ -59,6 +62,7 @@ class TestExecutionResult:
             stdout="test\n",
             stderr="",
             execution_time=0.1,
+            success=True,
         )
         assert success_result.success is True
 
@@ -69,6 +73,7 @@ class TestExecutionResult:
             stdout="",
             stderr="error\n",
             execution_time=0.1,
+            success=False,
         )
         assert failed_result.success is False
 
@@ -82,6 +87,7 @@ class TestExecutionResult:
             stdout=long_output,
             stderr="",
             execution_time=0.5,
+            success=True,
         )
 
         assert len(result.stdout) == 10000
@@ -97,6 +103,7 @@ class TestExecutionResult:
             stdout=unicode_output,
             stderr="",
             execution_time=0.1,
+            success=True,
         )
 
         assert result.stdout == unicode_output
@@ -110,6 +117,7 @@ class TestExecutionResult:
             stdout="test\n",
             stderr="",
             execution_time=0.1,
+            success=True,
         )
 
         repr_str = repr(result)
@@ -119,12 +127,18 @@ class TestExecutionResult:
     @pytest.mark.unit
     def test_execution_result_equality(self):
         """Test ExecutionResult equality comparison."""
+        import time
+
+        timestamp = time.time()
+
         result1 = ExecutionResult(
             command="echo 'test'",
             return_code=0,
             stdout="test\n",
             stderr="",
             execution_time=0.1,
+            success=True,
+            timestamp=timestamp,
         )
 
         result2 = ExecutionResult(
@@ -133,6 +147,8 @@ class TestExecutionResult:
             stdout="test\n",
             stderr="",
             execution_time=0.1,
+            success=True,
+            timestamp=timestamp,
         )
 
         result3 = ExecutionResult(
@@ -141,6 +157,8 @@ class TestExecutionResult:
             stdout="different\n",
             stderr="",
             execution_time=0.1,
+            success=True,
+            timestamp=timestamp,
         )
 
         assert result1 == result2
@@ -354,6 +372,7 @@ class TestInterfaceIntegration:
             stdout="Python 3.9.0\n",
             stderr="",
             execution_time=0.25,
+            success=True,
         )
 
         assert success_result.success
@@ -443,7 +462,12 @@ class TestInterfaceValidation:
         """Test ExecutionResult edge cases."""
         # Empty command
         result = ExecutionResult(
-            command="", return_code=0, stdout="", stderr="", execution_time=0.0
+            command="",
+            return_code=0,
+            stdout="",
+            stderr="",
+            execution_time=0.0,
+            success=True,
         )
         assert result.command == ""
         assert result.execution_time == 0.0
@@ -455,6 +479,7 @@ class TestInterfaceValidation:
             stdout="",
             stderr="Signal terminated",
             execution_time=0.1,
+            success=False,
         )
         assert result.return_code == -1
         assert not result.success

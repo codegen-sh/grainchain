@@ -29,12 +29,10 @@ class TestGrainchainError:
     @pytest.mark.unit
     def test_grainchain_error_inheritance(self):
         """Test that all custom exceptions inherit from GrainchainError."""
+        # Test exceptions with simple constructors
         exceptions = [
             SandboxError,
-            ProviderError,
             ConfigurationError,
-            GrainchainTimeoutError,
-            AuthenticationError,
             ResourceError,
             NetworkError,
         ]
@@ -43,6 +41,28 @@ class TestGrainchainError:
             error = exc_class("Test message")
             assert isinstance(error, GrainchainError)
             assert isinstance(error, Exception)
+            assert str(error) == "Test message"
+
+        # Test ProviderError separately due to different constructor
+        provider_error = ProviderError("Test message", "test_provider")
+        assert isinstance(provider_error, GrainchainError)
+        assert isinstance(provider_error, Exception)
+        assert str(provider_error) == "Test message"
+        assert provider_error.provider == "test_provider"
+
+        # Test TimeoutError separately due to different constructor
+        timeout_error = GrainchainTimeoutError("Test timeout", 30)
+        assert isinstance(timeout_error, GrainchainError)
+        assert isinstance(timeout_error, Exception)
+        assert str(timeout_error) == "Test timeout"
+        assert timeout_error.timeout_seconds == 30
+
+        # Test AuthenticationError separately due to different constructor
+        auth_error = AuthenticationError("Test auth error", "test_provider")
+        assert isinstance(auth_error, GrainchainError)
+        assert isinstance(auth_error, Exception)
+        assert str(auth_error) == "Test auth error"
+        assert auth_error.provider == "test_provider"
 
 
 class TestSandboxError:
