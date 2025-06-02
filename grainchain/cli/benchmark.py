@@ -13,6 +13,7 @@ def run_benchmark(
     provider: str = "local",
     config_path: Optional[str] = None,
     output_dir: Optional[str] = None,
+    codegen_benchmark: Optional[str] = None,
 ) -> bool:
     """
     Run a simple benchmark against the specified provider.
@@ -21,12 +22,20 @@ def run_benchmark(
         provider: Provider to benchmark (local, e2b, daytona)
         config_path: Path to config file (optional)
         output_dir: Output directory for results (optional)
+        codegen_benchmark: Special codegen benchmark type (e.g., 'outline')
 
     Returns:
         True if benchmark succeeded, False otherwise
     """
     try:
-        return asyncio.run(_run_benchmark_async(provider, config_path, output_dir))
+        if codegen_benchmark:
+            return asyncio.run(
+                _run_codegen_benchmark_async(
+                    codegen_benchmark, provider, config_path, output_dir
+                )
+            )
+        else:
+            return asyncio.run(_run_benchmark_async(provider, config_path, output_dir))
     except Exception as e:
         click.echo(f"Benchmark failed: {e}")
         return False
@@ -129,3 +138,33 @@ async def _run_benchmark_async(
     click.echo(f"   Tests passed: {len(results['tests'])}")
 
     return True
+
+
+async def _run_codegen_benchmark_async(
+    codegen_benchmark: str,
+    provider: str,
+    config_path: Optional[str],
+    output_dir: Optional[str],
+) -> bool:
+    """Async benchmark runner for codegen benchmarks."""
+    from grainchain.cli.codegen_benchmark import run_codegen_outline_benchmark
+
+    if codegen_benchmark.lower() == "outline":
+        # For codegen outline benchmark, we test both E2B and Daytona by default
+        # unless a specific provider is requested
+        if provider == "local":
+            click.echo(
+                "⚠️  Codegen outline benchmark is designed for E2B and Daytona providers"
+            )
+            click.echo("   Switching to E2B and Daytona for comparison...")
+            providers = ["e2b", "daytona"]
+        else:
+            providers = [provider]
+
+        return await run_codegen_outline_benchmark(
+            providers=providers, config_path=config_path, output_dir=output_dir
+        )
+    else:
+        click.echo(f"❌ Unknown codegen benchmark type: {codegen_benchmark}")
+        click.echo("   Available types: outline")
+        return False
