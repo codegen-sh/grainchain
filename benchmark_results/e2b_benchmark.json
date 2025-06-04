@@ -1,0 +1,24 @@
+{
+  "provider": "e2b",
+  "timestamp": 1749005003.059099,
+  "tests": [
+    {
+      "name": "basic_echo",
+      "duration": 0.319490909576416,
+      "success": true,
+      "stdout": "Hello, Grainchain!"
+    },
+    {
+      "name": "python_execution",
+      "duration": 0.14979839324951172,
+      "success": true,
+      "stdout": "Python works!"
+    },
+    {
+      "name": "file_operations",
+      "duration": 0.24552273750305176,
+      "success": true,
+      "stdout": "Hello from file!"
+    }
+  ]
+}

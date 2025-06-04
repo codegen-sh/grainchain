@@ -1,0 +1,24 @@
+{
+  "provider": "local",
+  "timestamp": 1749004995.8912113,
+  "tests": [
+    {
+      "name": "basic_echo",
+      "duration": 0.0027163028717041016,
+      "success": true,
+      "stdout": "Hello, Grainchain!"
+    },
+    {
+      "name": "python_execution",
+      "duration": 0.021675825119018555,
+      "success": true,
+      "stdout": "Python works!"
+    },
+    {
+      "name": "file_operations",
+      "duration": 0.004410982131958008,
+      "success": true,
+      "stdout": "Hello from file!"
+    }
+  ]
+}
