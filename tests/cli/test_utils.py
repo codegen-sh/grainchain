@@ -7,7 +7,6 @@ from grainchain.cli.utils import (
     check_dependency,
     format_duration,
     format_table,
-    get_terminal_width,
 )
 
 
@@ -79,21 +78,3 @@ class TestCheckDependency:
 
         result = check_dependency("slow-cmd", "SlowCommand")
         assert result is False
-
-
-class TestGetTerminalWidth:
-    """Test terminal width detection."""
-
-    @patch("click.get_terminal_size")
-    def test_normal_terminal(self, mock_get_size):
-        mock_get_size.return_value = (120, 30)
-
-        result = get_terminal_width()
-        assert result == 120
-
-    @patch("click.get_terminal_size")
-    def test_no_terminal(self, mock_get_size):
-        mock_get_size.side_effect = OSError()
-
-        result = get_terminal_width()
-        assert result == 80  # Default width
