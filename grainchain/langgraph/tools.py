@@ -4,7 +4,7 @@ LangChain tools for Grainchain sandbox integration.
 
 import asyncio
 import logging
-from typing import Any, Optional, Union
+from typing import Any
 
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
@@ -19,10 +19,10 @@ class SandboxExecuteInput(BaseModel):
     """Input schema for sandbox execution tool."""
 
     command: str = Field(description="Command to execute in the sandbox")
-    timeout: Optional[int] = Field(
+    timeout: int | None = Field(
         default=None, description="Timeout in seconds (optional)"
     )
-    working_dir: Optional[str] = Field(
+    working_dir: str | None = Field(
         default=None, description="Working directory for command execution (optional)"
     )
 
@@ -46,8 +46,8 @@ class SandboxTool(BaseTool):
 
     def __init__(
         self,
-        provider: Optional[Union[str, Any]] = None,
-        config: Optional[SandboxConfig] = None,
+        provider: str | Any | None = None,
+        config: SandboxConfig | None = None,
         **kwargs,
     ):
         """
@@ -61,14 +61,14 @@ class SandboxTool(BaseTool):
         super().__init__(**kwargs)
         self._provider = provider
         self._config = config or SandboxConfig()
-        self._sandbox: Optional[Sandbox] = None
+        self._sandbox: Sandbox | None = None
 
     async def _arun(
         self,
         command: str,
-        timeout: Optional[int] = None,
-        working_dir: Optional[str] = None,
-        run_manager: Optional[Any] = None,
+        timeout: int | None = None,
+        working_dir: str | None = None,
+        run_manager: Any | None = None,
     ) -> str:
         """
         Asynchronously execute a command in the sandbox.
@@ -112,9 +112,9 @@ class SandboxTool(BaseTool):
     def _run(
         self,
         command: str,
-        timeout: Optional[int] = None,
-        working_dir: Optional[str] = None,
-        run_manager: Optional[Any] = None,
+        timeout: int | None = None,
+        working_dir: str | None = None,
+        run_manager: Any | None = None,
     ) -> str:
         """
         Synchronously execute a command in the sandbox.
@@ -207,7 +207,7 @@ class SandboxFileUploadTool(BaseTool):
         path: str,
         content: str,
         mode: str = "w",
-        run_manager: Optional[Any] = None,
+        run_manager: Any | None = None,
     ) -> str:
         """
         Asynchronously upload a file to the sandbox.
@@ -244,7 +244,7 @@ class SandboxFileUploadTool(BaseTool):
         path: str,
         content: str,
         mode: str = "w",
-        run_manager: Optional[Any] = None,
+        run_manager: Any | None = None,
     ) -> str:
         """
         Synchronously upload a file to the sandbox.
@@ -278,7 +278,7 @@ class SandboxSnapshotInput(BaseModel):
     action: str = Field(
         description="Action to perform: 'create' to create a snapshot, 'restore' to restore from snapshot_id"
     )
-    snapshot_id: Optional[str] = Field(
+    snapshot_id: str | None = Field(
         default=None,
         description="Snapshot ID to restore (required when action='restore')",
     )
@@ -311,8 +311,8 @@ class SandboxSnapshotTool(BaseTool):
     async def _arun(
         self,
         action: str,
-        snapshot_id: Optional[str] = None,
-        run_manager: Optional[Any] = None,
+        snapshot_id: str | None = None,
+        run_manager: Any | None = None,
     ) -> str:
         """
         Asynchronously perform snapshot operations.
@@ -352,8 +352,8 @@ class SandboxSnapshotTool(BaseTool):
     def _run(
         self,
         action: str,
-        snapshot_id: Optional[str] = None,
-        run_manager: Optional[Any] = None,
+        snapshot_id: str | None = None,
+        run_manager: Any | None = None,
     ) -> str:
         """
         Synchronously perform snapshot operations.

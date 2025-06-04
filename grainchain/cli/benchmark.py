@@ -4,21 +4,20 @@ import asyncio
 import json
 import time
 from pathlib import Path
-from typing import Optional
 
 import click
 
 
 def run_benchmark(
     provider: str = "local",
-    config_path: Optional[str] = None,
-    output_dir: Optional[str] = None,
+    config_path: str | None = None,
+    output_dir: str | None = None,
 ) -> bool:
     """
     Run a simple benchmark against the specified provider.
 
     Args:
-        provider: Provider to benchmark (local, e2b, daytona)
+        provider: Provider to benchmark (local, e2b, daytona, morph)
         config_path: Path to config file (optional)
         output_dir: Output directory for results (optional)
 
@@ -33,7 +32,7 @@ def run_benchmark(
 
 
 async def _run_benchmark_async(
-    provider: str, config_path: Optional[str], output_dir: Optional[str]
+    provider: str, config_path: str | None, output_dir: str | None
 ) -> bool:
     """Async benchmark runner."""
     from grainchain import Sandbox

@@ -3,7 +3,7 @@
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import yaml
 from dotenv import load_dotenv
@@ -35,12 +35,12 @@ class SandboxConfig:
     """Configuration for sandbox creation and management."""
 
     # Resource limits
-    timeout: Optional[int] = 300  # seconds
-    memory_limit: Optional[str] = None  # e.g., "2GB"
-    cpu_limit: Optional[float] = None  # CPU cores
+    timeout: int | None = 300  # seconds
+    memory_limit: str | None = None  # e.g., "2GB"
+    cpu_limit: float | None = None  # CPU cores
 
     # Environment
-    image: Optional[str] = None
+    image: str | None = None
     working_directory: str = "~"
     environment_vars: dict[str, str] = field(default_factory=dict)
 
@@ -64,7 +64,7 @@ class ConfigManager:
         "~/.grainchain.yml",
     ]
 
-    def __init__(self, config_path: Optional[Union[str, Path]] = None):
+    def __init__(self, config_path: str | Path | None = None):
         self.config_path = config_path
         self._config: dict[str, Any] = {}
         self._providers: dict[str, ProviderConfig] = {}
@@ -89,7 +89,7 @@ class ConfigManager:
         # Initialize providers
         self._init_providers()
 
-    def _load_config_file(self, path: Union[str, Path]) -> None:
+    def _load_config_file(self, path: str | Path) -> None:
         """Load configuration from a YAML file."""
         try:
             with open(path) as f:
@@ -163,7 +163,7 @@ class ConfigManager:
 
 
 # Global configuration manager instance
-_config_manager: Optional[ConfigManager] = None
+_config_manager: ConfigManager | None = None
 
 
 def get_config_manager() -> ConfigManager:
