@@ -1,7 +1,7 @@
 """Daytona provider implementation for Grainchain."""
 
 import time
-from typing import Any, Optional, Union
+from typing import Any
 
 from grainchain.core.config import ProviderConfig
 from grainchain.core.exceptions import AuthenticationError, ProviderError
@@ -110,9 +110,9 @@ class DaytonaSandboxSession(BaseSandboxSession):
     async def execute(
         self,
         command: str,
-        timeout: Optional[int] = None,
-        working_dir: Optional[str] = None,
-        environment: Optional[dict[str, str]] = None,
+        timeout: int | None = None,
+        working_dir: str | None = None,
+        environment: dict[str, str] | None = None,
     ) -> ExecutionResult:
         """Execute a command in the Daytona sandbox."""
         start_time = time.time()
@@ -222,7 +222,7 @@ except Exception as e:
             )
 
     async def upload_file(
-        self, path: str, content: Union[str, bytes], mode: str = "text"
+        self, path: str, content: str | bytes, mode: str = "text"
     ) -> None:
         """Upload a file to the Daytona sandbox."""
         try:

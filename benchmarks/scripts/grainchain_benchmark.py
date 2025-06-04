@@ -2,7 +2,7 @@
 """
 Grainchain Sandbox Provider Benchmarking
 
-This script benchmarks different sandbox providers (Local, E2B, Modal, Daytona) to measure:
+This script benchmarks different sandbox providers (Local, E2B, Modal, Daytona, Morph) to measure:
 1. Sandbox creation time
 2. Command execution performance
 3. File operation speed
@@ -123,6 +123,7 @@ class GrainchainBenchmark:
                 "e2b",
                 "modal",
                 "daytona",
+                "morph",
             ],  # Add "modal" when available
             "iterations": 3,
             "timeout": 30,
@@ -740,7 +741,7 @@ async def main():
         "--providers",
         nargs="+",
         help="Providers to test",
-        choices=["local", "e2b", "modal", "daytona"],
+        choices=["local", "e2b", "modal", "daytona", "morph"],
         default=["local", "e2b"],
     )
     parser.add_argument(

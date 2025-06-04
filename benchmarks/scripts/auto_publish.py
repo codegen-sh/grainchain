@@ -162,12 +162,12 @@ class AutoPublisher:
                     build_time = snapshot["metrics"]["performance"].get(
                         "build_time_seconds"
                     )
-                    if build_time and isinstance(build_time, (int, float)):
+                    if build_time and isinstance(build_time, int | float):
                         build_times.append(build_time)
 
                 if "metrics" in snapshot and "container" in snapshot["metrics"]:
                     memory = snapshot["metrics"]["container"].get("memory_usage")
-                    if memory and isinstance(memory, (int, float)):
+                    if memory and isinstance(memory, int | float):
                         memory_usages.append(memory / 1024 / 1024)  # Convert to MB
 
             avg_build = (

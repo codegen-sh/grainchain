@@ -88,7 +88,9 @@ def typecheck(path: str):
 
 @main.command()
 @click.option(
-    "--provider", default="local", help="Provider to benchmark (local, e2b, daytona)"
+    "--provider",
+    default="local",
+    help="Provider to benchmark (local, e2b, daytona, morph)",
 )
 @click.option("--config", help="Path to benchmark config file")
 @click.option("--output", help="Output directory for results")
@@ -102,7 +104,7 @@ def benchmark(provider: str, config: str, output: str):
         result = run_benchmark(provider=provider, config_path=config, output_dir=output)
 
         if result:
-            click.echo("✅ Benchmarks completed successfully!")
+            click.echo("��� Benchmarks completed successfully!")
         else:
             click.echo("❌ Benchmarks failed!")
             sys.exit(1)

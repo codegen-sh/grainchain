@@ -20,7 +20,6 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-from typing import Dict
 
 import docker
 
@@ -633,14 +632,14 @@ class DockerBenchmarkRunner:
     """
     ⚠️ IMPORTANT: Docker support is not currently available in Grainchain.
     This benchmark runner is for future Docker provider development.
-    
+
     The local provider runs directly on your machine without Docker.
     Docker provider support is coming soon!
-    
+
     For now, please use the local provider for benchmarking.
     """
-    
-    def __init__(self, config: Dict[str, Any]):
+
+    def __init__(self, config: dict[str, Any]):
         # Docker support coming soon - this will fail for now
         try:
             self.docker_client = docker.from_env()

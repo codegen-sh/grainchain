@@ -4,7 +4,7 @@ LangGraph agent implementation for Grainchain sandbox integration.
 
 import logging
 from collections.abc import Sequence
-from typing import Annotated, Any, Optional, Union
+from typing import Annotated, Any
 
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
@@ -42,10 +42,10 @@ class SandboxAgent:
     def __init__(
         self,
         llm: BaseChatModel,
-        provider: Optional[Union[str, Any]] = None,
-        config: Optional[SandboxConfig] = None,
-        additional_tools: Optional[list[BaseTool]] = None,
-        system_message: Optional[str] = None,
+        provider: str | Any | None = None,
+        config: SandboxConfig | None = None,
+        additional_tools: list[BaseTool] | None = None,
+        system_message: str | None = None,
     ):
         """
         Initialize the SandboxAgent.
@@ -144,8 +144,8 @@ class SandboxAgent:
     async def arun(
         self,
         message: str,
-        thread_id: Optional[str] = None,
-        config: Optional[dict[str, Any]] = None,
+        thread_id: str | None = None,
+        config: dict[str, Any] | None = None,
     ) -> str:
         """
         Asynchronously run the agent with a message.
@@ -181,8 +181,8 @@ class SandboxAgent:
     def run(
         self,
         message: str,
-        thread_id: Optional[str] = None,
-        config: Optional[dict[str, Any]] = None,
+        thread_id: str | None = None,
+        config: dict[str, Any] | None = None,
     ) -> str:
         """
         Synchronously run the agent with a message.
@@ -238,10 +238,10 @@ class SandboxAgent:
 
 def create_sandbox_agent(
     llm: BaseChatModel,
-    provider: Optional[Union[str, Any]] = None,
-    config: Optional[SandboxConfig] = None,
-    additional_tools: Optional[list[BaseTool]] = None,
-    system_message: Optional[str] = None,
+    provider: str | Any | None = None,
+    config: SandboxConfig | None = None,
+    additional_tools: list[BaseTool] | None = None,
+    system_message: str | None = None,
 ) -> SandboxAgent:
     """
     Factory function to create a SandboxAgent.

@@ -20,7 +20,6 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import Optional
 
 try:
     from grainchain import Sandbox, SandboxConfig
@@ -131,7 +130,7 @@ USER user
 """
 
 
-async def create_custom_template() -> Optional[str]:
+async def create_custom_template() -> str | None:
     """Create custom E2B template with Dockerfile"""
     print_step(1, "Creating Custom E2B Template", Colors.MAGENTA)
 
