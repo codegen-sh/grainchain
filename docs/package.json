@@ -1,0 +1,17 @@
+{
+  "name": "grainchain-docs",
+  "version": "1.0.0",
+  "description": "Documentation for GrainChain - Langchain for sandboxes",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0"
+  },
+  "dependencies": {
+    "vue": "^3.3.0"
+  }
+}
+
