@@ -25,6 +25,78 @@ async def main():
 asyncio.run(main())
 ```
 
+## 🔍 Check Provider Availability
+
+Before using Grainchain, check which sandbox providers are available and properly configured:
+
+### CLI Command
+
+```bash
+# Check all providers
+grainchain providers
+
+# Show detailed setup instructions
+grainchain providers --verbose
+
+# Check specific provider
+grainchain providers --check e2b
+
+# Show only available providers
+grainchain providers --available-only
+```
+
+**Example output:**
+```
+🔧 Grainchain Sandbox Providers
+
+📌 Default provider: local ✅
+
+✅ LOCAL
+   Dependencies: ✅
+   Configuration: ✅
+
+❌ E2B
+   Dependencies: ❌
+   Install: pip install grainchain[e2b]
+   Configuration: ❌
+   Missing: E2B_API_KEY
+   Setup:
+     Set the following environment variables:
+       export E2B_API_KEY='your-e2b-api-key-here'
+
+📊 Summary: 1/5 providers available
+```
+
+### Python API
+
+```python
+from grainchain import get_providers_info, get_available_providers, check_provider
+
+# Get all provider information
+providers = get_providers_info()
+for name, info in providers.items():
+    print(f"{name}: {'���' if info.available else '❌'}")
+
+# Get only available providers
+available = get_available_providers()
+print(f"Ready to use: {', '.join(available)}")
+
+# Check specific provider
+e2b_info = check_provider("e2b")
+if not e2b_info.available:
+    print(f"E2B setup needed: {e2b_info.missing_config}")
+```
+
+### Provider Requirements
+
+| Provider | Dependencies | Environment Variables | Install Command |
+|----------|-------------|----------------------|-----------------|
+| **Local** | None | None | Built-in ✅ |
+| **E2B** | `e2b` | `E2B_API_KEY` | `pip install grainchain[e2b]` |
+| **Modal** | `modal` | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET` | `pip install grainchain[modal]` |
+| **Daytona** | `daytona` | `DAYTONA_API_KEY` | `pip install daytona-sdk` |
+| **Morph** | `morphcloud` | `MORPH_API_KEY` | `pip install morphcloud` |
+
 ## ⚡ Performance Benchmarks
 
 Compare sandbox providers with comprehensive performance testing:
@@ -106,9 +178,9 @@ Grainchain solves these problems with a unified interface that abstracts provide
 ```
 ┌─────────────────┐
 │   Application   │
-�����─────────────────┘
+�������─────────────────┘
          │
-┌─────────────────┐
+┌──────────���──────┐
 │   Grainchain    │
 │   Core API      │
 └─────────────────┘
@@ -434,6 +506,8 @@ Grainchain includes a comprehensive CLI for development:
 
 ```bash
 grainchain --help              # Show all commands
+grainchain providers           # Check provider availability
+grainchain providers --verbose # Show detailed setup instructions
 grainchain test               # Run pytest
 grainchain test --cov         # Run tests with coverage
 grainchain lint               # Run ruff linting

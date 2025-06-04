@@ -18,17 +18,22 @@ This document provides comprehensive instructions for running and understanding 
    pip install psutil
    ```
 
-3. **Set up environment variables:**
+### Check Provider Availability
 
-   ```bash
-   # Copy the example environment file
-   cp .env.example .env
+Before running benchmarks, check which providers are available and properly configured:
 
-   # Edit .env with your API keys
-   # For E2B: Set E2B_API_KEY
-   # For Modal: Set MODAL_TOKEN_ID and MODAL_TOKEN_SECRET
-   # For Daytona: Set DAYTONA_API_KEY
-   ```
+```bash
+# Check all providers
+grainchain providers
+
+# Show detailed setup instructions
+grainchain providers --verbose
+
+# Show only available providers
+grainchain providers --available-only
+```
+
+This will help you identify which providers you can benchmark and what setup is needed for unavailable ones.
 
 ### Running Benchmarks
 

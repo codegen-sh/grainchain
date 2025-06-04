@@ -3,6 +3,12 @@ Data analysis example using Grainchain.
 
 This example demonstrates how to use Grainchain for AI-powered data analysis
 tasks, similar to what you might do with Jupyter notebooks or data science environments.
+
+Before running this example, check which providers are available:
+    grainchain providers --verbose
+
+For data analysis, providers like E2B or Daytona work well as they support
+installing packages like pandas, numpy, and matplotlib.
 """
 
 import asyncio
