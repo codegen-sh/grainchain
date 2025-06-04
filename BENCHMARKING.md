@@ -312,4 +312,4 @@ Set up cron job for regular benchmarking:
 **Last Updated**: 2025-05-31
 **Benchmark Version**: 1.0
 **Supported Providers**: Local, E2B
-**Future Providers**: Modal, Docker, AWS Lambda
+**Future Providers**: Modal, Docker (coming soon - not currently supported)
