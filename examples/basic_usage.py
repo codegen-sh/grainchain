@@ -34,8 +34,8 @@ async def basic_example():
         print(f"Uploaded file output: {result.stdout.strip()}")
 
         # List files
-        files = await sandbox.list_files("/workspace")
-        print(f"Files in workspace: {[f.name for f in files]}")
+        files = await sandbox.list_files(".")
+        print(f"Files in current directory: {[f.name for f in files]}")
 
 
 async def provider_specific_example():
@@ -61,7 +61,7 @@ async def configuration_example():
     # Custom configuration
     config = SandboxConfig(
         timeout=60,
-        working_directory="/tmp",
+        working_directory=".",
         environment_vars={"MY_VAR": "test_value"},
         auto_cleanup=True,
     )

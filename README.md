@@ -6,6 +6,41 @@ Grainchain provides a clean, consistent API for interacting with various sandbox
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+- **Python 3.12+** (required)
+- **uv** (recommended) or **pip** for package management
+
+### Installation
+
+#### Option 1: Using uv (Recommended)
+```bash
+# Install uv if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install grainchain
+uv add grainchain
+```
+
+#### Option 2: Using pip
+```bash
+pip install grainchain
+```
+
+#### Option 3: Development Installation
+```bash
+# Clone the repository
+git clone https://github.com/codegen-sh/grainchain.git
+cd grainchain
+
+# Install in development mode
+uv sync  # or pip install -e .
+```
+
+### Your First Grainchain Program
+
+Create a file called `hello_grainchain.py`:
+
 ```python
 import asyncio
 from grainchain import Sandbox
@@ -24,6 +59,69 @@ async def main():
 
 asyncio.run(main())
 ```
+
+Run it:
+```bash
+python hello_grainchain.py
+```
+
+**Expected output:**
+```
+Hello, Grainchain!
+Hello from Python!
+```
+
+### Your First Benchmark
+
+Test the performance of your local sandbox provider:
+
+```bash
+grainchain benchmark --provider local
+```
+
+**Expected output:**
+```
+🚀 Running benchmarks with local provider...
+🏃 Starting benchmark with local provider...
+✅ Basic echo test: 0.002s
+✅ Python test: 0.018s
+✅ File operations test: 0.004s
+
+📈 Benchmark Summary:
+   Provider: local
+   Total time: 0.024s
+   Tests passed: 3
+✅ Benchmarks completed successfully!
+```
+
+🎉 **Congratulations!** You've successfully set up Grainchain and run your first sandbox operations.
+
+### Next Steps
+
+- 📖 [View more examples](examples/) - Explore comprehensive usage examples
+- 🔧 [Configure providers](#-providers) - Set up remote sandbox providers
+- 📊 [Run benchmarks](#-performance-benchmarks) - Compare provider performance
+- 🛠️ [Integration guide](#-integration) - Use Grainchain in your projects
+- ❓ [Troubleshooting](#-troubleshooting) - Common issues and solutions
+
+## 📚 Examples
+
+### Basic Usage
+```python
+# examples/basic_usage.py - Complete working example
+python examples/basic_usage.py
+```
+
+### Simple Data Analysis
+```python
+# examples/simple_data_analysis.py - Data analysis without external dependencies
+python examples/simple_data_analysis.py
+```
+
+### Advanced Examples
+- `examples/data_analysis.py` - Full data analysis with pandas/matplotlib
+- `examples/morph_provider_example.py` - Morph.so provider usage
+- `examples/langgraph/` - LangGraph integration examples
 
 ## ⚡ Performance Benchmarks
 
@@ -106,7 +204,7 @@ Grainchain solves these problems with a unified interface that abstracts provide
 ```
 ┌─────────────────┐
 │   Application   │
-�����������─────────────────┘
+�������������─────────────────┘
          │
 ┌─────────────────┐
 │   Grainchain    │
@@ -376,70 +474,136 @@ Check out the [examples](./examples/) directory for comprehensive usage examples
 - [`basic_usage.py`](./examples/basic_usage.py) - Core functionality and provider usage
 - [`data_analysis.py`](./examples/data_analysis.py) - Data science workflow example
 
-## 🛠️ Development
+## 🛠️ Integration
 
-### Development Workflow
+### Using Grainchain in Your Projects
 
-```bash
-# Set up development environment
-uv venv
-source .venv/bin/activate
-uv sync --all-extras
+#### Basic Integration
+```python
+from grainchain import Sandbox, SandboxConfig
 
-# Install pre-commit hooks
-grainchain install-hooks
+class MyDataProcessor:
+    def __init__(self, provider="local"):
+        self.provider = provider
 
-# Run tests
-grainchain test
-
-# Run tests with coverage
-grainchain test --cov
-
-# Format and fix code
-grainchain format
-
-# Lint code
-grainchain lint --fix
-
-# Type check (currently disabled)
-grainchain typecheck
-
-# Run all quality checks
-grainchain check
-
-# Run benchmarks
-grainchain benchmark --provider local
-
-# Generate comprehensive performance report (committable)
-./scripts/benchmark_all.sh
-
-# Check latest performance status
-./scripts/benchmark_status.sh
+    async def process_data(self, data_script: str):
+        config = SandboxConfig(timeout=300)
+        async with Sandbox(provider=self.provider, config=config) as sandbox:
+            await sandbox.upload_file("process.py", data_script)
+            result = await sandbox.execute("python process.py")
+            return result.stdout
 ```
 
-### CLI Commands
+#### Error Handling Best Practices
+```python
+from grainchain.core.exceptions import SandboxError, ProviderError
 
-Grainchain includes a comprehensive CLI for development:
-
-```bash
-grainchain --help              # Show all commands
-grainchain test               # Run pytest
-grainchain test --cov         # Run tests with coverage
-grainchain lint               # Run ruff linting
-grainchain format             # Format with ruff
-grainchain typecheck          # Type checking (temporarily disabled)
-grainchain benchmark          # Run performance benchmarks
-grainchain install-hooks      # Install pre-commit hooks
-grainchain check             # Run all quality checks
+async def safe_execution():
+    try:
+        async with Sandbox() as sandbox:
+            result = await sandbox.execute("your_command")
+            if not result.success:
+                print(f"Command failed: {result.stderr}")
+    except ProviderError as e:
+        print(f"Provider error: {e}")
+    except SandboxError as e:
+        print(f"Sandbox error: {e}")
 ```
 
-### Code Quality
+#### Configuration Management
+```python
+# Use environment variables for API keys
+import os
+from grainchain import Sandbox
 
-All code is automatically checked with:
+# For E2B
+os.environ["E2B_API_KEY"] = "your-e2b-key"
 
-- **Ruff** - Fast Python linting, formatting, and import sorting
-- **mypy** - Static type checking (temporarily disabled)
-- **Pre-commit hooks** - Automated quality checks
+# For Morph
+os.environ["MORPH_API_KEY"] = "your-morph-key"
+
+# For Daytona
+os.environ["DAYTONA_API_KEY"] = "your-daytona-key"
+```
+
+## ❓ Troubleshooting
+
+### Common Issues and Solutions
+
+#### Installation Issues
+
+**Problem**: `ModuleNotFoundError: No module named 'grainchain'`
+```bash
+# Solution: Install grainchain properly
+pip install grainchain
+# or
+uv add grainchain
+```
+
+**Problem**: `Python version not supported`
+```bash
+# Solution: Upgrade to Python 3.12+
+python --version  # Check current version
+# Install Python 3.12+ using your system package manager
+```
+
+#### Provider Configuration Issues
+
+**Problem**: `ProviderError: API key not found`
+```bash
+# Solution: Set up environment variables
+export E2B_API_KEY="your-api-key"
+export MORPH_API_KEY="your-api-key"
+export DAYTONA_API_KEY="your-api-key"
+
+# Or create a .env file
+echo "E2B_API_KEY=your-api-key" > .env
+```
+
+**Problem**: `Directory not found: /workspace`
+```python
+# Solution: Use relative paths for local provider
+files = await sandbox.list_files(".")  # Instead of "/workspace"
+```
+
+#### Performance Issues
+
+**Problem**: Slow package installation in sandboxes
+```python
+# Solution: Use lighter dependencies or pre-built images
+# For data analysis, consider using simple_data_analysis.py example
+# which uses only built-in Python libraries
+```
+
+**Problem**: Timeout errors
+```python
+# Solution: Increase timeout in configuration
+config = SandboxConfig(timeout=300)  # 5 minutes
+async with Sandbox(config=config) as sandbox:
+    # Your long-running operations
+```
+
+#### File Operation Issues
+
+**Problem**: `File not found` errors
+```python
+# Solution: Check file paths and working directory
+result = await sandbox.execute("pwd")  # Check current directory
+result = await sandbox.execute("ls -la")  # List files
+```
+
+**Problem**: Permission denied errors
+```python
+# Solution: Use appropriate file permissions
+await sandbox.execute("chmod +x script.sh")  # Make executable
+```
+
+### Getting Help
+
+1. **Check the examples**: Look at `examples/` directory for working code
+2. **Run diagnostics**: Use `grainchain benchmark --provider local` to test setup
+3. **Check logs**: Enable verbose logging for debugging
+4. **Community**: Join our [Discord](https://discord.gg/codegen) for support
 
 ## 🗺️ Roadmap
 
