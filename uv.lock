@@ -664,6 +664,7 @@ source = { editable = "." }
 dependencies = [
     { name = "aiohttp" },
     { name = "click" },
+    { name = "daytona-sdk" },
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
@@ -720,6 +721,7 @@ morph = [
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.8.0" },
     { name = "click", specifier = ">=8.0.0" },
+    { name = "daytona-sdk", specifier = ">=0.18.2" },
     { name = "daytona-sdk", marker = "extra == 'daytona'", specifier = ">=0.1.0" },
     { name = "docker", marker = "extra == 'benchmark'", specifier = ">=6.0.0" },
     { name = "e2b", marker = "extra == 'e2b'", specifier = ">=0.13.0" },

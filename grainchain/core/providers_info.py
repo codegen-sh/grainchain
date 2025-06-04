@@ -45,7 +45,7 @@ class ProviderDiscovery:
             "description": "Modal cloud compute provider",
         },
         "daytona": {
-            "dependencies": ["daytona"],
+            "dependencies": ["daytona_sdk"],
             "env_vars": ["DAYTONA_API_KEY"],
             "install_command": "pip install daytona-sdk",
             "description": "Daytona development environment provider",

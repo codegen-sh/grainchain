@@ -94,12 +94,12 @@ def providers(verbose: bool, check: str, available_only: bool):
 
         # Count available providers
         available_count = 0
-        for info in providers.values():
+        for info in all_providers.values():
             if info.available:
                 available_count += 1
 
         click.echo(
-            f"📊 Summary: {available_count}/{len(providers)} providers available"
+            f"📊 Summary: {available_count}/{len(all_providers)} providers available"
         )
 
         if not available_only:
@@ -112,7 +112,7 @@ def providers(verbose: bool, check: str, available_only: bool):
                 click.echo(
                     "   3. Run 'grainchain providers --available-only' to verify"
                 )
-            elif available_count < len(providers):
+            elif available_count < len(all_providers):
                 click.echo(
                     "\n💡 Run 'grainchain providers --verbose' for setup instructions"
                 )

@@ -29,6 +29,7 @@ dependencies = [
     "typing-extensions>=4.0.0",
     "python-dotenv>=1.0.0",
     "click>=8.0.0",
+    "daytona-sdk>=0.18.2",
 ]
 
 [project.optional-dependencies]

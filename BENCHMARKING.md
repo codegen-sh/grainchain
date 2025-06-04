@@ -4,41 +4,65 @@ This document provides comprehensive instructions for running and understanding 
 
 ## 🚀 Quick Start
 
-### 5-Minute Benchmark Walkthrough
+### Step 1: Check What You Can Benchmark ⚠️ IMPORTANT FIRST STEP
 
-Get your first benchmark results in under 5 minutes:
-
-### Check Provider Availability
-
-Before running benchmarks, check which providers are available and properly configured:
+**Before running any benchmarks**, check which providers are available and properly configured on your system:
 
 ```bash
-# Check all providers
+# Check all providers and their status
 grainchain providers
+```
 
-# Show detailed setup instructions
+**Example output:**
+
+```
+🔧 Grainchain Sandbox Providers
+
+📌 Default provider: local ✅
+
+✅ LOCAL
+✅ E2B
+✅ MODAL
+✅ DAYTONA
+✅ MORPH
+
+📊 Summary: 5/5 providers available
+```
+
+If you see ❌ for any provider, use the verbose flag to see setup instructions:
+
+```bash
+# Show detailed setup instructions for any missing providers
 grainchain providers --verbose
 
-# Check specific provider
+# Check specific provider status
 grainchain providers --check e2b
 
-# Show only available providers
+# Show only providers that are ready to benchmark
 grainchain providers --available-only
 ```
 
-This will help you identify which providers you can benchmark and what setup is needed for unavailable ones.
+**Why this matters:** Each provider requires different dependencies and environment variables. Running this command first will:
 
-### Running Your First Benchmark
+- Show you which providers you can benchmark immediately
+- Give you setup instructions for any missing providers
+- Save you time by avoiding benchmark failures due to missing configuration
+- Display the exact install commands and environment variables needed
+
+### Step 2: Running Your First Benchmark
+
+Once you've confirmed which providers are available, run your first benchmark:
 
 ```bash
 # 1. Verify installation
 grainchain --version
 
-# 2. Run your first benchmark (local provider, no API keys needed)
+# 2. Run your first benchmark (local provider usually works without setup)
 grainchain benchmark --provider local
 ```
 
 **Expected output:**
+
 ```
 🚀 Running benchmarks with local provider...
 🏃 Starting benchmark with local provider...
@@ -55,28 +79,51 @@ grainchain benchmark --provider local
 
 🎉 **Congratulations!** You've successfully run your first Grainchain benchmark.
 
-### Understanding Your Results
+### Step 3: Understanding Your Results
 
 - **Basic echo test**: Tests simple command execution speed
 - **Python test**: Tests Python code execution performance
 - **File operations test**: Tests file upload/download speed
 - **Total time**: Overall benchmark execution time
 
-### Next Steps
+### Step 4: Next Steps
 
-1. **Try other providers** (requires API keys):
+1. **Try other available providers** (based on your `grainchain providers` output):
+
    ```bash
-   grainchain benchmark --provider e2b
-   grainchain benchmark --provider daytona
-   grainchain benchmark --provider morph
+   grainchain benchmark --provider e2b      # If E2B shows ✅
+   grainchain benchmark --provider daytona  # If Daytona shows ✅
+   grainchain benchmark --provider morph    # If Morph shows ✅
    ```
 
 2. **Save results for comparison**:
+
    ```bash
    grainchain benchmark --provider local --output ./results/
    ```
 
 3. **Run comprehensive benchmarks**: See [Full Benchmark Suite](#full-benchmark-suite) below
+
+## ⚙️ Provider Setup Quick Reference
+
+If `grainchain providers` shows ❌ for any provider, here's what you need:
+
+| Provider    | Install Command                 | Environment Variable                   | Get API Key                      |
+| ----------- | ------------------------------- | -------------------------------------- | -------------------------------- |
+| **Local**   | Built-in ✅                     | None needed                            | N/A                              |
+| **E2B**     | `pip install grainchain[e2b]`   | `E2B_API_KEY`                          | [e2b.dev](https://e2b.dev)       |
+| **Modal**   | `pip install grainchain[modal]` | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET` | [modal.com](https://modal.com)   |
+| **Daytona** | `pip install daytona-sdk`       | `DAYTONA_API_KEY`                      | [daytona.io](https://daytona.io) |
+| **Morph**   | `pip install morphcloud`        | `MORPH_API_KEY`                        | [morph.so](https://morph.so)     |
+
+**Set environment variables:**
+
+```bash
+# Add to your ~/.bashrc, ~/.zshrc, or .env file
+export E2B_API_KEY='your-e2b-api-key-here'
+export DAYTONA_API_KEY='your-daytona-api-key-here'
+export MORPH_API_KEY='your-morph-api-key-here'
+```
 
 ## 📊 Understanding Results
 
