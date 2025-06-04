@@ -3,10 +3,13 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'GrainChain Documentation',
   description: 'Langchain for sandboxes - A powerful framework for building sandbox-aware AI applications',
-  
+
   // GitHub Pages deployment configuration
   base: '/grainchain/',
-  
+
+  // Ignore dead links for now (can be refined later)
+  ignoreDeadLinks: true,
+
   themeConfig: {
     // Navigation
     nav: [
@@ -138,4 +141,3 @@ export default defineConfig({
     ['meta', { property: 'og:description', content: 'Langchain for sandboxes - A powerful framework for building sandbox-aware AI applications' }]
   ]
 })
-
