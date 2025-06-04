@@ -106,7 +106,7 @@ Grainchain solves these problems with a unified interface that abstracts provide
 ```
 ┌─────────────────┐
 │   Application   │
-�����─────────────────┘
+�����������─────────────────┘
          │
 ┌─────────────────┐
 │   Grainchain    │
@@ -133,29 +133,18 @@ Grainchain solves these problems with a unified interface that abstracts provide
 # Basic installation
 pip install grainchain
 
-# With E2B support
+# With E2B provider support
 pip install grainchain[e2b]
 
-# With Daytona support
-pip install grainchain[daytona]
+# ⚠️ Note: Docker support is not currently available
+# The local provider runs directly on your machine without Docker
+# Docker provider support is coming soon!
 
-# With Morph support
-pip install grainchain[morph]
+# For development and testing
+pip install grainchain[dev]
 
-# With Local provider support
-pip install grainchain[local]
-
-# With Docker provider support
-pip install grainchain[docker]
-
-# With all sandbox providers
-pip install grainchain[all]
-
-# For benchmarking (docker, psutil)
+# For benchmarking (psutil and other tools)
 pip install grainchain[benchmark]
-
-# For data science examples (numpy, pandas, matplotlib)
-pip install grainchain[examples]
 ```
 
 ### For Development
@@ -187,13 +176,13 @@ grainchain install-hooks
 
 ## 🔧 Supported Providers
 
-| Provider    | Status       | Features                                         |
-| ----------- | ------------ | ------------------------------------------------ |
-| **E2B**     | ✅ Supported | Code interpreter, custom images, file operations |
-| **Daytona** | ✅ Supported | Development environments, workspace management   |
-| **Morph**   | ✅ Supported | Custom base images, instant snapshots, <250ms startup |
-| **Local**   | ✅ Supported | Local development and testing                    |
-| **Docker**  | 🚧 Planned   | Local Docker containers                          |
+| Provider    | Status       | Description                                      |
+|-------------|--------------|--------------------------------------------------|
+| **Local**   | ✅ Available | Direct execution on your local machine           |
+| **E2B**     | ✅ Available | Cloud sandboxes via E2B API                     |
+| **Daytona** | ✅ Available | Daytona development environments                 |
+| **Morph**   | ✅ Available | Morph cloud environments                        |
+| **Docker**  | 🚧 Coming Soon | Local Docker containers (not yet supported)   |
 
 ### Daytona Troubleshooting
 
@@ -453,6 +442,12 @@ All code is automatically checked with:
 - **Pre-commit hooks** - Automated quality checks
 
 ## 🗺️ Roadmap
+
+### Current Focus
+- [ ] Enhanced error handling and debugging
+- [ ] Performance optimizations
+- [ ] Docker provider (coming soon!)
+- [ ] Additional cloud providers
 
 ### Phase 1: Foundation ✅
 

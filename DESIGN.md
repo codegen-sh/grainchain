@@ -204,7 +204,7 @@ class ExecutionResult:
 ### Phase 2: Extended Providers
 
 3. **Local Provider** (for development/testing)
-4. **Docker Provider** (local Docker containers)
+4. **Docker Provider** (coming soon - not currently supported)
 5. **AWS Lambda Provider** (serverless execution)
 6. **Google Cloud Run Provider**
 
