@@ -8,6 +8,28 @@ This document provides comprehensive instructions for running and understanding 
 
 Get your first benchmark results in under 5 minutes:
 
+### Check Provider Availability
+
+Before running benchmarks, check which providers are available and properly configured:
+
+```bash
+# Check all providers
+grainchain providers
+
+# Show detailed setup instructions
+grainchain providers --verbose
+
+# Check specific provider
+grainchain providers --check e2b
+
+# Show only available providers
+grainchain providers --available-only
+```
+
+This will help you identify which providers you can benchmark and what setup is needed for unavailable ones.
+
+### Running Your First Benchmark
+
 ```bash
 # 1. Verify installation
 grainchain --version

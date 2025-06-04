@@ -3,6 +3,12 @@ Basic usage examples for Grainchain.
 
 This example demonstrates the core functionality of Grainchain
 with different sandbox providers.
+
+Before running this example, check which providers are available:
+    grainchain providers --verbose
+
+This will show you which providers are ready to use and provide
+setup instructions for any missing dependencies or configuration.
 """
 
 import asyncio

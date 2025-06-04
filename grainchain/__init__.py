@@ -16,6 +16,14 @@ from grainchain.core.exceptions import (
     SandboxError,
     TimeoutError,
 )
+
+# Provider information utilities
+from grainchain.core.providers_info import (
+    ProviderInfo,
+    check_provider,
+    get_available_providers,
+    get_providers_info,
+)
 from grainchain.core.sandbox import Sandbox
 
 # LangGraph integration (optional import)
@@ -35,6 +43,11 @@ __all__ = [
     "ConfigurationError",
     "TimeoutError",
     "AuthenticationError",
+    # Provider information
+    "ProviderInfo",
+    "get_providers_info",
+    "get_available_providers",
+    "check_provider",
 ]
 
 # Add langgraph to __all__ if available
