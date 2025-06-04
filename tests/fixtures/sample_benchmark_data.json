@@ -1,0 +1,358 @@
+{
+  "benchmark_info": {
+    "start_time": "2025-06-01T10:00:00.000000",
+    "end_time": "2025-06-01T10:05:30.000000",
+    "duration_seconds": 330.0,
+    "config": {
+      "providers": ["local", "e2b"],
+      "iterations": 3,
+      "timeout": 30
+    },
+    "test_scenarios": 5,
+    "providers": ["local", "e2b"]
+  },
+  "provider_results": {
+    "local": {
+      "provider": "local",
+      "status": "completed",
+      "scenarios": {
+        "basic_commands": {
+          "description": "Basic shell commands",
+          "iterations": [
+            {
+              "iteration": 0,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 0.1,
+                "command_execution_times": [
+                  {"command": "echo 'Hello'", "time": 0.02, "success": true},
+                  {"command": "pwd", "time": 0.01, "success": true}
+                ],
+                "total_time": 0.13
+              }
+            },
+            {
+              "iteration": 1,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 0.08,
+                "command_execution_times": [
+                  {"command": "echo 'Hello'", "time": 0.02, "success": true},
+                  {"command": "pwd", "time": 0.01, "success": true}
+                ],
+                "total_time": 0.11
+              }
+            },
+            {
+              "iteration": 2,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 0.09,
+                "command_execution_times": [
+                  {"command": "echo 'Hello'", "time": 0.02, "success": true},
+                  {"command": "pwd", "time": 0.01, "success": true}
+                ],
+                "total_time": 0.12
+              }
+            }
+          ],
+          "aggregated": {
+            "success_rate": 100.0,
+            "avg_execution_time": 0.12,
+            "min_execution_time": 0.11,
+            "max_execution_time": 0.13,
+            "total_iterations": 3,
+            "successful_iterations": 3,
+            "failed_iterations": 0,
+            "errors": []
+          }
+        },
+        "python_execution": {
+          "description": "Python script execution",
+          "iterations": [
+            {
+              "iteration": 0,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 0.1,
+                "command_execution_times": [
+                  {"command": "python3 --version", "time": 0.05, "success": true},
+                  {"command": "python3 -c 'print(\"test\")'", "time": 0.03, "success": true}
+                ],
+                "total_time": 0.18
+              }
+            },
+            {
+              "iteration": 1,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 0.08,
+                "command_execution_times": [
+                  {"command": "python3 --version", "time": 0.04, "success": true},
+                  {"command": "python3 -c 'print(\"test\")'", "time": 0.03, "success": true}
+                ],
+                "total_time": 0.15
+              }
+            },
+            {
+              "iteration": 2,
+              "status": "failed",
+              "error": "Timeout",
+              "metrics": {
+                "sandbox_creation_time": 0.1,
+                "command_execution_times": [],
+                "total_time": 30.0
+              }
+            }
+          ],
+          "aggregated": {
+            "success_rate": 66.7,
+            "avg_execution_time": 10.11,
+            "min_execution_time": 0.15,
+            "max_execution_time": 30.0,
+            "total_iterations": 3,
+            "successful_iterations": 2,
+            "failed_iterations": 1,
+            "errors": ["Timeout"]
+          }
+        },
+        "file_operations": {
+          "description": "File upload/download operations",
+          "iterations": [
+            {
+              "iteration": 0,
+              "status": "failed",
+              "error": "File upload failed",
+              "metrics": {
+                "sandbox_creation_time": 0.1,
+                "file_operation_times": [],
+                "total_time": 5.0
+              }
+            },
+            {
+              "iteration": 1,
+              "status": "failed",
+              "error": "File upload failed",
+              "metrics": {
+                "sandbox_creation_time": 0.09,
+                "file_operation_times": [],
+                "total_time": 5.0
+              }
+            },
+            {
+              "iteration": 2,
+              "status": "failed",
+              "error": "File upload failed",
+              "metrics": {
+                "sandbox_creation_time": 0.08,
+                "file_operation_times": [],
+                "total_time": 5.0
+              }
+            }
+          ],
+          "aggregated": {
+            "success_rate": 0.0,
+            "avg_execution_time": 5.0,
+            "min_execution_time": 5.0,
+            "max_execution_time": 5.0,
+            "total_iterations": 3,
+            "successful_iterations": 0,
+            "failed_iterations": 3,
+            "errors": ["File upload failed", "File upload failed", "File upload failed"]
+          }
+        }
+      },
+      "overall_metrics": {
+        "overall_success_rate": 55.6,
+        "avg_creation_time": 0.09,
+        "avg_execution_time": 5.08,
+        "total_scenarios": 3
+      }
+    },
+    "e2b": {
+      "provider": "e2b",
+      "status": "completed",
+      "scenarios": {
+        "basic_commands": {
+          "description": "Basic shell commands",
+          "iterations": [
+            {
+              "iteration": 0,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 2.5,
+                "command_execution_times": [
+                  {"command": "echo 'Hello'", "time": 0.1, "success": true},
+                  {"command": "pwd", "time": 0.05, "success": true}
+                ],
+                "total_time": 2.65
+              }
+            },
+            {
+              "iteration": 1,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 2.3,
+                "command_execution_times": [
+                  {"command": "echo 'Hello'", "time": 0.08, "success": true},
+                  {"command": "pwd", "time": 0.04, "success": true}
+                ],
+                "total_time": 2.42
+              }
+            },
+            {
+              "iteration": 2,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 2.4,
+                "command_execution_times": [
+                  {"command": "echo 'Hello'", "time": 0.09, "success": true},
+                  {"command": "pwd", "time": 0.05, "success": true}
+                ],
+                "total_time": 2.54
+              }
+            }
+          ],
+          "aggregated": {
+            "success_rate": 100.0,
+            "avg_execution_time": 2.54,
+            "min_execution_time": 2.42,
+            "max_execution_time": 2.65,
+            "total_iterations": 3,
+            "successful_iterations": 3,
+            "failed_iterations": 0,
+            "errors": []
+          }
+        },
+        "python_execution": {
+          "description": "Python script execution",
+          "iterations": [
+            {
+              "iteration": 0,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 2.5,
+                "command_execution_times": [
+                  {"command": "python3 --version", "time": 0.2, "success": true},
+                  {"command": "python3 -c 'print(\"test\")'", "time": 0.15, "success": true}
+                ],
+                "total_time": 2.85
+              }
+            },
+            {
+              "iteration": 1,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 2.3,
+                "command_execution_times": [
+                  {"command": "python3 --version", "time": 0.18, "success": true},
+                  {"command": "python3 -c 'print(\"test\")'", "time": 0.12, "success": true}
+                ],
+                "total_time": 2.6
+              }
+            },
+            {
+              "iteration": 2,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 2.4,
+                "command_execution_times": [
+                  {"command": "python3 --version", "time": 0.19, "success": true},
+                  {"command": "python3 -c 'print(\"test\")'", "time": 0.13, "success": true}
+                ],
+                "total_time": 2.72
+              }
+            }
+          ],
+          "aggregated": {
+            "success_rate": 100.0,
+            "avg_execution_time": 2.72,
+            "min_execution_time": 2.6,
+            "max_execution_time": 2.85,
+            "total_iterations": 3,
+            "successful_iterations": 3,
+            "failed_iterations": 0,
+            "errors": []
+          }
+        },
+        "file_operations": {
+          "description": "File upload/download operations",
+          "iterations": [
+            {
+              "iteration": 0,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 2.5,
+                "file_operation_times": [
+                  {"operation": "upload", "time": 0.5, "success": true},
+                  {"operation": "download", "time": 0.3, "success": true}
+                ],
+                "total_time": 3.3
+              }
+            },
+            {
+              "iteration": 1,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 2.3,
+                "file_operation_times": [
+                  {"operation": "upload", "time": 0.4, "success": true},
+                  {"operation": "download", "time": 0.25, "success": true}
+                ],
+                "total_time": 2.95
+              }
+            },
+            {
+              "iteration": 2,
+              "status": "success",
+              "metrics": {
+                "sandbox_creation_time": 2.4,
+                "file_operation_times": [
+                  {"operation": "upload", "time": 0.45, "success": true},
+                  {"operation": "download", "time": 0.28, "success": true}
+                ],
+                "total_time": 3.13
+              }
+            }
+          ],
+          "aggregated": {
+            "success_rate": 100.0,
+            "avg_execution_time": 3.13,
+            "min_execution_time": 2.95,
+            "max_execution_time": 3.3,
+            "total_iterations": 3,
+            "successful_iterations": 3,
+            "failed_iterations": 0,
+            "errors": []
+          }
+        }
+      },
+      "overall_metrics": {
+        "overall_success_rate": 100.0,
+        "avg_creation_time": 2.4,
+        "avg_execution_time": 2.8,
+        "total_scenarios": 3
+      }
+    }
+  },
+  "summary": {
+    "provider_comparison": {
+      "local": {
+        "success_rate": 55.6,
+        "avg_execution_time": 5.08,
+        "avg_creation_time": 0.09
+      },
+      "e2b": {
+        "success_rate": 100.0,
+        "avg_execution_time": 2.8,
+        "avg_creation_time": 2.4
+      }
+    },
+    "best_performers": {
+      "most_reliable": "e2b",
+      "fastest_execution": "local",
+      "fastest_startup": "local"
+    }
+  },
+  "status": "completed"
+}

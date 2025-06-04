@@ -1,0 +1,95 @@
+{
+  "default_settings": {
+    "time_range_days": 30,
+    "comparison_threshold": 0.1,
+    "chart_output_dir": "benchmarks/charts",
+    "report_output_dir": "benchmarks/reports",
+    "preferred_chart_format": "png",
+    "preferred_report_format": "html",
+    "include_charts_in_reports": true,
+    "interactive_charts": false
+  },
+  "visualization": {
+    "chart_style": "seaborn-v0_8",
+    "color_palette": ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"],
+    "figure_size": [12, 8],
+    "dpi": 300,
+    "font_size": 12,
+    "grid_alpha": 0.3
+  },
+  "metrics": {
+    "primary_metrics": ["success_rate", "avg_execution_time", "avg_creation_time"],
+    "secondary_metrics": ["min_execution_time", "max_execution_time", "total_scenarios"],
+    "metric_weights": {
+      "success_rate": 0.5,
+      "avg_execution_time": 0.3,
+      "avg_creation_time": 0.2
+    },
+    "regression_thresholds": {
+      "success_rate": 0.05,
+      "avg_execution_time": 0.5,
+      "avg_creation_time": 0.2
+    }
+  },
+  "providers": {
+    "display_names": {
+      "local": "Local",
+      "e2b": "E2B",
+      "modal": "Modal",
+      "daytona": "Daytona",
+      "morph": "Morph"
+    },
+    "provider_colors": {
+      "local": "#1f77b4",
+      "e2b": "#ff7f0e",
+      "modal": "#2ca02c",
+      "daytona": "#d62728",
+      "morph": "#9467bd"
+    },
+    "provider_priorities": {
+      "local": 1,
+      "e2b": 2,
+      "modal": 3,
+      "daytona": 4,
+      "morph": 5
+    }
+  },
+  "analysis": {
+    "trend_analysis": {
+      "min_data_points": 3,
+      "trend_strength_threshold": 0.3,
+      "statistical_confidence": 0.95
+    },
+    "comparison": {
+      "min_runs_for_comparison": 2,
+      "significance_threshold": 0.05,
+      "effect_size_threshold": 0.2
+    },
+    "recommendation": {
+      "confidence_threshold": 0.7,
+      "min_data_points": 5,
+      "use_case_weights": {
+        "general": {"success_rate": 0.4, "speed": 0.4, "startup": 0.2},
+        "speed": {"success_rate": 0.2, "speed": 0.6, "startup": 0.2},
+        "reliability": {"success_rate": 0.7, "speed": 0.2, "startup": 0.1}
+      }
+    }
+  },
+  "export": {
+    "formats": ["json", "csv", "html", "markdown"],
+    "include_raw_data": false,
+    "compress_exports": false,
+    "export_charts": true
+  },
+  "notifications": {
+    "regression_alerts": true,
+    "performance_improvements": true,
+    "new_provider_detection": true,
+    "alert_thresholds": {
+      "critical_success_rate": 0.5,
+      "warning_success_rate": 0.8,
+      "critical_execution_time": 10.0,
+      "warning_execution_time": 5.0
+    }
+  }
+}

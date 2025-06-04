@@ -2,6 +2,30 @@
 
 This document provides comprehensive instructions for running and understanding Grainchain sandbox provider benchmarks.
 
+## 📊 New: Advanced Analysis & Comparison Tools
+
+Grainchain now includes powerful analysis capabilities to help you make data-driven decisions about provider selection and performance optimization.
+
+### Quick Start with Analysis
+
+```bash
+# Run benchmarks and analyze results
+grainchain benchmark --provider all
+grainchain analysis compare --provider1 local --provider2 e2b --chart
+grainchain analysis report --format html --include-charts
+```
+
+### Key Analysis Features
+
+- **Provider Comparison**: Compare performance metrics between providers
+- **Trend Analysis**: Track performance changes over time
+- **Regression Detection**: Automatically detect performance degradations
+- **Interactive Dashboards**: Visualize data with charts and graphs
+- **Comprehensive Reports**: Generate detailed analysis reports
+- **Provider Recommendations**: Get data-driven provider suggestions
+
+For detailed analysis documentation, see the [Analysis Guide](docs/analysis_guide.md).
+
 ## 🚀 Quick Start
 
 ### 5-Minute Benchmark Walkthrough

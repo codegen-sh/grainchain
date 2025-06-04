@@ -2,6 +2,44 @@
 
 This directory contains benchmarking infrastructure for testing and comparing different sandbox providers in the Grainchain project.
 
+## 📊 New: Benchmark Analysis & Comparison
+
+Grainchain now includes powerful analysis tools to compare providers, analyze trends, and generate comprehensive reports.
+
+### Quick Analysis Commands
+
+```bash
+# Compare two providers
+grainchain analysis compare --provider1 local --provider2 e2b --chart
+
+# Analyze performance trends
+grainchain analysis trends --provider local --days 30 --interactive
+
+# Generate comprehensive report
+grainchain analysis report --format html --include-charts
+
+# Detect performance regressions
+grainchain analysis regressions --threshold 0.1
+
+# Get provider recommendations
+grainchain analysis recommend --use-case reliability
+
+# Create performance dashboard
+grainchain analysis dashboard --interactive
+```
+
+### Analysis Features
+
+- **Provider Comparison**: Compare performance between different providers
+- **Trend Analysis**: Analyze performance trends over time with statistical insights
+- **Regression Detection**: Automatically detect performance regressions
+- **Visualization**: Generate charts, graphs, and interactive dashboards
+- **Comprehensive Reports**: Create detailed reports in HTML, Markdown, or PDF
+- **Provider Recommendations**: Get data-driven provider recommendations
+- **Configuration Management**: Customize analysis settings and preferences
+
+For detailed analysis documentation, see [Analysis Guide](../docs/analysis_guide.md).
+
 ## Overview
 
 The benchmark suite evaluates sandbox providers across multiple scenarios:
