@@ -3,7 +3,7 @@ Integration helpers for using SandboxAgent with LocalSandbox.
 """
 
 import logging
-from typing import Any, Optional, Union
+from typing import Any
 
 from langchain_core.language_models import BaseChatModel
 from langchain_core.tools import BaseTool
@@ -27,8 +27,8 @@ class LocalSandboxAgent(SandboxAgent):
         llm: BaseChatModel,
         working_directory: str = "~/sandbox_workspace",
         timeout: int = 60,
-        additional_tools: Optional[list[BaseTool]] = None,
-        system_message: Optional[str] = None,
+        additional_tools: list[BaseTool] | None = None,
+        system_message: str | None = None,
     ):
         """
         Initialize the LocalSandboxAgent.
@@ -73,8 +73,8 @@ def create_local_sandbox_agent(
     llm: BaseChatModel,
     working_directory: str = "~/sandbox_workspace",
     timeout: int = 60,
-    additional_tools: Optional[list[BaseTool]] = None,
-    system_message: Optional[str] = None,
+    additional_tools: list[BaseTool] | None = None,
+    system_message: str | None = None,
 ) -> LocalSandboxAgent:
     """
     Factory function to create a LocalSandboxAgent.
@@ -128,16 +128,16 @@ class SandboxAgentManager:
     def __init__(self):
         """Initialize the agent manager."""
         self.agents: dict[str, SandboxAgent] = {}
-        self._active_agent: Optional[str] = None
+        self._active_agent: str | None = None
 
     def add_agent(
         self,
         name: str,
         llm: BaseChatModel,
-        provider: Optional[Union[str, Any]] = None,
-        config: Optional[SandboxConfig] = None,
-        additional_tools: Optional[list[BaseTool]] = None,
-        system_message: Optional[str] = None,
+        provider: str | Any | None = None,
+        config: SandboxConfig | None = None,
+        additional_tools: list[BaseTool] | None = None,
+        system_message: str | None = None,
     ) -> SandboxAgent:
         """
         Add a new agent to the manager.
@@ -178,8 +178,8 @@ class SandboxAgentManager:
         llm: BaseChatModel,
         working_directory: str = "~/sandbox_workspace",
         timeout: int = 60,
-        additional_tools: Optional[list[BaseTool]] = None,
-        system_message: Optional[str] = None,
+        additional_tools: list[BaseTool] | None = None,
+        system_message: str | None = None,
     ) -> LocalSandboxAgent:
         """
         Add a local sandbox agent to the manager.
@@ -214,7 +214,7 @@ class SandboxAgentManager:
 
         return agent
 
-    def get_agent(self, name: str) -> Optional[SandboxAgent]:
+    def get_agent(self, name: str) -> SandboxAgent | None:
         """Get an agent by name."""
         return self.agents.get(name)
 
@@ -224,13 +224,13 @@ class SandboxAgentManager:
             raise ValueError(f"Agent '{name}' not found")
         self._active_agent = name
 
-    def get_active_agent(self) -> Optional[SandboxAgent]:
+    def get_active_agent(self) -> SandboxAgent | None:
         """Get the currently active agent."""
         if self._active_agent:
             return self.agents.get(self._active_agent)
         return None
 
-    def run(self, message: str, agent_name: Optional[str] = None) -> str:
+    def run(self, message: str, agent_name: str | None = None) -> str:
         """
         Run a message with the specified agent or the active agent.
 
@@ -252,7 +252,7 @@ class SandboxAgentManager:
 
         return agent.run(message)
 
-    async def arun(self, message: str, agent_name: Optional[str] = None) -> str:
+    async def arun(self, message: str, agent_name: str | None = None) -> str:
         """
         Asynchronously run a message with the specified agent or the active agent.
 

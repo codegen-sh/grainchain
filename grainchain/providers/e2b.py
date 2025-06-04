@@ -1,7 +1,6 @@
 """E2B provider implementation for Grainchain."""
 
 import time
-from typing import Optional, Union
 
 from grainchain.core.config import ProviderConfig
 from grainchain.core.exceptions import AuthenticationError, ProviderError
@@ -90,9 +89,9 @@ class E2BSandboxSession(BaseSandboxSession):
     async def execute(
         self,
         command: str,
-        timeout: Optional[int] = None,
-        working_dir: Optional[str] = None,
-        environment: Optional[dict[str, str]] = None,
+        timeout: int | None = None,
+        working_dir: str | None = None,
+        environment: dict[str, str] | None = None,
     ) -> ExecutionResult:
         """Execute a command in the E2B sandbox."""
         import time
@@ -143,7 +142,7 @@ class E2BSandboxSession(BaseSandboxSession):
                 )
 
     async def upload_file(
-        self, path: str, content: Union[str, bytes], mode: str = "text"
+        self, path: str, content: str | bytes, mode: str = "text"
     ) -> None:
         """Upload a file to the E2B sandbox."""
         try:

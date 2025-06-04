@@ -7,7 +7,6 @@ import tempfile
 import time
 import uuid
 from pathlib import Path
-from typing import Optional, Union
 
 from grainchain.core.config import ProviderConfig
 from grainchain.core.exceptions import ProviderError
@@ -82,9 +81,9 @@ class LocalSandboxSession(BaseSandboxSession):
     async def execute(
         self,
         command: str,
-        timeout: Optional[int] = None,
-        working_dir: Optional[str] = None,
-        environment: Optional[dict[str, str]] = None,
+        timeout: int | None = None,
+        working_dir: str | None = None,
+        environment: dict[str, str] | None = None,
     ) -> ExecutionResult:
         """Execute a command in the local sandbox."""
         self._ensure_not_closed()
@@ -115,7 +114,7 @@ class LocalSandboxSession(BaseSandboxSession):
                 stdout, stderr = await asyncio.wait_for(
                     process.communicate(), timeout=timeout or self.config.timeout
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 process.kill()
                 await process.wait()
                 raise ProviderError(
@@ -146,7 +145,7 @@ class LocalSandboxSession(BaseSandboxSession):
             )
 
     async def upload_file(
-        self, path: str, content: Union[str, bytes], mode: str = "w"
+        self, path: str, content: str | bytes, mode: str = "w"
     ) -> None:
         """Upload a file to the local sandbox."""
         self._ensure_not_closed()

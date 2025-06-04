@@ -3,7 +3,6 @@
 import asyncio
 import time
 import uuid
-from typing import Optional, Union
 
 from grainchain.core.config import ProviderConfig
 from grainchain.core.exceptions import AuthenticationError, ProviderError
@@ -124,9 +123,9 @@ class MorphSandboxSession(BaseSandboxSession):
     async def execute(
         self,
         command: str,
-        timeout: Optional[int] = None,
-        working_dir: Optional[str] = None,
-        environment: Optional[dict[str, str]] = None,
+        timeout: int | None = None,
+        working_dir: str | None = None,
+        environment: dict[str, str] | None = None,
     ) -> ExecutionResult:
         """Execute a command in the Morph sandbox."""
         start_time = time.time()
@@ -184,7 +183,7 @@ class MorphSandboxSession(BaseSandboxSession):
                 )
 
     async def upload_file(
-        self, path: str, content: Union[str, bytes], mode: str = "text"
+        self, path: str, content: str | bytes, mode: str = "text"
     ) -> None:
         """Upload a file to the Morph sandbox."""
         try:
@@ -356,7 +355,7 @@ class MorphSandboxSession(BaseSandboxSession):
                 f"Morph sandbox termination failed: {e}", self._provider.name, e
             ) from e
 
-    async def wake_up(self, snapshot_id: Optional[str] = None) -> None:
+    async def wake_up(self, snapshot_id: str | None = None) -> None:
         """Wake up a terminated sandbox, optionally from a specific snapshot."""
         try:
             if snapshot_id:

@@ -218,7 +218,9 @@ def typecheck(path: str):
 
 @main.command()
 @click.option(
-    "--provider", default="local", help="Provider to benchmark (local, e2b, daytona)"
+    "--provider",
+    default="local",
+    help="Provider to benchmark (local, e2b, daytona, morph)",
 )
 @click.option("--config", help="Path to benchmark config file")
 @click.option("--output", help="Output directory for results")

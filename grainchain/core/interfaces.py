@@ -4,7 +4,7 @@ import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any
 
 
 class SandboxStatus(Enum):
@@ -66,12 +66,12 @@ class SandboxConfig:
     """Configuration for sandbox creation and management."""
 
     # Resource limits
-    timeout: Optional[int] = 300  # seconds
-    memory_limit: Optional[str] = None  # e.g., "2GB"
-    cpu_limit: Optional[float] = None  # CPU cores
+    timeout: int | None = 300  # seconds
+    memory_limit: str | None = None  # e.g., "2GB"
+    cpu_limit: float | None = None  # CPU cores
 
     # Environment
-    image: Optional[str] = None
+    image: str | None = None
     working_directory: str = "~"
     environment_vars: dict[str, str] = field(default_factory=dict)
 
@@ -136,16 +136,16 @@ class SandboxSession(ABC):
     async def execute(
         self,
         command: str,
-        timeout: Optional[int] = None,
-        working_dir: Optional[str] = None,
-        environment: Optional[dict[str, str]] = None,
+        timeout: int | None = None,
+        working_dir: str | None = None,
+        environment: dict[str, str] | None = None,
     ) -> ExecutionResult:
         """Execute a command in the sandbox."""
         pass
 
     @abstractmethod
     async def upload_file(
-        self, path: str, content: Union[str, bytes], mode: str = "w"
+        self, path: str, content: str | bytes, mode: str = "w"
     ) -> None:
         """Upload a file to the sandbox."""
         pass
@@ -184,7 +184,7 @@ class SandboxSession(ABC):
         """
         raise NotImplementedError("Sandbox termination not implemented")
 
-    async def wake_up(self, snapshot_id: Optional[str] = None) -> None:
+    async def wake_up(self, snapshot_id: str | None = None) -> None:
         """Wake up a terminated sandbox, optionally from a specific snapshot.
 
         Args:

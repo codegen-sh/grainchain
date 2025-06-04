@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-Benchmarking Infrastructure for Outline Application
+Outline Benchmark Runner
 
-This script orchestrates the benchmarking process:
-1. Boots up a VM using the codex-universal base image
-2. Installs Outline application (yarn install)
-3. Takes performance snapshots before and after making trivial changes
-4. Stores results and generates reports
+⚠️ IMPORTANT: Docker support is not currently available in Grainchain.
+This benchmark runner is for future Docker provider development.
+
+The local provider runs directly on your machine without Docker.
+Docker provider support is coming soon!
+
+For now, please use the local provider for benchmarking.
 """
 
 import argparse
@@ -624,6 +626,30 @@ class BenchmarkRunner:
                 self.logger.info("Container stopped and cleaned up")
             except Exception as e:
                 self.logger.error(f"Failed to cleanup container: {e}")
+
+
+class DockerBenchmarkRunner:
+    """
+    ⚠️ IMPORTANT: Docker support is not currently available in Grainchain.
+    This benchmark runner is for future Docker provider development.
+
+    The local provider runs directly on your machine without Docker.
+    Docker provider support is coming soon!
+
+    For now, please use the local provider for benchmarking.
+    """
+
+    def __init__(self, config: dict[str, Any]):
+        # Docker support coming soon - this will fail for now
+        try:
+            self.docker_client = docker.from_env()
+        except Exception as e:
+            raise RuntimeError(
+                "❌ Docker support is not currently available in Grainchain.\n"
+                "The local provider runs directly on your machine without Docker.\n"
+                "Docker provider support is coming soon!\n"
+                f"Original error: {e}"
+            )
 
 
 def main():

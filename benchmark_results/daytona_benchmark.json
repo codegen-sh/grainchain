@@ -1,0 +1,24 @@
+{
+  "provider": "daytona",
+  "timestamp": 1749005010.964963,
+  "tests": [
+    {
+      "name": "basic_echo",
+      "duration": 0.27715301513671875,
+      "success": true,
+      "stdout": "Hello, Grainchain!"
+    },
+    {
+      "name": "python_execution",
+      "duration": 0.18847203254699707,
+      "success": true,
+      "stdout": "Python works!"
+    },
+    {
+      "name": "file_operations",
+      "duration": 0.3319377899169922,
+      "success": true,
+      "stdout": "Hello from file!"
+    }
+  ]
+}

@@ -20,10 +20,23 @@ async def setup_data_environment(sandbox: Sandbox):
     """Set up a data analysis environment with required packages."""
     print("📦 Setting up data analysis environment...")
 
-    # Install required packages
-    result = await sandbox.execute("pip install pandas numpy matplotlib seaborn")
+    # Install required packages with longer timeout
+    print("Installing pandas and numpy...")
+    result = await sandbox.execute("pip install pandas numpy")
     if not result.success:
-        print(f"Package installation failed: {result.stderr}")
+        print(f"Failed to install pandas/numpy: {result.stderr}")
+        return False
+
+    print("Installing matplotlib...")
+    result = await sandbox.execute("pip install matplotlib")
+    if not result.success:
+        print(f"Failed to install matplotlib: {result.stderr}")
+        return False
+
+    print("Installing seaborn...")
+    result = await sandbox.execute("pip install seaborn")
+    if not result.success:
+        print(f"Failed to install seaborn: {result.stderr}")
         return False
 
     print("✅ Packages installed successfully")
@@ -246,9 +259,9 @@ async def data_analysis_workflow():
     # Configure sandbox for data analysis
     config = SandboxConfig(
         timeout=300,  # 5 minutes for longer operations
-        working_directory="/workspace",
+        working_directory=".",
         environment_vars={
-            "PYTHONPATH": "/workspace",
+            "PYTHONPATH": ".",
             "MPLBACKEND": "Agg",  # Use non-interactive matplotlib backend
         },
     )
@@ -275,7 +288,7 @@ async def data_analysis_workflow():
 
             # List all generated files
             print("\n📁 Generated files:")
-            files = await sandbox.list_files("/workspace")
+            files = await sandbox.list_files(".")
             for file in files:
                 if not file.is_directory:
                     print(f"  - {file.name} ({file.size} bytes)")
@@ -337,6 +350,41 @@ if __name__ == '__main__':
 """
 
     async with Sandbox(provider="local") as sandbox:
+        # First create the sample data in this sandbox
+        data_script = """
+import pandas as pd
+import numpy as np
+
+# Generate sample sales data
+np.random.seed(42)
+dates = pd.date_range('2023-01-01', periods=365, freq='D')
+products = ['Product A', 'Product B', 'Product C', 'Product D']
+
+data = []
+for date in dates:
+    for product in products:
+        sales = np.random.normal(100, 20)  # Normal distribution around 100
+        price = np.random.uniform(10, 50)  # Random price between 10-50
+        data.append({
+            'date': date,
+            'product': product,
+            'sales': max(0, sales),  # Ensure non-negative sales
+            'price': price,
+            'revenue': max(0, sales) * price
+        })
+
+df = pd.DataFrame(data)
+df.to_csv('sales_data.csv', index=False)
+print("Created sample data for AI analysis")
+"""
+
+        # Install pandas and numpy first
+        await sandbox.execute("pip install pandas numpy")
+
+        # Create the data
+        await sandbox.upload_file("create_sample_data.py", data_script)
+        await sandbox.execute("python create_sample_data.py")
+
         # Upload and execute AI-generated code
         await sandbox.upload_file("ai_analysis.py", ai_generated_code)
         result = await sandbox.execute("python ai_analysis.py")

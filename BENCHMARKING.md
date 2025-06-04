@@ -4,19 +4,9 @@ This document provides comprehensive instructions for running and understanding 
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### 5-Minute Benchmark Walkthrough
 
-1. **Install Grainchain in development mode:**
-
-   ```bash
-   pip install -e .
-   ```
-
-2. **Install additional dependencies:**
-
-   ```bash
-   pip install psutil
-   ```
+Get your first benchmark results in under 5 minutes:
 
 ### Check Provider Availability
 
@@ -29,58 +19,64 @@ grainchain providers
 # Show detailed setup instructions
 grainchain providers --verbose
 
+# Check specific provider
+grainchain providers --check e2b
+
 # Show only available providers
 grainchain providers --available-only
 ```
 
 This will help you identify which providers you can benchmark and what setup is needed for unavailable ones.
 
-### Running Benchmarks
-
-#### Option 1: Using Make Commands (Recommended)
+### Running Your First Benchmark
 
 ```bash
-# Run benchmarks for all available providers
-make grainchain-benchmark
+# 1. Verify installation
+grainchain --version
 
-# Test only local provider
-make grainchain-local
-
-# Test only E2B provider
-make grainchain-e2b
-
-# Test only Daytona provider
-make grainchain-daytona
-
-# Test only Modal provider (when available)
-make grainchain-modal
-
-# Compare all providers with more iterations
-make grainchain-compare
+# 2. Run your first benchmark (local provider, no API keys needed)
+grainchain benchmark --provider local
 ```
 
-#### Option 2: Direct Script Execution
+**Expected output:**
+```
+🚀 Running benchmarks with local provider...
+🏃 Starting benchmark with local provider...
+✅ Basic echo test: 0.002s
+✅ Python test: 0.018s
+✅ File operations test: 0.004s
 
-```bash
-# Run with default settings (local + e2b, 3 iterations)
-./benchmarks/scripts/run_grainchain_benchmark.sh
-
-# Specify providers and iterations
-./benchmarks/scripts/run_grainchain_benchmark.sh "local e2b" 5
-
-# Run only one provider
-./benchmarks/scripts/run_grainchain_benchmark.sh "e2b" 3
+📈 Benchmark Summary:
+   Provider: local
+   Total time: 0.024s
+   Tests passed: 3
+✅ Benchmarks completed successfully!
 ```
 
-#### Option 3: Python Script Direct
+🎉 **Congratulations!** You've successfully run your first Grainchain benchmark.
 
-```bash
-# Run with custom configuration
-python benchmarks/scripts/grainchain_benchmark.py \
-    --providers local e2b \
-    --iterations 3 \
-    --config benchmarks/configs/grainchain.json
-```
+### Understanding Your Results
+
+- **Basic echo test**: Tests simple command execution speed
+- **Python test**: Tests Python code execution performance
+- **File operations test**: Tests file upload/download speed
+- **Total time**: Overall benchmark execution time
+
+### Next Steps
+
+1. **Try other providers** (requires API keys):
+   ```bash
+   grainchain benchmark --provider e2b
+   grainchain benchmark --provider daytona
+   grainchain benchmark --provider morph
+   ```
+
+2. **Save results for comparison**:
+   ```bash
+   grainchain benchmark --provider local --output ./results/
+   ```
+
+3. **Run comprehensive benchmarks**: See [Full Benchmark Suite](#full-benchmark-suite) below
 
 ## 📊 Understanding Results
 
@@ -317,4 +313,4 @@ Set up cron job for regular benchmarking:
 **Last Updated**: 2025-05-31
 **Benchmark Version**: 1.0
 **Supported Providers**: Local, E2B
-**Future Providers**: Modal, Docker, AWS Lambda
+**Future Providers**: Modal, Docker (coming soon - not currently supported)

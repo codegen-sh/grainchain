@@ -1,7 +1,6 @@
 """Main Sandbox class - the primary interface for Grainchain."""
 
 import logging
-from typing import Optional, Union
 
 from grainchain.core.config import get_config_manager
 from grainchain.core.exceptions import ConfigurationError, SandboxError
@@ -27,8 +26,8 @@ class Sandbox:
 
     def __init__(
         self,
-        provider: Optional[Union[str, SandboxProvider]] = None,
-        config: Optional[SandboxConfig] = None,
+        provider: str | SandboxProvider | None = None,
+        config: SandboxConfig | None = None,
     ):
         """
         Initialize a new Sandbox instance.
@@ -40,11 +39,11 @@ class Sandbox:
         self._config_manager = get_config_manager()
         self._provider = self._resolve_provider(provider)
         self._config = config or self._config_manager.get_sandbox_defaults()
-        self._session: Optional[SandboxSession] = None
+        self._session: SandboxSession | None = None
         self._closed = False
 
     def _resolve_provider(
-        self, provider: Optional[Union[str, SandboxProvider]]
+        self, provider: str | SandboxProvider | None
     ) -> SandboxProvider:
         """Resolve provider from string name or return provider instance."""
         if provider is None:
@@ -137,9 +136,9 @@ class Sandbox:
     async def execute(
         self,
         command: str,
-        timeout: Optional[int] = None,
-        working_dir: Optional[str] = None,
-        environment: Optional[dict[str, str]] = None,
+        timeout: int | None = None,
+        working_dir: str | None = None,
+        environment: dict[str, str] | None = None,
     ) -> ExecutionResult:
         """
         Execute a command in the sandbox.
@@ -174,7 +173,7 @@ class Sandbox:
             raise SandboxError(f"Command execution failed: {e}") from e
 
     async def upload_file(
-        self, path: str, content: Union[str, bytes], mode: str = "w"
+        self, path: str, content: str | bytes, mode: str = "w"
     ) -> None:
         """
         Upload a file to the sandbox.
@@ -264,7 +263,7 @@ class Sandbox:
         except Exception as e:
             raise SandboxError(f"Sandbox termination failed: {e}") from e
 
-    async def wake_up(self, snapshot_id: Optional[str] = None) -> None:
+    async def wake_up(self, snapshot_id: str | None = None) -> None:
         """Wake up a terminated sandbox, optionally from a specific snapshot."""
         try:
             await self._session.wake_up(snapshot_id)
@@ -279,7 +278,7 @@ class Sandbox:
         return self._session.status
 
     @property
-    def sandbox_id(self) -> Optional[str]:
+    def sandbox_id(self) -> str | None:
         """Get sandbox ID if session exists."""
         return self._session.sandbox_id if self._session else None
 

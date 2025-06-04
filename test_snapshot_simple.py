@@ -20,7 +20,6 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import Optional
 
 try:
     from grainchain import Sandbox, SandboxConfig
@@ -196,7 +195,7 @@ RUN export NVM_DIR="$HOME/.nvm" && \
 """
 
 
-async def create_custom_template() -> Optional[str]:
+async def create_custom_template() -> str | None:
     """Create custom E2B template with Codegen Dockerfile"""
     print_step(1, "Creating Codegen-Based E2B Template", Colors.MAGENTA)
 

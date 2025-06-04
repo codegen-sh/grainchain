@@ -2,12 +2,11 @@
 
 import logging
 import sys
-from typing import Optional
 
 
 def setup_logging(
     level: str = "INFO",
-    format_string: Optional[str] = None,
+    format_string: str | None = None,
     include_timestamp: bool = True,
 ) -> None:
     """
