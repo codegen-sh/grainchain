@@ -1,17 +1,8 @@
 name: Outline Benchmarks
 
 on:
-  schedule:
-    # Run benchmarks daily at 2 AM UTC
-    - cron: '0 2 * * *'
   workflow_dispatch:
-    # Allow manual triggering
-  push:
-    branches:
-      - main
-    paths:
-      - 'benchmarks/**'
-      - '.github/workflows/benchmark.yml'
+    # Allow manual triggering only
 
 jobs:
   benchmark:
