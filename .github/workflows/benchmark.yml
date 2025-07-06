@@ -1,4 +1,4 @@
-name: Outline Benchmarks
+name: Grainchain Benchmarks
 
 on:
   workflow_dispatch:
@@ -35,9 +35,11 @@ jobs:
 
     - name: Run benchmarks
       run: |
-        uv run python benchmarks/scripts/grainchain_benchmark.py --providers local --iterations 3
-      env:
-        PYTHONPATH: ${{ github.workspace }}
+        uv run python benchmarks/scripts/auto_publish.py --run-benchmark
+
+    - name: Generate summary report
+      run: |
+        uv run python benchmarks/scripts/auto_publish.py --generate-summary
 
     - name: Commit and push results
       run: |

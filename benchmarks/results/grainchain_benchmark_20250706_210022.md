@@ -1,7 +1,7 @@
 # Grainchain Provider Benchmark Report
 
-**Generated:** 2025-07-06T21:10:45.505859
-**Duration:** 20.82 seconds
+**Generated:** 2025-07-06T21:00:22.661707
+**Duration:** 0.21 seconds
 **Providers Tested:** local
 **Test Scenarios:** 5
 
@@ -9,7 +9,7 @@
 
 | Provider | Success Rate | Avg Time (s) | Creation Time (s) | Status |
 |----------|--------------|--------------|-------------------|--------|
-| local | 100.0% | 1.39 | 0.00 | ✅ |
+| local | 73.3% | 0.04 | 0.00 | ⚠️ |
 
 ## 🏆 Best Performers
 
@@ -21,34 +21,34 @@
 
 ### LOCAL Provider
 
-- **Overall Success Rate:** 100.0%
-- **Average Scenario Time:** 1.39s
+- **Overall Success Rate:** 73.3%
+- **Average Scenario Time:** 0.04s
 - **Average Creation Time:** 0.00s
 
 #### Basic Commands
 - **Success Rate:** 100.0%
-- **Average Time:** 0.02s
-- **Iterations:** 3/3
+- **Average Time:** 0.03s
+- **Iterations:** 1/1
 
 #### Python Execution
 - **Success Rate:** 100.0%
-- **Average Time:** 0.08s
-- **Iterations:** 3/3
+- **Average Time:** 0.09s
+- **Iterations:** 1/1
 
 #### File Operations
-- **Success Rate:** 100.0%
+- **Success Rate:** 0.0%
 - **Average Time:** 0.00s
-- **Iterations:** 3/3
+- **Iterations:** 1/1
 
 #### Computational Tasks
 - **Success Rate:** 100.0%
-- **Average Time:** 0.06s
-- **Iterations:** 3/3
+- **Average Time:** 0.07s
+- **Iterations:** 1/1
 
 #### Snapshot Lifecycle
-- **Success Rate:** 100.0%
-- **Average Time:** 6.78s
-- **Iterations:** 3/3
+- **Success Rate:** 66.7%
+- **Average Time:** 0.02s
+- **Iterations:** 1/1
 
 ## Configuration
 
@@ -57,7 +57,7 @@
   "providers": [
     "local"
   ],
-  "iterations": 3,
+  "iterations": 1,
   "timeout": 30,
   "parallel_tests": false,
   "detailed_metrics": true,

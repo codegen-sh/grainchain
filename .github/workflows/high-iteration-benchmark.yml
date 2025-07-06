@@ -82,8 +82,14 @@ jobs:
         echo "🚀 Starting high-iteration benchmark with ${{ github.event.inputs.iterations }} iterations"
         echo "📊 Testing providers: ${{ github.event.inputs.providers }}"
 
-        # Run the high-iteration benchmark script
-        ./scripts/benchmark_high_iteration.sh "${{ github.event.inputs.iterations }}" "${{ github.event.inputs.providers }}"
+        # Create high_iteration results directory
+        mkdir -p benchmarks/results/high_iteration
+
+        # Run the grainchain benchmark with specified parameters
+        uv run python benchmarks/scripts/grainchain_benchmark.py \
+          --providers ${{ github.event.inputs.providers }} \
+          --iterations ${{ github.event.inputs.iterations }} \
+          --output-dir benchmarks/results/high_iteration
       timeout-minutes: 150
 
     - name: Generate statistical analysis
