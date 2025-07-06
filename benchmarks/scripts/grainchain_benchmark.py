@@ -101,6 +101,7 @@ class GrainchainBenchmark:
                 "description": "Git clone, file creation, snapshot, kill, and restore operations",
                 "type": "snapshot_lifecycle",
                 "commands": [
+                    "rm -rf /tmp/outline",  # Clean up any existing directory
                     "git clone https://github.com/codegen-sh/outline.git /tmp/outline",
                     "ls -la /tmp/outline",
                 ],
@@ -311,10 +312,14 @@ class GrainchainBenchmark:
                             )
                             download_time = time.time() - download_start
 
-                            # Verify content
+                            # Verify content (downloaded_content is bytes, need to decode)
+                            downloaded_str = (
+                                downloaded_content.decode("utf-8")
+                                if isinstance(downloaded_content, bytes)
+                                else downloaded_content
+                            )
                             content_match = (
-                                downloaded_content.strip()
-                                == file_info["content"].strip()
+                                downloaded_str.strip() == file_info["content"].strip()
                             )
 
                             result["metrics"]["file_operation_times"].append(
@@ -404,9 +409,14 @@ class GrainchainBenchmark:
             result["metrics"]["sandbox_creation_time"] = time.time() - creation_start
             operations_completed += 1
 
-            # Step 2: Git clone the outline repo
+            # Step 2: Clean up and git clone the outline repo
             clone_start = time.time()
             try:
+                # First clean up any existing directory
+                await sandbox.execute(
+                    "rm -rf /tmp/outline", timeout=self.config["timeout"]
+                )
+
                 clone_result = await sandbox.execute(
                     "git clone https://github.com/codegen-sh/outline.git /tmp/outline",
                     timeout=self.config["timeout"],

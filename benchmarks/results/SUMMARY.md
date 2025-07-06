@@ -1,12 +1,17 @@
 # Grainchain Benchmark Summary
 
-**Last Updated:** 2025-07-06 20:49:29
-**Total Benchmark Runs:** 1
+**Last Updated:** 2025-07-06 21:11:13
+**Total Benchmark Runs:** 6
 
 ## Recent Results
 
 | Date | Status | Success Rate | Avg Time (s) | Providers | Notes |
 |------|--------|--------------|--------------|-----------|-------|
+| 2025-07-06 | ✅ | 100.0% | 1.39 | local | OK |
+| 2025-07-06 | ✅ | 100.0% | 1.45 | local | OK |
+| 2025-07-06 | ✅ | 96.7% | 1.58 | local | OK |
+| 2025-07-06 | ✅ | 73.3% | 0.04 | local | OK |
+| 2025-07-06 | ✅ | 73.3% | 0.03 | local | OK |
 | 2025-07-06 | ✅ | 76.7% | 1.09 | local | OK |
 
 ## Configuration

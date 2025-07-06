@@ -22,10 +22,14 @@ from grainchain.providers.base import BaseSandboxProvider, BaseSandboxSession
 class LocalProvider(BaseSandboxProvider):
     """Local sandbox provider implementation using temporary directories."""
 
+    # Class-level snapshot registry shared across all instances
+    _shared_snapshots: dict[str, str] = {}
+
     def __init__(self, config: ProviderConfig):
         """Initialize Local provider."""
         super().__init__(config)
         self.base_dir = self.get_config_value("base_dir", tempfile.gettempdir())
+        self._global_snapshots: dict[str, str] = {}  # Provider-level snapshots
 
     @property
     def name(self) -> str:
@@ -233,11 +237,21 @@ class LocalSandboxSession(BaseSandboxSession):
 
         try:
             snapshot_id = f"local_snapshot_{int(time.time())}"
-            snapshot_dir = f"{self.sandbox_dir}_snapshot_{snapshot_id}"
+            # Use a persistent location for snapshots in the base temp directory
+            snapshot_dir = os.path.join(
+                self._provider.base_dir, "grainchain_snapshots", snapshot_id
+            )
+
+            # Ensure snapshots directory exists
+            os.makedirs(os.path.dirname(snapshot_dir), exist_ok=True)
 
             # Copy entire sandbox directory
             shutil.copytree(self.sandbox_dir, snapshot_dir)
             self._snapshots[snapshot_id] = snapshot_dir
+            # Also store in provider-level snapshots for persistence
+            self._provider._global_snapshots[snapshot_id] = snapshot_dir
+            # Store in class-level registry for cross-instance persistence
+            LocalProvider._shared_snapshots[snapshot_id] = snapshot_dir
 
             return snapshot_id
 
@@ -251,12 +265,17 @@ class LocalSandboxSession(BaseSandboxSession):
         self._ensure_not_closed()
 
         try:
-            if snapshot_id not in self._snapshots:
+            # Check instance, provider-level, and class-level snapshots
+            if snapshot_id in self._snapshots:
+                snapshot_dir = self._snapshots[snapshot_id]
+            elif snapshot_id in self._provider._global_snapshots:
+                snapshot_dir = self._provider._global_snapshots[snapshot_id]
+            elif snapshot_id in LocalProvider._shared_snapshots:
+                snapshot_dir = LocalProvider._shared_snapshots[snapshot_id]
+            else:
                 raise ProviderError(
                     f"Snapshot not found: {snapshot_id}", self._provider.name
                 )
-
-            snapshot_dir = self._snapshots[snapshot_id]
 
             if not os.path.exists(snapshot_dir):
                 raise ProviderError(
@@ -281,9 +300,12 @@ class LocalSandboxSession(BaseSandboxSession):
             if os.path.exists(self.sandbox_dir):
                 shutil.rmtree(self.sandbox_dir)
 
-            # Remove snapshots
-            for snapshot_dir in self._snapshots.values():
-                if os.path.exists(snapshot_dir):
+            # Remove only local snapshots that are not in the shared registry
+            for snapshot_id, snapshot_dir in self._snapshots.items():
+                if (
+                    snapshot_id not in LocalProvider._shared_snapshots
+                    and os.path.exists(snapshot_dir)
+                ):
                     shutil.rmtree(snapshot_dir)
 
         except Exception as e:
