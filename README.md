@@ -549,6 +549,95 @@ grainchain benchmark --provider local
 ./scripts/benchmark_status.sh
 ```
 
+### Testing
+
+Grainchain includes a comprehensive test suite with >90% code coverage to ensure reliability across all providers.
+
+### Running Tests
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run only unit tests
+uv run pytest tests/unit/ -v
+
+# Run only integration tests
+uv run pytest tests/integration/ -v
+
+# Run tests with coverage
+uv run pytest --cov=grainchain --cov-report=html
+
+# Run tests for specific provider
+uv run pytest tests/integration/test_local_provider.py -v
+
+# Run performance tests
+uv run pytest -m slow
+
+# Run tests excluding slow tests
+uv run pytest -m "not slow"
+```
+
+### Test Categories
+
+- **Unit Tests** (`tests/unit/`): Fast, isolated tests for core functionality
+  - `test_sandbox.py`: Core Sandbox class tests
+  - `test_providers.py`: Provider implementation tests
+  - `test_config.py`: Configuration management tests
+  - `test_exceptions.py`: Exception handling tests
+  - `test_interfaces.py`: Interface and data structure tests
+
+- **Integration Tests** (`tests/integration/`): Real provider interactions
+  - `test_e2b_provider.py`: E2B provider integration tests
+  - `test_modal_provider.py`: Modal provider integration tests
+  - `test_daytona_provider.py`: Daytona provider integration tests
+  - `test_local_provider.py`: Local provider integration tests
+
+### Test Configuration
+
+Tests are configured via `pytest.ini` with the following markers:
+
+- `unit`: Unit tests (fast, no external dependencies)
+- `integration`: Integration tests (require provider credentials)
+- `slow`: Slow tests that may take longer to run
+- `e2b`: Tests requiring E2B provider
+- `modal`: Tests requiring Modal provider
+- `daytona`: Tests requiring Daytona provider
+- `local`: Tests requiring Local provider
+- `snapshot`: Tests for snapshot functionality
+
+### Provider Credentials for Integration Tests
+
+To run integration tests with real providers, set these environment variables:
+
+```bash
+# E2B
+export E2B_API_KEY=your-e2b-api-key
+
+# Modal
+export MODAL_TOKEN_ID=your-modal-token-id
+export MODAL_TOKEN_SECRET=your-modal-token-secret
+
+# Daytona
+export DAYTONA_API_KEY=your-daytona-api-key
+```
+
+### Continuous Integration
+
+Tests run automatically on GitHub Actions for:
+
+- **Python 3.12** on pull requests and main branch pushes
+- **Integration tests** with real providers on main branch pushes
+- **Performance tests** and benchmarks on releases
+- **Security scans** with bandit on all commits
+
+### Coverage Requirements
+
+- Minimum coverage: **90%**
+- All new code must include tests
+- Integration tests must cover happy path and error scenarios
+- Performance tests ensure operations complete within expected timeframes
+
 ### CLI Commands
 
 Grainchain includes a comprehensive CLI for development:
