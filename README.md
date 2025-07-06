@@ -1,4 +1,4 @@
-# Grainchain 🌾
+# Grainchain 🏜️
 
 > **Langchain for Sandboxes** - A unified Python interface for sandbox providers
 

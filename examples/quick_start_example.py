@@ -16,7 +16,7 @@ from grainchain import Sandbox
 
 async def hello_world_example():
     """Basic 'Hello World' example."""
-    print("🌾 Grainchain Quick Start Example")
+    print("🏜️ Grainchain Quick Start Example")
     print("=" * 40)
 
     print("\n1. Creating a sandbox...")
