@@ -1,11 +1,11 @@
-name: Grainchain Benchmarks
+name: Comprehensive Benchmarks (Manual Only)
 
 on:
   workflow_dispatch:
-    # Allow manual triggering only
+    # Allow manual triggering for comprehensive benchmarks
 
 jobs:
-  benchmark:
+  comprehensive-benchmark:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,7 +45,7 @@ jobs:
       run: |
         git add benchmarks/results/
         if ! git diff --cached --quiet; then
-          git commit -m "📊 Automated benchmark results - $(date '+%Y-%m-%d %H:%M:%S')"
+          git commit -m "📊 Comprehensive benchmark results (scheduled) - $(date '+%Y-%m-%d %H:%M:%S')"
           git push
         else
           echo "No new benchmark results to commit"
@@ -57,6 +57,6 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: benchmark-results
+        name: comprehensive-benchmark-results
         path: benchmarks/results/
         retention-days: 30

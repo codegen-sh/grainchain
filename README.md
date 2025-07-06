@@ -99,7 +99,19 @@ if not e2b_info.available:
 
 ## ⚡ Performance Benchmarks
 
-Compare sandbox providers with comprehensive performance testing:
+Grainchain features a dual benchmark system for comprehensive performance testing:
+
+### 🏃‍♂️ Automated Small Benchmarks
+- **Trigger**: Automatically run on every merge to `main`
+- **Iterations**: 10 per provider (fast execution)
+- **Purpose**: Quick regression detection and merge validation
+- **Providers**: `local`, `e2b`
+
+### 🔬 Comprehensive Benchmarks
+- **Trigger**: Manual execution only
+- **Iterations**: 20 per provider (thorough analysis)
+- **Purpose**: Detailed performance analysis and provider comparison
+- **Providers**: `local`, `e2b`, `daytona`
 
 ### Quick Performance Test
 
@@ -115,6 +127,18 @@ python benchmarks/scripts/grainchain_benchmark.py --providers local e2b --iterat
 
 # Generate automated summary report
 python benchmarks/scripts/auto_publish.py --generate-summary
+```
+
+### Manual Small Benchmark
+
+Run the same lightweight benchmarks that execute on merge:
+
+```bash
+# Run small benchmarks (10 iterations) manually
+grainchain benchmark --config benchmarks/configs/merge-small.json
+
+# Or with custom iterations
+grainchain benchmark --provider local e2b --iterations 10
 ```
 
 ### Full Benchmark Suite

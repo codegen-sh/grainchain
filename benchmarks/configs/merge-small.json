@@ -1,10 +1,10 @@
 {
-  "providers": ["local", "e2b", "daytona"],
-  "iterations": 20,
+  "providers": ["local", "e2b"],
+  "iterations": 10,
   "timeout": 30,
   "parallel_tests": false,
   "detailed_metrics": true,
-  "export_formats": ["json", "markdown", "html"],
+  "export_formats": ["json", "markdown"],
   "test_scenarios": {
     "basic_commands": {
       "enabled": true,
@@ -19,28 +19,21 @@
       "timeout": 20,
       "test_files": [
         { "name": "small.txt", "size": 100 },
-        { "name": "medium.txt", "size": 10000 },
-        { "name": "large.txt", "size": 100000 }
+        { "name": "medium.txt", "size": 10000 }
       ]
     },
     "computational_tasks": {
       "enabled": true,
       "timeout": 30
-    },
-    "snapshot_lifecycle": {
-      "enabled": true,
-      "timeout": 120,
-      "description": "Git clone, file creation, snapshot, kill, and restore operations"
     }
   },
   "environment": {
     "E2B_API_KEY": "from_env",
-    "E2B_TEMPLATE": "base",
-    "DAYTONA_API_KEY": "from_env"
+    "E2B_TEMPLATE": "base"
   },
   "reporting": {
-    "include_raw_data": true,
+    "include_raw_data": false,
     "generate_charts": false,
-    "auto_commit": false
+    "auto_commit": true
   }
 }

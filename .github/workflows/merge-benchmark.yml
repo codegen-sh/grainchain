@@ -1,0 +1,117 @@
+name: Small Benchmarks (Auto on Merge)
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+  workflow_dispatch:
+    # Allow manual triggering for testing
+
+jobs:
+  small-benchmark:
+    # Only run on merged PRs, not just closed ones
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --all-extras
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Configure Git
+      run: |
+        git config --global user.name "Benchmark Bot"
+        git config --global user.email "benchmark@grainchain.dev"
+
+    - name: Run small benchmarks (10 iterations)
+      run: |
+        uv run python benchmarks/scripts/grainchain_benchmark.py --config benchmarks/configs/merge-small.json
+      env:
+        DOCKER_HOST: unix:///var/run/docker.sock
+
+    - name: Generate summary report
+      run: |
+        uv run python benchmarks/scripts/auto_publish.py --generate-summary
+      continue-on-error: true
+
+    - name: Commit and push results
+      run: |
+        git add benchmarks/results/
+        if ! git diff --cached --quiet; then
+          git commit -m "📊 Small benchmark results (merge-triggered) - $(date '+%Y-%m-%d %H:%M:%S')"
+          git push
+        else
+          echo "No new benchmark results to commit"
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload benchmark artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: small-benchmark-results
+        path: benchmarks/results/
+        retention-days: 30
+
+    - name: Comment on PR with results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+
+          // Find the latest benchmark result file
+          const resultsDir = 'benchmarks/results';
+          if (fs.existsSync(resultsDir)) {
+            const files = fs.readdirSync(resultsDir)
+              .filter(f => f.endsWith('.json') && f.includes('grainchain_benchmark'))
+              .sort()
+              .reverse();
+
+            if (files.length > 0) {
+              const latestFile = files[0];
+              const results = JSON.parse(fs.readFileSync(path.join(resultsDir, latestFile), 'utf8'));
+
+              let comment = '## 🏃‍♂️ Small Benchmark Results (10 iterations)\n\n';
+              comment += `**Benchmark completed:** ${results.metadata?.timestamp || 'Unknown'}\n\n`;
+
+              if (results.summary?.provider_comparison) {
+                comment += '### Provider Performance Summary\n\n';
+                for (const [provider, metrics] of Object.entries(results.summary.provider_comparison)) {
+                  comment += `**${provider.toUpperCase()}:**\n`;
+                  comment += `- Success Rate: ${(metrics.success_rate || 0).toFixed(1)}%\n`;
+                  comment += `- Avg Duration: ${(metrics.avg_duration || 0).toFixed(2)}s\n\n`;
+                }
+              }
+
+              comment += `\n📊 [View detailed results](${context.payload.repository.html_url}/actions/runs/${context.runId})`;
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+          }
