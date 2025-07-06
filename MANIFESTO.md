@@ -1,4 +1,4 @@
-# The Grainchain Manifesto 🌾
+# The Grainchain Manifesto ⏳
 
 *A Declaration for the Future of Sandbox Computing*
 
@@ -17,7 +17,7 @@ Today, developers face an impossible choice: commit to a single sandbox provider
 The explosion of sandbox providers—E2B, Modal, Daytona, Morph, and countless others—represents incredible innovation in cloud computing. But this innovation comes with a cost:
 
 - **Developers are trapped** by vendor-specific APIs
-- **Innovation is stifled** by the fear of choosing the wrong provider  
+- **Innovation is stifled** by the fear of choosing the wrong provider
 - **Code becomes brittle** when tightly coupled to a single service
 - **Teams waste time** rewriting the same logic for different providers
 
@@ -137,7 +137,7 @@ The future of software development is increasingly cloud-native and sandbox-driv
 We commit to:
 
 - **Open development** - All decisions made in public
-- **Community-driven roadmap** - Your needs shape our priorities  
+- **Community-driven roadmap** - Your needs shape our priorities
 - **Backward compatibility** - Your code won't break as we evolve
 - **Performance transparency** - Regular benchmarks across all providers
 - **Documentation excellence** - Clear guides for every use case
@@ -180,4 +180,3 @@ The future of sandbox computing is unified, open, and developer-first.
 ---
 
 **"Just as Langchain unified LLMs, Grainchain unifies sandboxes. The future is provider-agnostic."**
-

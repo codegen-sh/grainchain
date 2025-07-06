@@ -11,7 +11,7 @@ import os
 
 async def main():
     """Main example function with real LLM."""
-    print("🌾 Grainchain LangGraph + OpenAI Example")
+    print("⏳ Grainchain LangGraph + OpenAI Example")
     print("=" * 50)
 
     # Check for API key

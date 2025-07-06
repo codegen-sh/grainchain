@@ -13,7 +13,7 @@ from grainchain import create_local_sandbox
 
 async def hello_world():
     """The simplest possible grainchain example."""
-    print("🌾 Grainchain Hello World")
+    print("⏳ Grainchain Hello World")
     print("=" * 30)
 
     # Create and use a sandbox in just 3 lines!

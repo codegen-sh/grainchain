@@ -71,7 +71,7 @@ class MockChatModel:
 
 async def main():
     """Main example function."""
-    print("🌾 Grainchain LangGraph Integration Example")
+    print("⏳ Grainchain LangGraph Integration Example")
     print("=" * 50)
 
     # Import the necessary components
