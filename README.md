@@ -144,23 +144,40 @@ The `benchmark_all.sh` script generates timestamped reports in `benchmarks/resul
 
 ### Current Performance Baseline
 
-Latest benchmark results (updated 2024-05-31):
+Latest benchmark results (updated 2025-07-06):
 
 | Provider    | Total Time | Basic Echo | Python Test | File Ops | Performance      |
 | ----------- | ---------- | ---------- | ----------- | -------- | ---------------- |
-| **Local**   | 0.036s     | 0.007s     | 0.021s      | 0.008s   | ⚡ Fastest       |
-| **E2B**     | 0.599s     | 0.331s     | 0.111s      | 0.156s   | 🚀 Balanced      |
-| **Daytona** | 1.012s     | 0.305s     | 0.156s      | 0.551s   | 🛡️ Comprehensive |
-| **Morph**   | 0.250s     | 0.005s     | 0.010s      | 0.005s   | 🚀 Instant Snapshots |
+| **Local**   | 0.051s     | 0.003s     | 0.030s      | 0.005s   | ⚡ Fastest       |
+| **E2B**     | 2.08s      | 0.109s     | 0.300s      | 0.408s   | 🚀 Balanced      |
+| **Daytona** | N/A        | N/A        | N/A         | N/A      | ❌ Credits Depleted |
+| **Morph**   | N/A        | 5.02s      | Failed      | N/A      | ⚠️ Partial Support |
 
 > **Performance Notes**:
 >
-> - Local: Best for development/testing (17x faster than E2B, 28x faster than Daytona)
-> - E2B: Production-ready with good speed and reliability
-> - Daytona: Full workspace environments with comprehensive tooling
-> - Morph: Custom base images, instant snapshots, <250ms startup
+> - Local: Best for development/testing (41x faster than E2B, instant startup)
+> - E2B: Production-ready with excellent reliability (93.3% success rate)
+> - Daytona: Currently unavailable due to depleted credits
+> - Morph: Basic commands work but Python execution has issues
 
 Results are automatically saved to `benchmarks/results/` and can be committed to track performance over time.
+
+### Detailed Performance Analysis
+
+**Comprehensive Benchmark Results (July 6, 2025)**
+
+| Scenario | Local Success | Local Avg Time | E2B Success | E2B Avg Time | Winner |
+|----------|---------------|----------------|-------------|--------------|--------|
+| **Basic Commands** | 100% | 0.021s | 100% | 0.662s | 🏆 Local (31x faster) |
+| **Python Execution** | 100% | 0.089s | 100% | 1.343s | 🏆 Local (15x faster) |
+| **File Operations** | 100% | 0.001s | 100% | 1.343s | 🏆 Local (1343x faster) |
+| **Computational Tasks** | 100% | 0.080s | 100% | 1.067s | 🏆 Local (13x faster) |
+| **Snapshot Lifecycle** | 33% | 6.0s | 67% | 9.05s | 🏆 E2B (better reliability) |
+
+**Key Insights:**
+- **Local Provider**: Exceptional speed across all scenarios, but snapshot functionality needs improvement
+- **E2B Provider**: Consistent reliability with reasonable performance, excellent for production workloads
+- **Overall Recommendation**: Use Local for development/testing, E2B for production deployments
 
 ## 🎯 Why Grainchain?
 
