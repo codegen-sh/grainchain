@@ -179,6 +179,36 @@ Results are automatically saved to `benchmarks/results/` and can be committed to
 - **E2B Provider**: Consistent reliability with reasonable performance, excellent for production workloads
 - **Overall Recommendation**: Use Local for development/testing, E2B for production deployments
 
+### High-Iteration Benchmarks (Optional)
+
+For more statistically significant results, you can run high-iteration benchmarks with configurable iterations:
+
+**Command Line:**
+```bash
+# Run 50 iterations (default) for comprehensive analysis
+./scripts/benchmark_high_iteration.sh 50
+
+# Run 100 iterations on specific providers
+./scripts/benchmark_high_iteration.sh 100 "local e2b"
+
+# Using the CLI command
+uv run grainchain benchmark-high-iteration --iterations 50 --providers "local e2b"
+```
+
+**GitHub Action (Manual Trigger):**
+1. Go to Actions → "High-Iteration Benchmarks (Manual)"
+2. Click "Run workflow"
+3. Configure iterations (default: 50) and providers
+4. Results will be available as workflow artifacts
+
+**Benefits of High-Iteration Testing:**
+- **Statistical Significance**: Detect smaller performance differences with confidence
+- **Confidence Intervals**: 95% confidence intervals for all metrics
+- **Outlier Detection**: Identify and analyze performance anomalies
+- **Trend Analysis**: Better understanding of performance consistency
+
+> **Note**: High-iteration benchmarks are **not part of CI/CD** and must be run manually. They provide more reliable data for production deployment decisions.
+
 ## 🎯 Why Grainchain?
 
 The sandbox ecosystem is rapidly expanding with providers like [E2B](https://e2b.dev/), [Daytona](https://daytona.io/), [Morph](https://morph.dev/), and others. Each has different APIs and capabilities, creating:

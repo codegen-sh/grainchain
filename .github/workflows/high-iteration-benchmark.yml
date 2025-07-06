@@ -1,0 +1,220 @@
+name: High-Iteration Benchmarks (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: 'Number of iterations per test scenario'
+        required: true
+        default: '50'
+        type: string
+      providers:
+        description: 'Space-separated list of providers to test'
+        required: true
+        default: 'local e2b'
+        type: string
+      include_statistical_analysis:
+        description: 'Generate detailed statistical analysis'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  high-iteration-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180  # 3 hours max for high-iteration tests
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: Install dependencies
+      run: |
+        uv sync --all-extras
+
+    - name: Install additional analysis tools
+      run: |
+        uv add numpy pandas matplotlib seaborn scipy
+
+    - name: Validate inputs
+      run: |
+        echo "🔍 Validating benchmark parameters..."
+        echo "Iterations: ${{ github.event.inputs.iterations }}"
+        echo "Providers: ${{ github.event.inputs.providers }}"
+        echo "Statistical Analysis: ${{ github.event.inputs.include_statistical_analysis }}"
+
+        # Validate iterations is a positive number
+        if ! [[ "${{ github.event.inputs.iterations }}" =~ ^[1-9][0-9]*$ ]]; then
+          echo "❌ Error: Iterations must be a positive integer"
+          exit 1
+        fi
+
+        # Check if iterations is reasonable (warn if > 100)
+        if [ "${{ github.event.inputs.iterations }}" -gt 100 ]; then
+          echo "⚠️  Warning: High iteration count (${{ github.event.inputs.iterations }}) may take a very long time"
+        fi
+
+    - name: Configure environment variables
+      run: |
+        # Set up any required API keys from secrets
+        echo "E2B_API_KEY=${{ secrets.E2B_API_KEY }}" >> $GITHUB_ENV
+        echo "DAYTONA_API_KEY=${{ secrets.DAYTONA_API_KEY }}" >> $GITHUB_ENV
+        echo "MORPH_API_KEY=${{ secrets.MORPH_API_KEY }}" >> $GITHUB_ENV
+      env:
+        E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+        DAYTONA_API_KEY: ${{ secrets.DAYTONA_API_KEY }}
+        MORPH_API_KEY: ${{ secrets.MORPH_API_KEY }}
+
+    - name: Run high-iteration benchmarks
+      run: |
+        echo "🚀 Starting high-iteration benchmark with ${{ github.event.inputs.iterations }} iterations"
+        echo "📊 Testing providers: ${{ github.event.inputs.providers }}"
+
+        # Run the high-iteration benchmark script
+        ./scripts/benchmark_high_iteration.sh "${{ github.event.inputs.iterations }}" "${{ github.event.inputs.providers }}"
+      timeout-minutes: 150
+
+    - name: Generate statistical analysis
+      if: ${{ github.event.inputs.include_statistical_analysis == 'true' }}
+      run: |
+        echo "📈 Generating detailed statistical analysis..."
+
+        # Create a Python script for statistical analysis
+        cat > analyze_results.py << 'EOF'
+        import json
+        import numpy as np
+        import pandas as pd
+        from pathlib import Path
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        from scipy import stats
+
+        results_dir = Path("benchmarks/results/high_iteration")
+
+        print("📊 Analyzing high-iteration benchmark results...")
+
+        # Find all JSON result files
+        json_files = list(results_dir.glob("*.json"))
+
+        if not json_files:
+            print("❌ No result files found")
+            exit(1)
+
+        for json_file in json_files:
+            print(f"📋 Analyzing: {json_file.name}")
+
+            with open(json_file) as f:
+                data = json.load(f)
+
+            # Extract timing data for analysis
+            if 'provider_results' in data:
+                for provider, results in data['provider_results'].items():
+                    print(f"\n🔍 Provider: {provider}")
+
+                    if 'scenarios' in results:
+                        for scenario, scenario_data in results['scenarios'].items():
+                            if 'iterations' in scenario_data:
+                                times = [iter_data['metrics']['total_time']
+                                        for iter_data in scenario_data['iterations']
+                                        if 'metrics' in iter_data and 'total_time' in iter_data['metrics']]
+
+                                if times:
+                                    mean_time = np.mean(times)
+                                    std_time = np.std(times)
+                                    ci_95 = stats.t.interval(0.95, len(times)-1,
+                                                           loc=mean_time,
+                                                           scale=stats.sem(times))
+
+                                    print(f"  📈 {scenario}:")
+                                    print(f"    Mean: {mean_time:.3f}s ± {std_time:.3f}s")
+                                    print(f"    95% CI: [{ci_95[0]:.3f}s, {ci_95[1]:.3f}s]")
+                                    print(f"    Samples: {len(times)}")
+
+        print("\n✅ Statistical analysis complete!")
+        EOF
+
+        uv run python analyze_results.py
+
+    - name: Create benchmark summary
+      run: |
+        echo "📋 Creating benchmark summary..."
+
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        SUMMARY_FILE="benchmarks/results/high_iteration/SUMMARY_$TIMESTAMP.md"
+
+        cat > "$SUMMARY_FILE" << EOF
+        # High-Iteration Benchmark Summary
+
+        **Triggered by:** @${{ github.actor }}
+        **Date:** $(date)
+        **Iterations:** ${{ github.event.inputs.iterations }}
+        **Providers:** ${{ github.event.inputs.providers }}
+        **Statistical Analysis:** ${{ github.event.inputs.include_statistical_analysis }}
+
+        ## Workflow Details
+
+        - **Run ID:** ${{ github.run_id }}
+        - **Run Number:** ${{ github.run_number }}
+        - **Repository:** ${{ github.repository }}
+        - **Branch:** ${{ github.ref_name }}
+
+        ## Results Location
+
+        All detailed results are available in the \`benchmarks/results/high_iteration/\` directory.
+
+        ## Usage
+
+        This high-iteration benchmark provides more statistically significant results than the standard 3-iteration tests.
+        With ${{ github.event.inputs.iterations }} iterations per scenario, we can:
+
+        - Detect smaller performance differences
+        - Calculate reliable confidence intervals
+        - Identify performance outliers
+        - Analyze performance consistency
+
+        ## Next Steps
+
+        1. Review the detailed results in the artifacts
+        2. Compare with previous benchmark runs
+        3. Update documentation if significant changes are found
+        4. Consider these results for production deployment decisions
+
+        ---
+        *Generated by GitHub Actions High-Iteration Benchmark Workflow*
+        EOF
+
+        echo "📄 Summary created: $SUMMARY_FILE"
+
+    - name: Upload benchmark artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: high-iteration-benchmark-results-${{ github.event.inputs.iterations }}-iterations
+        path: benchmarks/results/high_iteration/
+        retention-days: 90
+
+    - name: Comment on workflow run
+      if: always()
+      run: |
+        echo "## 🎯 High-Iteration Benchmark Complete!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Parameters:**" >> $GITHUB_STEP_SUMMARY
+        echo "- Iterations: ${{ github.event.inputs.iterations }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Providers: ${{ github.event.inputs.providers }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Statistical Analysis: ${{ github.event.inputs.include_statistical_analysis }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Results:** Available in the workflow artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Total Tests Run:** $(($(echo '${{ github.event.inputs.providers }}' | wc -w) * 5 * ${{ github.event.inputs.iterations }}))" >> $GITHUB_STEP_SUMMARY
