@@ -10,7 +10,7 @@ from typing import Any, Optional, Union
 class AnalysisConfig:
     """Configuration manager for benchmark analysis settings"""
 
-    def __init__(self, config_path: str | Nonestr | Path] = None):
+    def __init__(self, config_path: str | Path | None = None):
         if config_path is None:
             config_path = Path(__file__).parent.parent / "configs" / "analysis.json"
 
@@ -104,7 +104,7 @@ class AnalysisConfig:
         # Set the value
         config[keys[-1]] = value
 
-    def save(self, path: str | Nonestr | Path] = None) -> None:
+    def save(self, path: str | Path | None = None) -> None:
         """Save configuration to file"""
         save_path = Path(path) if path else self.config_path
         save_path.parent.mkdir(parents=True, exist_ok=True)

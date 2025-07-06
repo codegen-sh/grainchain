@@ -23,7 +23,7 @@ class BenchmarkComparator:
         self.data_parser = data_parser
 
     def compare_providers(
-        self, provider1: str, provider2: str, time_range_days: str | Noneint] = None
+        self, provider1: str, provider2: str, time_range_days: int | None = None
     ) -> ComparisonResult:
         """Compare two providers across all available metrics"""
 
@@ -115,7 +115,7 @@ class BenchmarkComparator:
 
     def analyze_time_trends(
         self,
-        provider: str | Nonestr] = None,
+        provider: str | None = None,
         days: int = 30,
         metric: str = "success_rate",
     ) -> TrendAnalysis:
@@ -409,7 +409,7 @@ class BenchmarkComparator:
 
     def _extract_metric_value(
         self, provider_metrics: ProviderMetrics, metric: str
-    ) -> str | Nonefloat]:
+    ) -> float | None:
         """Extract a specific metric value from provider metrics"""
         if metric == "success_rate":
             return provider_metrics.overall_success_rate

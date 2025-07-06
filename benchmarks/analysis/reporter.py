@@ -21,7 +21,7 @@ class BenchmarkReporter:
     def generate_comparison_report(
         self,
         comparison_result: ComparisonResult,
-        output_path: str | NonePath] = None,
+        output_path: str | Path | None = None,
         format: str = "markdown",
     ) -> Path:
         """Generate a detailed comparison report"""
@@ -44,7 +44,7 @@ class BenchmarkReporter:
         self,
         results: list[BenchmarkResult],
         format: str = "html",
-        output_path: str | NonePath] = None,
+        output_path: str | Path | None = None,
         include_charts: bool = True,
     ) -> Path:
         """Generate a comprehensive benchmark analysis report"""
