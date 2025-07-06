@@ -1,0 +1,32 @@
+{
+  "providers": [
+    "local",
+    "e2b"
+  ],
+  "iterations": 50,
+  "timeout": 60,
+  "parallel_tests": false,
+  "detailed_metrics": true,
+  "export_formats": [
+    "json",
+    "markdown",
+    "html"
+  ],
+  "scenarios": [
+    "basic_commands",
+    "python_execution",
+    "file_operations",
+    "computational_tasks",
+    "snapshot_lifecycle"
+  ],
+  "statistical_analysis": {
+    "confidence_interval": 0.95,
+    "outlier_detection": true,
+    "trend_analysis": true
+  },
+  "output": {
+    "save_raw_data": true,
+    "generate_charts": true,
+    "detailed_logs": true
+  }
+}
