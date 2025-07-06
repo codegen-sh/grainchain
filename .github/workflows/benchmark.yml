@@ -1,4 +1,4 @@
-name: Outline Benchmarks
+name: Grainchain Benchmarks
 
 on:
   schedule:
@@ -37,9 +37,6 @@ jobs:
       run: |
         uv sync --all-extras
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
     - name: Configure Git
       run: |
         git config --global user.name "Benchmark Bot"
@@ -48,8 +45,6 @@ jobs:
     - name: Run benchmarks
       run: |
         uv run python benchmarks/scripts/auto_publish.py --run-benchmark
-      env:
-        DOCKER_HOST: unix:///var/run/docker.sock
 
     - name: Generate summary report
       run: |

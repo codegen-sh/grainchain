@@ -18,7 +18,6 @@ from pathlib import Path
 
 # Add the scripts directory to Python path
 sys.path.append(str(Path(__file__).parent))
-from benchmark_runner import BenchmarkRunner  # noqa: E402
 
 
 class AutoPublisher:
@@ -36,17 +35,32 @@ class AutoPublisher:
     def run_benchmark_and_publish(self) -> bool:
         """Run benchmark and publish results"""
         try:
-            # Run the benchmark
-            self.logger.info("Starting automated benchmark run...")
-            runner = BenchmarkRunner()
-            results = runner.run_benchmark()
+            # Run the grainchain benchmark instead of Docker-based benchmark
+            self.logger.info("Starting automated grainchain benchmark run...")
 
-            if results.get("status") != "completed":
-                self.logger.error("Benchmark failed, not publishing results")
+            import subprocess
+            import sys
+
+            # Run the grainchain benchmark script
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "benchmarks/scripts/grainchain_benchmark.py",
+                    "--providers",
+                    "local",
+                    "--iterations",
+                    "3",
+                ],
+                capture_output=True,
+                text=True,
+                cwd=self.repo_root,
+            )
+
+            if result.returncode != 0:
+                self.logger.error(f"Grainchain benchmark failed: {result.stderr}")
                 return False
 
-            # Save results
-            runner.save_results(results)
+            self.logger.info("Grainchain benchmark completed successfully")
 
             # Commit and push results
             return self._commit_and_push_results()
@@ -101,12 +115,12 @@ class AutoPublisher:
     def generate_summary_report(self) -> None:
         """Generate a summary report from all historical results"""
         try:
-            # Find all result files
-            result_files = list(self.results_dir.glob("benchmark_*.json"))
+            # Find all grainchain result files
+            result_files = list(self.results_dir.glob("grainchain_benchmark_*.json"))
             result_files.sort()
 
             if not result_files:
-                self.logger.warning("No benchmark results found")
+                self.logger.warning("No grainchain benchmark results found")
                 return
 
             # Load all results
@@ -120,7 +134,7 @@ class AutoPublisher:
                     self.logger.warning(f"Failed to load {file_path}: {e}")
 
             # Generate summary markdown
-            summary_md = self._generate_summary_markdown(all_results)
+            summary_md = self._generate_grainchain_summary_markdown(all_results)
 
             # Save summary
             summary_file = self.results_dir / "SUMMARY.md"
@@ -132,74 +146,82 @@ class AutoPublisher:
         except Exception as e:
             self.logger.error(f"Failed to generate summary report: {e}")
 
-    def _generate_summary_markdown(self, results: list) -> str:
-        """Generate summary markdown from all results"""
-        md_content = f"""# Outline Benchmark Summary
+    def _generate_grainchain_summary_markdown(self, results: list) -> str:
+        """Generate summary markdown from grainchain benchmark results"""
+        md_content = f"""# Grainchain Benchmark Summary
 
 **Last Updated:** {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 **Total Benchmark Runs:** {len(results)}
 
 ## Recent Results
 
-| Date | Status | Avg Build Time (s) | Avg Memory (MB) | Notes |
-|------|--------|-------------------|-----------------|-------|
+| Date | Status | Success Rate | Avg Time (s) | Providers | Notes |
+|------|--------|--------------|--------------|-----------|-------|
 """
 
         # Show last 10 results
         recent_results = results[-10:] if len(results) > 10 else results
 
         for result in reversed(recent_results):
-            date = result.get("start_time", "Unknown")[:10]  # Extract date part
+            # Extract date from benchmark_info
+            start_time = result.get("benchmark_info", {}).get("start_time", "Unknown")
+            date = start_time[:10] if start_time != "Unknown" else "Unknown"
+
             status = "✅" if result.get("status") == "completed" else "❌"
 
-            # Calculate averages
-            snapshots = result.get("snapshots", [])
-            build_times = []
-            memory_usages = []
+            # Calculate overall success rate and average time
+            provider_results = result.get("provider_results", {})
+            success_rates = []
+            avg_times = []
+            providers = []
 
-            for snapshot in snapshots:
-                if "metrics" in snapshot and "performance" in snapshot["metrics"]:
-                    build_time = snapshot["metrics"]["performance"].get(
-                        "build_time_seconds"
-                    )
-                    if build_time and isinstance(build_time, int | float):
-                        build_times.append(build_time)
+            for provider, provider_data in provider_results.items():
+                providers.append(provider)
+                if provider_data.get("status") == "completed":
+                    overall_metrics = provider_data.get("overall_metrics", {})
+                    success_rate = overall_metrics.get("overall_success_rate", 0)
+                    avg_time = overall_metrics.get("avg_scenario_time", 0)
+                    success_rates.append(success_rate)
+                    avg_times.append(avg_time)
 
-                if "metrics" in snapshot and "container" in snapshot["metrics"]:
-                    memory = snapshot["metrics"]["container"].get("memory_usage")
-                    if memory and isinstance(memory, int | float):
-                        memory_usages.append(memory / 1024 / 1024)  # Convert to MB
-
-            avg_build = (
-                round(sum(build_times) / len(build_times), 2) if build_times else "N/A"
+            overall_success = (
+                round((sum(success_rates) / len(success_rates)) * 100, 1)
+                if success_rates
+                else 0
             )
-            avg_memory = (
-                round(sum(memory_usages) / len(memory_usages), 2)
-                if memory_usages
-                else "N/A"
+            overall_avg_time = (
+                round(sum(avg_times) / len(avg_times), 2) if avg_times else 0
             )
+            providers_str = ", ".join(providers) if providers else "None"
 
             notes = "Failed" if result.get("status") != "completed" else "OK"
 
-            md_content += (
-                f"| {date} | {status} | {avg_build} | {avg_memory} | {notes} |\n"
-            )
+            md_content += f"| {date} | {status} | {overall_success}% | {overall_avg_time} | {providers_str} | {notes} |\n"
 
         md_content += """
 ## Configuration
 
 The benchmarks use the following configuration:
-- **Base Image:** `ghcr.io/openai/codex-universal:latest`
-- **Node Version:** 20
-- **Benchmark Iterations:** 3
-- **Trivial Changes:** Comment addition, whitespace, log statements
+- **Providers:** Local, E2B, Modal, Daytona, Morph (when available)
+- **Test Scenarios:** Basic commands, Python execution, File operations, Computational tasks, Snapshot lifecycle
+- **Default Iterations:** 3
+- **Timeout:** 30 seconds per scenario
 
 ## Metrics Collected
 
-- **Build Time:** Time to run `yarn build`
-- **Memory Usage:** Container memory consumption
-- **File System:** Package count and directory sizes
-- **Test Time:** Time to run test suite
+- **Sandbox Creation Time:** Time to create a new sandbox
+- **Command Execution Time:** Time to execute individual commands
+- **Success Rate:** Percentage of successful operations
+- **File Operations:** Upload/download performance
+- **Snapshot Lifecycle:** Git clone, snapshot creation, and restoration
+
+## Test Scenarios
+
+1. **Basic Commands:** Shell commands (echo, pwd, ls, whoami, date)
+2. **Python Execution:** Python script execution and version checks
+3. **File Operations:** File upload/download with various sizes
+4. **Computational Tasks:** CPU-intensive Python operations
+5. **Snapshot Lifecycle:** Git clone, file creation, snapshot, kill, and restore
 
 ## Automation
 
