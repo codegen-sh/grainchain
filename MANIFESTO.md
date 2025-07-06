@@ -1,4 +1,4 @@
-# The Grainchain Manifesto ⏳
+# The Grainchain Manifesto 🏜️
 
 *A Declaration for the Future of Sandbox Computing*
 
