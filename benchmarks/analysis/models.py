@@ -34,8 +34,8 @@ class ProviderMetrics:
     avg_execution_time: float
     total_scenarios: int
     scenarios: dict[str, ScenarioMetrics] = field(default_factory=dict)
-    benchmark_timestamp: str | Nonedatetime] = None
-    benchmark_duration: str | Nonefloat] = None
+    benchmark_timestamp: datetime | None = None
+    benchmark_duration: float | None = None
     status: str = "unknown"
 
 
@@ -48,8 +48,8 @@ class BenchmarkResult:
     providers_tested: list[str]
     test_scenarios: int
     provider_results: dict[str, ProviderMetrics] = field(default_factory=dict)
-    file_path: str | NonePath] = None
-    raw_data: str | Nonedict[str, Any]] = None
+    file_path: Path | None = None
+    raw_data: dict[str, Any] | None = None
 
 
 @dataclass
@@ -57,8 +57,8 @@ class ComparisonResult:
     """Result of comparing benchmark data"""
 
     comparison_type: str  # "provider", "time_series", "regression"
-    baseline: str | str, datetime]  # Provider name or timestamp
-    target: str | str, datetime]
+    baseline: str | datetime  # Provider name or timestamp
+    target: str | datetime
     metrics_compared: list[str]
     improvements: dict[str, float] = field(default_factory=dict)
     regressions: dict[str, float] = field(default_factory=dict)
@@ -71,7 +71,7 @@ class TrendAnalysis:
     """Time-series trend analysis result"""
 
     metric_name: str
-    provider: str | Nonestr]
+    provider: str | None
     time_period: str
     trend_direction: str  # "improving", "declining", "stable"
     trend_strength: float  # 0-1 scale

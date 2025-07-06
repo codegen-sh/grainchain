@@ -48,7 +48,7 @@ class BenchmarkDataParser:
         results.sort(key=lambda x: x.timestamp)
         return results
 
-    def load_json_result(self, file_path: Path) -> str | NoneBenchmarkResult]:
+    def load_json_result(self, file_path: Path) -> BenchmarkResult | None:
         """Load a benchmark result from a JSON file"""
         try:
             with open(file_path) as f:
@@ -59,7 +59,7 @@ class BenchmarkDataParser:
             print(f"Error loading JSON file {file_path}: {e}")
             return None
 
-    def load_markdown_result(self, file_path: Path) -> str | NoneBenchmarkResult]:
+    def load_markdown_result(self, file_path: Path) -> BenchmarkResult | None:
         """Load a benchmark result from a Markdown file"""
         try:
             with open(file_path) as f:
@@ -279,7 +279,7 @@ class BenchmarkDataParser:
             if start_date <= result.timestamp <= end_date
         ]
 
-    def get_latest_result(self) -> str | NoneBenchmarkResult]:
+    def get_latest_result(self) -> BenchmarkResult | None:
         """Get the most recent benchmark result"""
         all_results = self.load_all_results()
         return all_results[-1] if all_results else None

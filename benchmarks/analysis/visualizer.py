@@ -39,7 +39,7 @@ class BenchmarkVisualizer:
         self,
         comparison_result: ComparisonResult,
         chart_type: str = "bar",
-        save_path: str | NonePath] = None,
+        save_path: str | Path | None = None,
     ) -> Path:
         """Create a chart comparing two providers"""
 
@@ -70,7 +70,7 @@ class BenchmarkVisualizer:
         return save_path
 
     def create_trend_chart(
-        self, trend_analysis: TrendAnalysis, save_path: str | NonePath] = None
+        self, trend_analysis: TrendAnalysis, save_path: str | Path | None = None
     ) -> Path:
         """Create a trend analysis chart"""
 
@@ -175,7 +175,7 @@ class BenchmarkVisualizer:
         return save_path
 
     def create_performance_dashboard(
-        self, results: list[BenchmarkResult], save_path: str | NonePath] = None
+        self, results: list[BenchmarkResult], save_path: str | Path | None = None
     ) -> Path:
         """Create a comprehensive performance dashboard"""
 
@@ -226,8 +226,8 @@ class BenchmarkVisualizer:
         return save_path
 
     def create_interactive_dashboard(
-        self, results: list[BenchmarkResult], save_path: str | NonePath] = None
-    ) -> str | NonePath]:
+        self, results: list[BenchmarkResult], save_path: str | Path | None = None
+    ) -> str | Path | None:
         """Create an interactive HTML dashboard using Plotly"""
 
         if not PLOTLY_AVAILABLE:
@@ -671,7 +671,7 @@ class BenchmarkVisualizer:
             )
 
     def export_chart_data(
-        self, results: list[BenchmarkResult], save_path: str | NonePath] = None
+        self, results: list[BenchmarkResult], save_path: str | Path | None = None
     ) -> Path:
         """Export chart data as JSON for external visualization tools"""
 
