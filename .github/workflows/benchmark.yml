@@ -37,9 +37,6 @@ jobs:
       run: |
         uv sync --all-extras
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
     - name: Configure Git
       run: |
         git config --global user.name "Benchmark Bot"
@@ -47,13 +44,9 @@ jobs:
 
     - name: Run benchmarks
       run: |
-        uv run python benchmarks/scripts/auto_publish.py --run-benchmark
+        uv run python benchmarks/scripts/grainchain_benchmark.py --providers local --iterations 3
       env:
-        DOCKER_HOST: unix:///var/run/docker.sock
-
-    - name: Generate summary report
-      run: |
-        uv run python benchmarks/scripts/auto_publish.py --generate-summary
+        PYTHONPATH: ${{ github.workspace }}
 
     - name: Commit and push results
       run: |
