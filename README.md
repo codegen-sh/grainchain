@@ -105,62 +105,64 @@ Compare sandbox providers with comprehensive performance testing:
 
 ```bash
 # Test individual providers
-grainchain benchmark --provider local
-grainchain benchmark --provider e2b
-grainchain benchmark --provider daytona
-grainchain benchmark --provider morph
+python benchmarks/scripts/grainchain_benchmark.py --providers local
+python benchmarks/scripts/grainchain_benchmark.py --providers e2b
+python benchmarks/scripts/grainchain_benchmark.py --providers daytona
+python benchmarks/scripts/grainchain_benchmark.py --providers morph
 
-# Generate timestamped results
-grainchain benchmark --provider local --output benchmarks/results/
+# Test multiple providers at once
+python benchmarks/scripts/grainchain_benchmark.py --providers local e2b --iterations 3
 
-# Check latest benchmark status (without running new tests)
-./scripts/benchmark_status.sh
+# Generate automated summary report
+python benchmarks/scripts/auto_publish.py --generate-summary
 ```
 
 ### Full Benchmark Suite
 
-Run comprehensive benchmarks across all providers:
+Run comprehensive benchmarks across all available providers:
 
 ```bash
-# Quick: Run all providers and save results
-for provider in local e2b daytona morph; do
-    echo "🚀 Testing $provider..."
-    grainchain benchmark --provider $provider --output benchmarks/results/
-done
+# Run full benchmark suite with all providers
+python benchmarks/scripts/grainchain_benchmark.py --providers local e2b modal daytona morph --iterations 3
 
-# Comprehensive: Generate a full report that can be committed
-./scripts/benchmark_all.sh
+# Run automated benchmark and generate summary (used by CI)
+python benchmarks/scripts/auto_publish.py --run-benchmark
 
-# Advanced: Use the detailed benchmark script
-./benchmarks/scripts/run_grainchain_benchmark.sh "local e2b daytona morph" 3
+# Generate summary from existing results
+python benchmarks/scripts/auto_publish.py --generate-summary
 ```
 
-The `benchmark_all.sh` script generates timestamped reports in `benchmarks/results/` that include:
+The benchmark system generates timestamped reports in `benchmarks/results/` that include:
 
-- Performance comparison tables
-- Environment details (OS, commit hash)
-- Analysis and recommendations
-- Raw benchmark data for tracking trends
+- Performance comparison tables across providers
+- Success rates and error analysis
+- Detailed metrics for each test scenario
+- JSON data for historical tracking
+- Automated summary reports
 
 ### Current Performance Baseline
 
 Latest benchmark results (updated 2025-07-06):
 
-| Provider    | Total Time | Basic Echo | Python Test | File Ops | Performance      |
-| ----------- | ---------- | ---------- | ----------- | -------- | ---------------- |
-| **Local**   | 0.051s     | 0.003s     | 0.030s      | 0.005s   | ⚡ Fastest       |
-| **E2B**     | 2.08s      | 0.109s     | 0.300s      | 0.408s   | 🚀 Balanced      |
-| **Daytona** | N/A        | N/A        | N/A         | N/A      | ❌ Credits Depleted |
-| **Morph**   | N/A        | 5.02s      | Failed      | N/A      | ⚠️ Partial Support |
+| Provider | Success Rate | Avg Time (s) | Status | Performance |
+|----------|--------------|--------------|--------|-------------|
+| **Local** | 73.3% | 0.03 | ⚠️ Needs fixing | ⚡ Fastest |
+| **E2B** | - | - | ❓ Not tested | 🚀 Cloud-based |
+| **Daytona** | - | - | ❓ Not tested | 🛡️ Comprehensive |
+| **Morph** | - | - | ❌ Payment required | 🚀 Instant Snapshots |
 
 > **Performance Notes**:
 >
-> - Local: Best for development/testing (41x faster than E2B, instant startup)
-> - E2B: Production-ready with excellent reliability (93.3% success rate)
-> - Daytona: Currently unavailable due to depleted credits
-> - Morph: Basic commands work but Python execution has issues
+> - **Local**: Best for development/testing, fastest execution, but currently at 73.3% success rate
+> - **E2B**: Production-ready cloud sandboxes (requires API key setup)
+> - **Daytona**: Full workspace environments with comprehensive tooling
+> - **Morph**: Custom base images with instant snapshots (requires paid plan)
+>
+> **⚠️ CRITICAL**: Local provider must achieve 100% success rate before production use.
+> Current failures are in File Operations (0% success) and Snapshot Lifecycle (66.7% success).
 
 Results are automatically saved to `benchmarks/results/` and can be committed to track performance over time.
+View the full benchmark summary at [`benchmarks/results/SUMMARY.md`](benchmarks/results/SUMMARY.md).
 
 ### Detailed Performance Analysis
 
